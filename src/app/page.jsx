@@ -8,7 +8,7 @@ import  AboutPage  from './about/page';
 import  ServicesPage  from './services/page';
 import  CorporatePage  from './corporate/page';
 import  BookingPage from './booking/page';
-import  ContactPage  from './contact/page';
+import  ContactPage  from './conatct/page';
 
 
 export default function App() {
