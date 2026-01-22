@@ -31,6 +31,12 @@ export const seoData = {
       "Get in touch with Navsafar Travel Solutions for travel inquiries, bookings, and customized tour packages.",
     path: "/contact",
   },
+  corporate: {
+  title: "Corporate Travel Management",
+  description:
+    "Professional corporate travel management and business travel solutions by Navsafar Travel Solutions.",
+  path: "/corporate",
+},
 };
 
 export function generateSeoMetadata(pageKey) {

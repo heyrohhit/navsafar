@@ -1,8 +1,10 @@
-import CorporatePageClient from "./CorporatePageClient"
-import { generateSeoMetadata } from "../../lib/seo";
+import CorporatePageClient from "./CorporatePageClient";
+import { generateSeoMetadata } from "@/lib/seo";
 
-export const metadata = generateSeoMetadata("services");
+export async function getInfo() {
+  return generateSeoMetadata("corporate");
+}
 
-export default function page() {
+export default function Page() {
   return <CorporatePageClient />;
 }
