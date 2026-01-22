@@ -4,6 +4,14 @@ import "./globals.css";
 import FooterPage from "./pages/footer-page";
 import { PremiumHeader } from "./components/premium-header";
 
+import { Playfair_Display, Inter } from "next/font/google";
+
+export const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+  weight: ["400", "600", "700", "800"],
+});
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -83,7 +91,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className={`font-playfair ${geistSans.variable} ${geistMono.variable}`}>
          <PremiumHeader />
         {children}
         <FooterPage/>

@@ -86,7 +86,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="mb-12 text-center"
           >
-            <h2 className="mb-4 font-['Playfair_Display'] text-4xl font-bold text-[#0B1C2D]">
+            <h2 className="mb-4 font-['Playfair_Display'] text-4xl font-bold text-[#f6cf7a]">
               Our Core Values
             </h2>
             <p className="mx-auto max-w-2xl font-['Inter'] text-lg text-gray-600">
@@ -131,7 +131,7 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-12 font-['Playfair_Display'] text-4xl font-bold text-[#0B1C2D]">
+            <h2 className="mb-12 font-['Playfair_Display'] text-4xl font-bold text-white">
               Leadership Team
             </h2>
 

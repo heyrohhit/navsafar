@@ -85,7 +85,7 @@ export default function page() {
 
           {/* Booking Services */}
           <section>
-            <h2 className="mb-8 text-3xl font-bold text-gray-900">
+            <h2 className="mb-8 text-3xl font-bold text-[#f6cf7a]">
               Booking Services
             </h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

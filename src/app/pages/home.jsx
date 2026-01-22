@@ -1,170 +1,197 @@
-"use client"
+"use client";
 
-import { motion } from 'motion/react';
-import { ImageWithFallback } from '../components/figma/ImageWithFallback';
+import { motion } from "motion/react";
+import { ImageWithFallback } from "../components/figma/ImageWithFallback";
 import { useEffect, useState } from "react";
-
 import {
   CheckCircle2,
   MessageCircle,
   Phone,
   Shield,
-  Clock,
   Award,
   Users,
   Globe,
   Plane,
   Building2,
-  Heart,
   Map,
-} from 'lucide-react';
+  Star,
+} from "lucide-react";
+
+
+
+/* ================= DATA ================= */
 
 const tourCategories = [
-  {
-    title: 'International Luxury Tours',
-    image: 'https://images.unsplash.com/photo-1763571589025-efacfe091161?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxldXJvcGUlMjB2YWNhdGlvbiUyMHNjZW5pY3xlbnwxfHx8fDE3NjkwNjE4NTV8MA&ixlib=rb-4.1.0&q=80&w=1080',
-  },
-  {
-    title: 'Honeymoon Packages',
-    image: 'https://images.unsplash.com/photo-1614505241347-7f4765c1035e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYWxkaXZlcyUyMGx1eHVyeSUyMHJlc29ydHxlbnwxfHx8fDE3Njg5NzU1Nzh8MA&ixlib=rb-4.1.0&q=80&w=1080',
-  },
-  {
-    title: 'Religious Tours',
-    image: 'https://images.unsplash.com/photo-1649147313351-c86537fda0eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxrZWRhcm5hdGglMjB0ZW1wbGUlMjBtb3VudGFpbnN8ZW58MXx8fHwxNzY5MDYxODU2fDA&ixlib=rb-4.1.0&q=80&w=1080',
-  },
-  {
-    title: 'Corporate Group Travel',
-    image: 'https://images.unsplash.com/photo-1758518731706-be5d5230e5a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb3Jwb3JhdGUlMjBidXNpbmVzcyUyMG1lZXRpbmd8ZW58MXx8fHwxNzY4OTk2MzY4fDA&ixlib=rb-4.1.0&q=80&w=1080',
-  },
-  {
-    title: 'Family Vacations',
-    image: 'https://images.unsplash.com/photo-1552249352-02a0817a2d95?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW1pbHklMjB2YWNhdGlvbiUyMGJlYWNofGVufDF8fHx8MTc2OTA2MTg1Nnww&ixlib=rb-4.1.0&q=80&w=1080',
-  },
-  {
-    title: 'Customized Journeys',
-    image: 'https://images.unsplash.com/photo-1759773936612-164cc2e19671?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjB3b3JsZCUyMHRyYXZlbCUyMGRlc3RpbmF0aW9uc3xlbnwxfHx8fDE3NjkwNjE4NTV8MA&ixlib=rb-4.1.0&q=80&w=1080',
-  },
+  { title: "International Luxury Tours", image: "https://images.unsplash.com/photo-1763571589025-efacfe091161?q=80&w=1080" },
+  { title: "Honeymoon Packages", image: "https://images.unsplash.com/photo-1614505241347-7f4765c1035e?q=80&w=1080" },
+  { title: "Religious Tours", image: "https://images.unsplash.com/photo-1649147313351-c86537fda0eb?q=80&w=1080" },
+  { title: "Corporate Group Travel", image: "https://images.unsplash.com/photo-1758518731706-be5d5230e5a5?q=80&w=1080" },
+  { title: "Family Vacations", image: "https://images.unsplash.com/photo-1552249352-02a0817a2d95?q=80&w=1080" },
+  { title: "Customized Journeys", image: "https://images.unsplash.com/photo-1759773936612-164cc2e19671?q=80&w=1080" },
 ];
 
 const services = [
-  { icon: Shield, text: 'Clear Pricing – No Hidden Charges' },
-  { icon: Users, text: 'Dedicated Trip Management' },
-  { icon: Map, text: 'Customized Travel Plans' },
-  { icon: MessageCircle, text: 'WhatsApp Support (Before, During & After Trip)' },
-  { icon: Plane, text: 'Domestic & International Flights' },
-  { icon: Building2, text: 'Corporate & Premium Hotel Bookings' },
-  { icon: Globe, text: 'Airport Transfers & Cab Services' },
-  { icon: Award, text: 'Visa Assistance (Business & Tourist)' },
-  { icon: CheckCircle2, text: 'Travel Insurance' },
+  { icon: Shield, text: "Clear Pricing – No Hidden Charges" },
+  { icon: Users, text: "Dedicated Trip Management" },
+  { icon: Map, text: "Customized Travel Plans" },
+  { icon: MessageCircle, text: "WhatsApp Support (Before, During & After Trip)" },
+  { icon: Plane, text: "Domestic & International Flights" },
+  { icon: Building2, text: "Corporate & Premium Hotel Bookings" },
+  { icon: Globe, text: "Airport Transfers & Cab Services" },
+  { icon: Award, text: "Visa Assistance (Business & Tourist)" },
+  { icon: CheckCircle2, text: "Travel Insurance" },
 ];
 
-const bookingSteps = [
-  'Share your travel idea',
-  'Receive a custom itinerary',
-  'Review & modify',
-  'Flexible payment',
-  'Enjoy stress-free travel',
+const bookingSteps = [ 'Share your travel idea', 'Receive a custom itinerary', 'Review & modify', 'Flexible payment', 'Enjoy stress-free travel', ];
+ const uspPoints = [ 'Personal Trip Advisor', 'Fully Customized Itineraries', '24/7 Human Support', 'Flexible Payment Options', 'Easy Cancellation', 'Post-trip Support', ];
+
+const testimonials = [
+  {
+    name: "Rohit Sharma",
+    text: "Navsafar planned our Europe honeymoon perfectly. Zero stress, pure luxury!",
+  },
+  {
+    name: "Anjali Mehta",
+    text: "Best corporate travel partner we have worked with. Highly professional.",
+  },
+  {
+    name: "Faizan Khan",
+    text: "Excellent service, instant support on WhatsApp even during the trip.",
+  },
 ];
 
-const uspPoints = [
-  'Personal Trip Advisor',
-  'Fully Customized Itineraries',
-  '24/7 Human Support',
-  'Flexible Payment Options',
-  'Easy Cancellation',
-  'Post-trip Support',
-];
+/* ================= COMPONENT ================= */
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentText, setCurrentText] = useState(false);
+  const [currentReview, setCurrentReview] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % tourCategories.length);
-    }, 3000);
-
-    return () => clearInterval(interval);
+    const slideInterval = setInterval(
+      () => setCurrentSlide((p) => (p + 1) % tourCategories.length),
+      3000
+    );
+    return () => clearInterval(slideInterval);
   }, []);
-  useEffect(() => {
-    const textShow = setTimeout(() => {
-      setCurrentText(true);
-    }, 1000);
 
-    return () => clearTimeout(textShow);
+  useEffect(() => {
+    const reviewInterval = setInterval(
+      () => setCurrentReview((p) => (p + 1) % testimonials.length),
+      4000
+    );
+    return () => clearInterval(reviewInterval);
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setCurrentText(true), 1000);
+    return () => clearTimeout(t);
   }, []);
 
   return (
     <div className="bg-[#F5F7FA]">
-      {/* Hero Section */}
-    <section className="relative h-screen overflow-hidden bg-red-500">
-      <div className="absolute inset-0">
-        {tourCategories.map((item, idx) => (
-          <motion.div
-            key={idx}
-            className="absolute inset-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: currentSlide === idx ? 1 : 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <ImageWithFallback
-              src={item.image}
-              alt={item.title}
-              className="h-full w-full object-cover"
-            />
-          </motion.div>
-        ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/100 via-black/60 to-black/80" />
-      </div>
+      {/* ================= HERO ================= */}
+      <section className="relative h-[92vh] md:h-screen overflow-hidden font-['Playfair_Display']">
+        <div className="absolute inset-0">
+          {tourCategories.map((item, idx) => (
+            <motion.div
+              key={idx}
+              className="absolute inset-0"
+              animate={{ opacity: currentSlide === idx ? 1 : 0 }}
+            >
+              <ImageWithFallback src={item.image} alt={item.title} className="h-full w-full object-cover" />
+            </motion.div>
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/80" />
+        </div>
 
-      <div className="relative flex h-full items-center">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl"
-          >
-           <div calssName="fixed overflow-hidden">
-             {currentText?tourCategories.map((item,idx)=>(
-             <motion.h1
-            key={idx}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: currentSlide === idx ? 1 : 0, }}
-            transition={{ duration: 0.7}}
-           className="absolute top-50 mb-4 font-['Playfair_Display'] text-5xl font-bold leading-tight text-white md:text-7xl">
-              {item.title}
-            </motion.h1>
-           )):<motion.h1
-           initial={{ opacity: 1 }}
-            animate={{ opacity: 0 }}
-            transition={{ duration: 1.5}}
-            className="mb-4 font-['Playfair_Display'] text-5xl font-bold leading-tight text-white">Navsafar Travel Solutions</motion.h1>}
-           </div>
-            <p className="mb-8 font-['Inter'] text-xl text-gray-200 md:text-2xl">
-              Luxury • Corporate • Customized Travel Experiences
-            </p>
-            <div className="flex gap-4 sm:flex-row flex-wrap cursor-pointer relative z-10">
-              <a
-                href="#enquiry-form"
-                className="md:w-[45%] inline-block rounded-lg bg-[#C9A24D] px-8 py-4 text-center font-['Inter'] text-lg font-semibold text-white transition-all hover:bg-[#B8934D]"
-              >
-                Plan My Trip
-              </a>
-              <a
-                href="https://wa.me/919560185041"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="md:w-[50%] inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white bg-transparent px-8 py-4 font-['Inter'] text-lg font-semibold text-white transition-all hover:bg-white hover:text-[#0B1C2D]"
-              >
-                <MessageCircle size={24} />
-                WhatsApp Expert
-              </a>
+        <div className="relative flex h-full items-center">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="max-w-3xl">
+              <div className="relative md:min-h-[160px] min-h-[110px] flex">
+                {currentText &&
+                  tourCategories.map((item, idx) => (
+                    <motion.h1
+                      key={idx}
+                      animate={{ opacity: currentSlide === idx ? 1 : 0 }}
+                      className={`absolute inset-0 flex text-center text-white font-bold font-['Playfair_Display'] text-5xl sm:text-5xl md:text-6xl lg:text-7xl`}
+                    >
+                      {item.title}
+                    </motion.h1>
+                  
+                  ))}
+              </div>
+
+              <p className="mb-8 text-gray-200 text-lg sm:text-xl font-['Playfair_Display'] flex items-center">
+                Luxury • Corporate • Customized Travel Experiences
+              </p>
+
+              <div className="flex flex-wrap gap-4">
+                <a href="#enquiry-form" className="bg-[#C9A24D] px-8 py-4 rounded-lg text-[#0B1C2D]  text-shadow-2xl font-[Cormorant_Garamond] font-bold">
+                  Plan My Trip
+                </a>
+                <a href="https://wa.me/919560185041" className="border-2 border-white px-8 py-4 rounded-lg text-white flex items-center gap-2">
+                  <MessageCircle size={20} /> WhatsApp Expert
+                </a>
+              </div>
             </div>
+          </div>
+        </div>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+          {tourCategories.map((_, idx) => (
+            <span key={idx} className={`h-2 rounded-full bg-white transition-all ${currentSlide === idx ? "w-6" : "w-2 opacity-50"}`} />
+          ))}
+        </div>
+      </section>
+
+      {/* ================= LIVE STATS ================= */}
+      <section className="bg-white py-16">
+        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {[
+            ["5000+", "Happy Customers"],
+            ["12000+", "Trips Planned"],
+            ["35+", "Countries Covered"],
+            ["300+", "Corporate Clients"],
+          ].map(([num, label]) => (
+            <div key={label}>
+              <h3 className="text-4xl font-bold text-[#C9A24D]">{num}</h3>
+              <p className="text-gray-600">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ================= TESTIMONIALS ================= */}
+      <section className="bg-[#0B1C2D] py-20">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <h2 className="text-4xl font-bold mb-10 font-['Playfair_Display']">
+            Happy Travelers
+          </h2>
+
+          <motion.div
+            key={currentReview}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white/10 p-8 rounded-xl"
+          >
+            <div className="flex justify-center mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="text-[#C9A24D]" />
+              ))}
+            </div>
+            <p className="text-lg italic mb-4">
+              “{testimonials[currentReview].text}”
+            </p>
+            <p className="font-semibold">
+              — {testimonials[currentReview].name}
+            </p>
           </motion.div>
         </div>
-      </div>
-    </section>
+      </section>
+
+     
 
       {/* About Preview */}
       <section className="bg-white py-20">
@@ -444,6 +471,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }
