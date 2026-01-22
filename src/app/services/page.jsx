@@ -37,7 +37,7 @@ const bookingServices = [
 
 export default function page() {
   return (
-    <div className="mt-6 bg-gradient-to-b from-gray-50 to-white ">
+    <div className="mt-6 bg-gradient-to-b from-gray-50 to-[#0B1C2D] ">
       <div className="mx-auto max-w-7xl px-8 py-16 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

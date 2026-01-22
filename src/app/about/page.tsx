@@ -11,7 +11,7 @@ const values = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#F5F7FA] pt-20">
+    <div className="min-h-screen bg-gradient-to-b from-white/100 to-[#0B1C2D] pt-20">
       {/* Hero Section */}
       <section className="bg-[#0B1C2D] py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -33,7 +33,7 @@ export default function AboutPage() {
       </section>
 
       {/* Mission & Vision */}
-      <section className="bg-white py-20">
+      <section className="py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2">
             <motion.div
@@ -77,7 +77,7 @@ export default function AboutPage() {
       </section>
 
       {/* Values */}
-      <section className="bg-[#F5F7FA] py-20">
+      <section className=" py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -122,7 +122,7 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="bg-white py-20">
+      <section className=" py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -157,7 +157,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-[#0B1C2D] to-[#1a3a52] py-20">
+      <section className="py-20">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

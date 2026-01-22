@@ -77,19 +77,27 @@ const uspPoints = [
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentText, setCurrentText] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % tourCategories.length);
-    }, 2000);
+    }, 3000);
 
     return () => clearInterval(interval);
+  }, []);
+  useEffect(() => {
+    const textShow = setTimeout(() => {
+      setCurrentText(true);
+    }, 1000);
+
+    return () => clearTimeout(textShow);
   }, []);
 
   return (
     <div className="bg-[#F5F7FA]">
       {/* Hero Section */}
-    <section className="relative h-screen">
+    <section className="relative h-screen overflow-hidden bg-red-500">
       <div className="absolute inset-0">
         {tourCategories.map((item, idx) => (
           <motion.div
@@ -117,20 +125,26 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
             className="max-w-3xl"
           >
-           {tourCategories.map((item,idx)=>{
-             return <motion.h1
+           <div calssName="fixed overflow-hidden">
+             {currentText?tourCategories.map((item,idx)=>(
+             <motion.h1
             key={idx}
             initial={{ opacity: 0 }}
-            animate={{ opacity: currentSlide === idx ? 1 : 0 }}
-            transition={{ duration: 0.7 }}
-           className="absolute inset-0 mb-4 font-['Playfair_Display'] md:left-[25%] left-5 top-[25%] text-5xl font-bold leading-tight text-white md:text-7xl">
+            animate={{ opacity: currentSlide === idx ? 1 : 0, }}
+            transition={{ duration: 0.7}}
+           className="absolute top-50 mb-4 font-['Playfair_Display'] text-5xl font-bold leading-tight text-white md:text-7xl">
               {item.title}
-            </motion. h1>
-           })}
+            </motion.h1>
+           )):<motion.h1
+           initial={{ opacity: 1 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 1.5}}
+            className="mb-4 font-['Playfair_Display'] text-5xl font-bold leading-tight text-white">Navsafar Travel Solutions</motion.h1>}
+           </div>
             <p className="mb-8 font-['Inter'] text-xl text-gray-200 md:text-2xl">
               Luxury • Corporate • Customized Travel Experiences
             </p>
-            <div className="flex gap-4 sm:flex-row flex-wrap">
+            <div className="flex gap-4 sm:flex-row flex-wrap cursor-pointer relative z-10">
               <a
                 href="#enquiry-form"
                 className="md:w-[45%] inline-block rounded-lg bg-[#C9A24D] px-8 py-4 text-center font-['Inter'] text-lg font-semibold text-white transition-all hover:bg-[#B8934D]"

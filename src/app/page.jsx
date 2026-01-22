@@ -8,7 +8,7 @@ import  AboutPage  from './about/page';
 import  ServicesPage  from './services/page';
 import  CorporatePage  from './corporate/page';
 import  BookingPage from './booking/page';
-import  ContactPage  from './conatct/page';
+import  ContactPage  from './contact/page';
 
 
 export default function App() {
@@ -46,7 +46,7 @@ export default function App() {
   }
 
   return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-[#0B1C2D]">
         {randerPage()}
         {/* Premium Footer */}
       </div>

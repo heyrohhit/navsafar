@@ -102,7 +102,7 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen mt-12 bg-gradient-to-b from-slate-900 via-gray-800 to-black py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen mt-12 bg-gradient-to-b from-gray-50 to-[#0B1C2D] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -110,10 +110,10 @@ export default function BookingPage() {
           transition={{ duration: 0.6 }}
           className="mb-8 text-center"
         >
-          <h1 className="mb-3 font-['Playfair_Display'] md:text-5xl text-4xl font-bold text-white">
+          <h1 className="mb-3 font-['Playfair_Display'] md:text-5xl text-4xl font-bold text-[#0B1C2D] ">
             Luxury Travel Enquiry
           </h1>
-          <p className="font-['Inter'] md:text-lg text-gray-300">
+          <p className="font-['Inter'] md:text-lg text-gray-700">
             Let us craft your perfect journey with personalized attention to every detail
           </p>
         </motion.div>
@@ -436,7 +436,7 @@ export default function BookingPage() {
               Send Enquiry on WhatsApp
             </button>
 
-            <p className="text-center font-['Inter'] text-sm text-gray-500">
+            <p className="text-center font-['Inter'] text-sm text-gray-800">
               Your enquiry will be sent directly to our WhatsApp for immediate assistance
             </p>
           </div>

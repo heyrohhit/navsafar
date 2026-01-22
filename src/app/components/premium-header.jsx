@@ -11,11 +11,11 @@ const navItems = [
   {
     label: "Services",
     submenu: [
-      { label: "Domestic Tours", path: "/services" },
-      { label: "International Tours", path: "/services" },
-      { label: "Corporate Travel", path: "/services" },
-      { label: "Religious Tours", path: "/services" },
-      { label: "Customized Tours", path: "/services" },
+      { label: "Domestic Tours", path: "/services/#domestic-tours" },
+      { label: "International Tours", path: "/services/#international-tours" },
+      { label: "Corporate Travel", path: "/services/#corporate-travel" },
+      { label: "Religious Tours", path: "/services/#religious-tours" },
+      { label: "Customized Tours", path: "/services/#customized-tours" },
     ],
   },
   { label: "Corporate & MICE", path: "/corporate" },
@@ -79,7 +79,7 @@ export function PremiumHeader() {
                   >
                     <button
                       type="button"
-                      className="flex items-center gap-1 rounded-md px-4 py-2 font-['Inter'] font-medium text-white transition-colors hover:text-[#C9A24D]"
+                      className="flex items-center gap-1 rounded-md px-4 py-2 font-['Inter'] font-medium cursor-pointer text-white transition-colors hover:text-[#C9A24D]"
                     >
                       {item.label}
                       <ChevronDown size={16} />
@@ -92,7 +92,7 @@ export function PremiumHeader() {
                             key={subItem.label}
                             href={subItem.path}
                             onClick={() => setServicesOpen(false)}
-                            className="block px-4 py-3 font-['Inter'] text-sm text-gray-700 transition-colors hover:bg-[#C9A24D] hover:text-white"
+                            className="block px-4 py-3 font-['Inter'] text-sm text-gray-700 transition-colors cursor-pointer hover:bg-[#C9A24D] hover:text-white"
                           >
                             {subItem.label}
                           </Link>
