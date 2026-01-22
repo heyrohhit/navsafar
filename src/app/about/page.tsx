@@ -1,7 +1,7 @@
 // app/about/page.js
 
 import AboutPageClient from "./AboutPageClient";
-import { generateSeoMetadata } from "../lib/seo";
+import { generateSeoMetadata } from "../../lib/seo";
 
 export const metadata = generateSeoMetadata("about");
 

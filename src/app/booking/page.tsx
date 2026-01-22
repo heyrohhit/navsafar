@@ -1,5 +1,5 @@
 import BookingPageClient from "./BookingPageClient";
-import { generateSeoMetadata } from "../lib/seo";
+import { generateSeoMetadata } from "../../lib/seo";
 
 export const metadata = generateSeoMetadata("home");
 
