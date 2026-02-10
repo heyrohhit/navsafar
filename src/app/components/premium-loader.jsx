@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 export function PremiumLoader() {
   const [isClient, setIsClient] = useState(false);
@@ -73,13 +74,13 @@ export function PremiumLoader() {
           >
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#C9A24D] to-[#d4b05e] flex items-center justify-center shadow-2xl">
               <div className="text-white font-bold text-2xl font-['Playfair_Display']">
-                N
+                <Image src="/logo.png" alt="Logo" width={100} height={100} />
               </div>
             </div>
           </motion.div>
         ) : (
           <div className="mb-8 mx-auto opacity-100">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#C9A24D] to-[#d4b05e] flex items-center justify-center shadow-2xl">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-2xl">
               <div className="text-white font-bold text-2xl font-['Playfair_Display']">
                 N
               </div>

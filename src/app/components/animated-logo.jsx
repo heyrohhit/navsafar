@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export function AnimatedLogo() {
   const [isHovered, setIsHovered] = useState(false);
@@ -23,7 +24,7 @@ export function AnimatedLogo() {
       >
         {/* Outer glow effect */}
         <motion.div
-          className="absolute inset-0 rounded-full bg-gradient-to-br from-[#C9A24D] to-transparent opacity-0 group-hover:opacity-100 blur-md"
+          className="absolute inset-0 rounded-full  opacity-0 group-hover:opacity-100 blur-md"
           animate={{ scale: isHovered ? [1, 1.2, 1] : 1 }}
           transition={{ duration: 2, repeat: isHovered ? Infinity : 0 }}
         />
@@ -37,7 +38,7 @@ export function AnimatedLogo() {
           }}
           transition={{ duration: 0.5 }}
         >
-          N
+          <Image src="/logo.png" alt="Logo" width={100} height={100} />
         </motion.span>
 
         {/* Subtle rotating ring */}

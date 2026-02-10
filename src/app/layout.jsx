@@ -63,7 +63,7 @@ export const metadata = {
     siteName: "Navsafar Travel Solutions",
     images: [
       {
-        url: "https://navsafar.vercel.app/og-image.jpg",
+        url: "https://navsafar.vercel.app/vercel.svg",
         width: 1200,
         height: 630,
         alt: "Navsafar Travel Solutions",
@@ -78,7 +78,7 @@ export const metadata = {
     title: "Navsafar Travel Solutions | Best Travel Agency in India",
     description:
       "Trusted travel agency offering tour packages, corporate travel & MICE services in India and abroad.",
-    images: ["https://navsafar.vercel.app/og-image.jpg"],
+    images: ["https://navsafar.vercel.app/vercel.svg"],
   },
 
   alternates: {
