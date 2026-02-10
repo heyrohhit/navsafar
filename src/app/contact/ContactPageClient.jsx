@@ -7,15 +7,15 @@ const contactMethods = [
   {
     icon: Phone,
     title: "Phone",
-    value: "+91 95601 85041",
-    link: "tel:+919560185041",
+    value: "+91 8700750589",
+    link: "tel:+918700750589",
     color: "bg-blue-500",
   },
   {
     icon: MessageCircle,
     title: "WhatsApp",
     value: "+91 95601 85041",
-    link: "https://wa.me/919560185041",
+    link: "https://wa.me/918700750589",
     color: "bg-green-500",
   },
   {
@@ -36,7 +36,7 @@ const contactMethods = [
     icon: Globe,
     title: "Website",
     value: "www.navsafartravels.com",
-    link: "https://www.navsafartravels.com",
+    link: "https://www.navsafar.vercel.app/",
     color: "bg-teal-500",
   },
 ];

@@ -77,7 +77,7 @@ export default function BookingPage() {
       `📝 *Additional Requirements:* ${formData.message || "None"}%0A%0A` +
       `--------------------`;
 
-    const whatsappUrl = `https://wa.me/919560185041?text=${message}`;
+    const whatsappUrl = `https://wa.me/918700750589?text=${message}`;
     window.open(whatsappUrl, "_blank");
 
     setSubmitted(true);

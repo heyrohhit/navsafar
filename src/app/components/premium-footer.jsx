@@ -41,10 +41,10 @@ const footerSections = [
   {
     title: "Services",
     links: [
-      { label: "International Tours", href: "/services#international" },
+      { label: "International Tours", href: "/services/International" },
       { label: "Corporate MICE", href: "/corporate" },
-      { label: "Honeymoon Packages", href: "/services#honeymoon" },
-      { label: "Customized Tours", href: "/services#custom" },
+      { label: "Honeymoon Packages", href: "/services/Honeymoon" },
+      { label: "Customized Tours", href: "/services/Custom" },
     ]
   }
 ];
@@ -103,7 +103,7 @@ export function PremiumFooter() {
                 </div>
                 <div className="flex items-center gap-3 text-gray-300">
                   <Phone size={18} className="text-[#C9A24D]" />
-                  <span className="font-['Inter'] text-sm">+91 9560185041</span>
+                  <span className="font-['Inter'] text-sm">+91 8700750589</span>
                 </div>
                 <div className="flex items-center gap-3 text-gray-300">
                   <Mail size={18} className="text-[#C9A24D]" />
@@ -192,7 +192,7 @@ export function PremiumFooter() {
               />
               <motion.button
                 type="submit"
-                className="px-6 py-3 bg-[#C9A24D] text-white rounded-lg font-['Inter'] font-semibold hover:bg-[#B8934D] transition-colors duration-300"
+                className="px-6 py-3 bg-[#C9A24D] text-white rounded-lg font-['Inter'] font-semibold hover:bg-[#B8934D] transition-colors duration-300 cursor-pointer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
