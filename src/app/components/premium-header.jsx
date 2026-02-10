@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown, MessageCircle } from "lucide-react";
+import { AnimatedLogo } from "./animated-logo";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -11,14 +12,14 @@ const navItems = [
   {
     label: "Services",
     submenu: [
-      { label: "Domestic Tours", path: "/services/#domestic-tours" },
-      { label: "International Tours", path: "/services/#international-tours" },
-      { label: "Corporate Travel", path: "/services/#corporate-travel" },
-      { label: "Religious Tours", path: "/services/#religious-tours" },
-      { label: "Customized Tours", path: "/services/#customized-tours" },
+      { label: "Domestic Tours", path: "/services/Domestic-Tours" },
+      { label: "International Tours", path: "/services/International-Tours " },
+      { label: "Corporate Travel", path: "/services/Corporate-Travel" },
+      { label: "Religious Tours", path: "/services/Religious-Tours" },
+      { label: "Customized Tours", path: "/services/Customized-Tours" },
     ],
   },
-  { label: "Corporate & MICE", path: "/corporate" },
+  { label: "Corporate & MICE", path: "/Corporate" },
   { label: "Contact", path: "/contact" },
 ];
 
@@ -51,21 +52,7 @@ export function PremiumHeader() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#C9A24D]">
-              <span className="font-['Playfair_Display'] text-xl font-bold text-white">
-                N
-              </span>
-            </div>
-            <div>
-              <div className="font-['Playfair_Display'] text-xl font-bold text-white">
-                NAVSAFAR
-              </div>
-              <div className="font-['Inter'] text-xs text-[#C9A24D]">
-                Travel Solutions
-              </div>
-            </div>
-          </Link>
+          <AnimatedLogo />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-1 lg:flex">

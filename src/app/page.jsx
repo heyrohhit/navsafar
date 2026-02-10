@@ -1,14 +1,16 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { StarterLoader } from './components/starter-loader';
+
 import { usePathname } from 'next/navigation';
 import { PremiumHeader } from './components/premium-header';
+
 import  HomePage  from './pages/home';
 import  AboutPage  from './about/page';
 import  ServicesPage  from './services/page';
 import  CorporatePage  from './corporate/page';
 import  BookingPage from './booking/page';
 import  ContactPage  from './contact/page';
+import PremiumLoader from './components/premium-loader';
 
 
 export default function App() {
@@ -23,7 +25,7 @@ export default function App() {
   }, []);
 
   if (showLoader) {
-    return <StarterLoader/>;
+    return <PremiumLoader/>;
   }
 
   const randerPage =()=>{
@@ -47,8 +49,8 @@ export default function App() {
 
   return (
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-[#0B1C2D]">
+        <PremiumHeader />
         {randerPage()}
-        {/* Premium Footer */}
       </div>
   
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle2 } from "lucide-react";
 
@@ -32,6 +32,24 @@ export default function BookingPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+
+  // Check for pre-filled journey data
+  useEffect(() => {
+    const selectedJourney = localStorage.getItem('selectedJourney');
+    if (selectedJourney) {
+      const journey = JSON.parse(selectedJourney);
+      setFormData(prev => ({
+        ...prev,
+        destination: journey.location,
+        tripCategory: journey.category,
+        nights: journey.duration.includes('Days') ? journey.duration.split(' ')[0] : "",
+        travellers: journey.groupSize.includes('People') ? journey.groupSize.split(' ')[0] : "",
+        message: `Interested in: ${journey.title} - ${journey.description.substring(0, 100)}...`
+      }));
+      // Clear the stored journey after using it
+      localStorage.removeItem('selectedJourney');
+    }
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();

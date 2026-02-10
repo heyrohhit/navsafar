@@ -1,71 +1,44 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { ImageWithFallback } from "../components/figma/ImageWithFallback";
-import { useEffect, useState } from "react";
-import {
+import { Star, MapPin, Calendar, Users, ArrowRight, Shield, Map, MessageCircle, Plane, Building2, Globe, Award, CheckCircle2, Headphones, Phone } from "lucide-react";
+import { PremiumPortfolio } from "../components/premium-portfolio";
+import { BookingRoadmap } from "../components/booking-roadmap";
+import { 
+  tourCategories, 
+  services, 
+  uspPoints, 
+  testimonials,
+  serviceCategories
+} from "../../allAPIs/home";
+
+/* ================= ICON MAPPING ================= */
+const iconMap = {
+  Shield,
+  Users,
+  Map,
+  Headphones,
   CheckCircle2,
   MessageCircle,
-  Phone,
-  Shield,
-  Award,
-  Users,
-  Globe,
   Plane,
   Building2,
-  Map,
-  Star,
-} from "lucide-react";
+  Globe,
+  Award
+};
 
-
-
-/* ================= DATA ================= */
-
-const tourCategories = [
-  { title: "International Luxury Tours", image: "https://images.unsplash.com/photo-1763571589025-efacfe091161?q=80&w=1080" },
-  { title: "Honeymoon Packages", image: "https://images.unsplash.com/photo-1614505241347-7f4765c1035e?q=80&w=1080" },
-  { title: "Religious Tours", image: "https://images.unsplash.com/photo-1649147313351-c86537fda0eb?q=80&w=1080" },
-  { title: "Corporate Group Travel", image: "https://images.unsplash.com/photo-1758518731706-be5d5230e5a5?q=80&w=1080" },
-  { title: "Family Vacations", image: "https://images.unsplash.com/photo-1552249352-02a0817a2d95?q=80&w=1080" },
-  { title: "Customized Journeys", image: "https://images.unsplash.com/photo-1759773936612-164cc2e19671?q=80&w=1080" },
-];
-
-const services = [
-  { icon: Shield, text: "Clear Pricing – No Hidden Charges" },
-  { icon: Users, text: "Dedicated Trip Management" },
-  { icon: Map, text: "Customized Travel Plans" },
-  { icon: MessageCircle, text: "WhatsApp Support (Before, During & After Trip)" },
-  { icon: Plane, text: "Domestic & International Flights" },
-  { icon: Building2, text: "Corporate & Premium Hotel Bookings" },
-  { icon: Globe, text: "Airport Transfers & Cab Services" },
-  { icon: Award, text: "Visa Assistance (Business & Tourist)" },
-  { icon: CheckCircle2, text: "Travel Insurance" },
-];
-
-const bookingSteps = [ 'Share your travel idea', 'Receive a custom itinerary', 'Review & modify', 'Flexible payment', 'Enjoy stress-free travel', ];
- const uspPoints = [ 'Personal Trip Advisor', 'Fully Customized Itineraries', '24/7 Human Support', 'Flexible Payment Options', 'Easy Cancellation', 'Post-trip Support', ];
-
-const testimonials = [
-  {
-    name: "Rohit Sharma",
-    text: "Navsafar planned our Europe honeymoon perfectly. Zero stress, pure luxury!",
-  },
-  {
-    name: "Anjali Mehta",
-    text: "Best corporate travel partner we have worked with. Highly professional.",
-  },
-  {
-    name: "Faizan Khan",
-    text: "Excellent service, instant support on WhatsApp even during the trip.",
-  },
-];
 
 /* ================= COMPONENT ================= */
 
 export default function HomePage() {
+  const [isClient, setIsClient] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentText, setCurrentText] = useState(false);
-  const [currentReview, setCurrentReview] = useState(0);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     const slideInterval = setInterval(
@@ -76,14 +49,6 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const reviewInterval = setInterval(
-      () => setCurrentReview((p) => (p + 1) % testimonials.length),
-      4000
-    );
-    return () => clearInterval(reviewInterval);
-  }, []);
-
-  useEffect(() => {
     const t = setTimeout(() => setCurrentText(true), 1000);
     return () => clearTimeout(t);
   }, []);
@@ -91,103 +56,238 @@ export default function HomePage() {
   return (
     <div className="bg-[#F5F7FA]">
       {/* ================= HERO ================= */}
-      <section className="relative h-[92vh] md:h-screen overflow-hidden font-['Playfair_Display']">
+      <section className="relative h-[75vh] md:h-[75vh] overflow-hidden font-['Playfair_Display']">
         <div className="absolute inset-0">
           {tourCategories.map((item, idx) => (
-            <motion.div
-              key={idx}
-              className="absolute inset-0"
-              animate={{ opacity: currentSlide === idx ? 1 : 0 }}
-            >
-              <ImageWithFallback src={item.image} alt={item.title} className="h-full w-full object-cover" />
-            </motion.div>
+            isClient ? (
+              <motion.div
+                key={idx}
+                className="absolute inset-0"
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ 
+                  opacity: currentSlide === idx ? 1 : 0,
+                  scale: currentSlide === idx ? 1 : 1.1
+                }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
+              >
+                <ImageWithFallback src={item.image} alt={item.title} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/80" />
+              </motion.div>
+            ) : (
+              <div key={idx} className="absolute inset-0">
+                <ImageWithFallback src={item.image} alt={item.title} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/80" />
+              </div>
+            )
           ))}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/80" />
         </div>
 
         <div className="relative flex h-full items-center">
           <div className="mx-auto max-w-7xl px-6">
-            <div className="max-w-3xl">
-              <div className="relative md:min-h-[160px] min-h-[110px] flex">
+            <div className="max-w-5xl text-center">
+              <div className="relative md:min-h-[180px] min-h-[120px] flex">
                 {currentText &&
                   tourCategories.map((item, idx) => (
-                    <motion.h1
-                      key={idx}
-                      animate={{ opacity: currentSlide === idx ? 1 : 0 }}
-                      className={`absolute inset-0 flex text-center text-white font-bold font-['Playfair_Display'] text-5xl sm:text-5xl md:text-6xl lg:text-7xl`}
-                    >
-                      {item.title}
-                    </motion.h1>
-                  
+                    isClient ? (
+                      <motion.h1
+                        key={idx}
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ 
+                          opacity: currentSlide === idx ? 1 : 0,
+                          y: currentSlide === idx ? 0 : 50
+                        }}
+                        transition={{ duration: 1, delay: currentSlide === idx ? 0.3 : 0 }}
+                        className={`absolute inset-0 flex items-center justify-center text-center text-white font-bold font-['Playfair_Display'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight px-4`}
+                      >
+                        <span className="bg-gradient-to-r from-white via-[#C9A24D] to-white bg-clip-text text-transparent drop-shadow-lg">
+                          {item.title}
+                        </span>
+                      </motion.h1>
+                    ) : (
+                      <h1 key={idx} className={`absolute inset-0 flex items-center justify-center text-center text-white font-bold font-['Playfair_Display'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight px-4 ${currentSlide === idx ? 'opacity-100' : 'opacity-0'}`}>
+                        <span className="bg-gradient-to-r from-white via-[#C9A24D] to-white bg-clip-text text-transparent drop-shadow-lg">
+                          {item.title}
+                        </span>
+                      </h1>
+                    )
                   ))}
               </div>
 
-              <p className="mb-8 text-gray-200 text-lg sm:text-xl font-['Playfair_Display'] flex items-center">
-                Luxury • Corporate • Customized Travel Experiences
-              </p>
+              {isClient ? (
+                <motion.p 
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.8 }}
+                  className="mb-8 text-white text-lg sm:text-xl md:text-2xl font-['Cormorant_Garamond'] flex items-center justify-center gap-4 drop-shadow-md"
+                >
+                  <span className="inline-block w-8 h-0.5 bg-[#C9A24D] shadow-lg"></span>
+                  <span className="font-semibold">Luxury • Corporate • Customized Travel Experiences</span>
+                  <span className="inline-block w-8 h-0.5 bg-[#C9A24D] shadow-lg"></span>
+                </motion.p>
+              ) : (
+                <p className="mb-8 text-white text-lg sm:text-xl md:text-2xl font-['Cormorant_Garamond'] flex items-center justify-center gap-4 drop-shadow-md opacity-100">
+                  <span className="inline-block w-8 h-0.5 bg-[#C9A24D] shadow-lg"></span>
+                  <span className="font-semibold">Luxury • Corporate • Customized Travel Experiences</span>
+                  <span className="inline-block w-8 h-0.5 bg-[#C9A24D] shadow-lg"></span>
+                </p>
+              )}
 
-              <div className="flex flex-wrap gap-4">
-                <a href="#enquiry-form" className="bg-[#C9A24D] px-8 py-4 rounded-lg text-[#0B1C2D]  text-shadow-2xl font-[Cormorant_Garamond] font-bold">
-                  Plan My Trip
-                </a>
-                <a href="https://wa.me/919560185041" className="border-2 border-white px-8 py-4 rounded-lg text-white flex items-center gap-2">
-                  <MessageCircle size={20} /> WhatsApp Expert
-                </a>
-              </div>
+              {isClient ? (
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 1.2 }}
+                  className="flex flex-wrap gap-4 justify-center"
+                >
+                  <motion.a 
+                    href="#enquiry-form" 
+                    className="bg-gradient-to-br from-[#C9A24D] via-[#B8934D] to-[#A0803D] px-10 py-5 rounded-xl text-[#0B1C2D] font-['Cormorant_Garamond'] font-bold text-lg shadow-2xl hover:shadow-[#C9A24D]/50 transition-all duration-300"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Plan My Trip
+                  </motion.a>
+                  <motion.a 
+                    href="https://wa.me/919560185041" 
+                    className="border-2 border-white/80 backdrop-blur-sm px-10 py-5 rounded-xl text-white flex items-center gap-3 hover:bg-white hover:text-[#0B1C2D] transition-all duration-300 font-['Inter'] font-semibold"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <MessageCircle size={22} /> WhatsApp Expert
+                  </motion.a>
+                </motion.div>
+              ) : (
+                <div className="flex flex-wrap gap-4 justify-center opacity-100">
+                  <a 
+                    href="#enquiry-form" 
+                    className="bg-gradient-to-br from-[#C9A24D] via-[#B8934D] to-[#A0803D] px-10 py-5 rounded-xl text-[#0B1C2D] font-['Cormorant_Garamond'] font-bold text-lg shadow-2xl hover:shadow-[#C9A24D]/50 transition-all duration-300"
+                  >
+                    Plan My Trip
+                  </a>
+                  <a 
+                    href="https://wa.me/919560185041" 
+                    className="border-2 border-white/80 backdrop-blur-sm px-10 py-5 rounded-xl text-white flex items-center gap-3 hover:bg-white hover:text-[#0B1C2D] transition-all duration-300 font-['Inter'] font-semibold"
+                  >
+                    <MessageCircle size={22} /> WhatsApp Expert
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Slide Indicators */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2">
+        {/* Enhanced Slide Indicators */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-3">
           {tourCategories.map((_, idx) => (
-            <span key={idx} className={`h-2 rounded-full bg-white transition-all ${currentSlide === idx ? "w-6" : "w-2 opacity-50"}`} />
+            isClient ? (
+              <motion.button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-3 rounded-full bg-white transition-all ${
+                  currentSlide === idx ? "w-12" : "w-3 opacity-50"
+                }`}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+              />
+            ) : (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-3 rounded-full bg-white transition-all ${
+                  currentSlide === idx ? "w-12" : "w-3 opacity-50"
+                }`}
+              />
+            )
           ))}
         </div>
+
+        {/* Floating decorative elements */}
+        {isClient ? (
+          <>
+            <motion.div
+              className="absolute top-20 left-10 w-20 h-20 border-2 border-[#C9A24D]/30 rounded-full"
+              animate={{ 
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3]
+              }}
+              transition={{ duration: 4, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute bottom-20 right-10 w-16 h-16 border-2 border-[#C9A24D]/30 rounded-full"
+              animate={{ 
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+            />
+          </>
+        ) : (
+          <>
+            <div className="absolute top-20 left-10 w-20 h-20 border-2 border-[#C9A24D]/30 rounded-full opacity-30" />
+            <div className="absolute bottom-20 right-10 w-16 h-16 border-2 border-[#C9A24D]/30 rounded-full opacity-30" />
+          </>
+        )}
       </section>
 
-      {/* ================= LIVE STATS ================= */}
-      <section className="bg-white py-16">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          {[
-            ["5000+", "Happy Customers"],
-            ["12000+", "Trips Planned"],
-            ["35+", "Countries Covered"],
-            ["300+", "Corporate Clients"],
-          ].map(([num, label]) => (
-            <div key={label}>
-              <h3 className="text-4xl font-bold text-[#C9A24D]">{num}</h3>
-              <p className="text-gray-600">{label}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+ {/* Premium Portfolio Section */}
+      <PremiumPortfolio maxItems={6}/>
 
       {/* ================= TESTIMONIALS ================= */}
-      <section className="bg-[#0B1C2D] py-20">
-        <div className="max-w-4xl mx-auto text-center text-white">
-          <h2 className="text-4xl font-bold mb-10 font-['Playfair_Display']">
-            Happy Travelers
-          </h2>
-
+      <section className="bg-gradient-to-r from-[#0B1C2D] via-[#1a3a52] to-[#0B1C2D] py-24 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-0 w-full h-full bg-[url(&quot;data:image/svg+xml,%3Csvg width=\&quot;60\&quot; height=\&quot;60\&quot; viewBox=\&quot;0 0 60 60\&quot; xmlns=\&quot;http://www.w3.org/2000/svg\&quot;%3E%3Cg fill=\&quot;none\&quot; fill-rule=\&quot;evenodd\&quot;%3E%3Cg fill=\&quot;%23C9A24D\&quot; fill-opacity=\&quot;0.4\&quot;%3E%3Ccircle cx=\&quot;7\&quot; cy=\&quot;7\&quot; r=\&quot;1\&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&quot;)] bg-repeat"></div>
+        </div>
+        
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
-            key={currentReview}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white/10 p-8 rounded-xl"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
           >
-            <div className="flex justify-center mb-4">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="text-[#C9A24D]" />
-              ))}
-            </div>
-            <p className="text-lg italic mb-4">
-              “{testimonials[currentReview].text}”
-            </p>
-            <p className="font-semibold">
-              — {testimonials[currentReview].name}
-            </p>
+            <h2 className="font-['Playfair_Display'] text-4xl md:text-5xl font-bold text-white mb-6">
+              What Our <span className="text-[#C9A24D]">Travelers</span> Say
+            </h2>
+            <div className="w-24 h-1 bg-[#C9A24D] mx-auto rounded-full"></div>
           </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.2 }}
+                whileHover={{ scale: 1.03, y: -5 }}
+                className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/20 hover:bg-white/15 transition-all duration-300"
+              >
+                <div className="flex justify-center mb-6">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="text-[#C9A24D] fill-current" size={20} />
+                  ))}
+                </div>
+                <p className="text-lg font-['Cormorant_Garamond'] text-white/90 italic mb-6 leading-relaxed">
+                  "{testimonial.text}"
+                </p>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-[#C9A24D] rounded-full mx-auto mb-3 flex items-center justify-center">
+                    <span className="text-white font-bold text-xl">
+                      {testimonial.name.split(' ').map(n => n[0]).join('')}
+                    </span>
+                  </div>
+                  <p className="font-['Inter'] font-semibold text-white">
+                    {testimonial.name}
+                  </p>
+                  <p className="font-['Inter'] text-[#C9A24D] text-sm">
+                    Verified Traveler
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -234,34 +334,57 @@ export default function HomePage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {tourCategories.map((category, index) => (
-              <motion.div
-                key={category.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group relative overflow-hidden rounded-2xl shadow-lg"
-              >
-                <div className="aspect-[4/3]">
-                  <ImageWithFallback
-                    src={category.image}
-                    alt={category.title}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+              isClient ? (
+                <motion.div
+                  key={category.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="group cursor-pointer overflow-hidden rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#C9A24D]/20"
+                  onClick={() => window.location.href = `/tours/${encodeURIComponent(category.title.replace(/\s+/g, '-'))}`}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <ImageWithFallback
+                      src={category.image}
+                      alt={category.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="font-['Playfair_Display'] text-xl font-bold text-white">
+                        {category.title}
+                      </h3>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <div
+                  key={category.title}
+                  className="group cursor-pointer overflow-hidden rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#C9A24D]/20 opacity-100"
+                  onClick={() => window.location.href = `/tours/${encodeURIComponent(category.title.replace(/\s+/g, '-'))}`}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <ImageWithFallback
+                      src={category.image}
+                      alt={category.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="font-['Playfair_Display'] text-xl font-bold text-white">
+                        {category.title}
+                      </h3>
+                    </div>
+                  </div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="font-['Playfair_Display'] text-2xl font-bold text-white">
-                    {category.title}
-                  </h3>
-                </div>
-              </motion.div>
+              )
             ))}
           </div>
         </div>
       </section>
 
-      {/* Services */}
+      {/* Service Categories */}
       <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -271,66 +394,72 @@ export default function HomePage() {
             className="mb-12 text-center"
           >
             <h2 className="mb-4 font-['Playfair_Display'] text-4xl font-bold text-[#0B1C2D]">
-              Our Best Services
+              Our Travel Services
             </h2>
           </motion.div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service, index) => {
-              const Icon = service.icon;
-              return (
+            {serviceCategories.map((category, index) => (
+              isClient ? (
                 <motion.div
-                  key={service.text}
+                  key={category.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.05 }}
-                  className="flex items-start gap-4 rounded-xl bg-[#F5F7FA] p-6"
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="group cursor-pointer overflow-hidden rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#C9A24D]/20"
+                  onClick={() => window.location.href = `/services/${encodeURIComponent(category.title.replace(/\s+/g, '-'))}`}
                 >
-                  <div className="flex-shrink-0">
-                    <Icon className="text-[#C9A24D]" size={28} />
+                  <div className="relative h-48 overflow-hidden">
+                    <ImageWithFallback
+                      src={category.image}
+                      alt={category.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="font-['Playfair_Display'] text-xl font-bold text-white">
+                        {category.title}
+                      </h3>
+                      <p className="text-sm text-white/90 mt-1">
+                        {category.description}
+                      </p>
+                    </div>
                   </div>
-                  <p className="font-['Inter'] text-gray-700">{service.text}</p>
                 </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Booking Process */}
-      <section className="bg-[#0B1C2D] py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="mb-4 font-['Playfair_Display'] text-4xl font-bold text-white">
-              How Booking Works
-            </h2>
-          </motion.div>
-
-          <div className="grid gap-8 md:grid-cols-5">
-            {bookingSteps.map((step, index) => (
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center"
-              >
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#C9A24D] font-['Playfair_Display'] text-2xl font-bold text-white">
-                  {index + 1}
+              ) : (
+                <div
+                  key={category.title}
+                  className="group cursor-pointer overflow-hidden rounded-2xl bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:shadow-[#C9A24D]/20 opacity-100"
+                  onClick={() => window.location.href = `/services/${encodeURIComponent(category.title.replace(/\s+/g, '-'))}`}
+                >
+                  <div className="relative h-48 overflow-hidden">
+                    <ImageWithFallback
+                      src={category.image}
+                      alt={category.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <h3 className="font-['Playfair_Display'] text-xl font-bold text-white">
+                        {category.title}
+                      </h3>
+                      <p className="text-sm text-white/90 mt-1">
+                        {category.description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <p className="font-['Inter'] text-gray-300">{step}</p>
-              </motion.div>
+              )
             ))}
           </div>
         </div>
       </section>
+
+      {/* Services Features */}
+
+      {/* Booking Process */}
+      <BookingRoadmap/>
 
       {/* USP Section */}
       <section className="bg-[#F5F7FA] py-20">
@@ -348,19 +477,31 @@ export default function HomePage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {uspPoints.map((point, index) => (
-              <motion.div
-                key={point}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="flex items-center gap-4 rounded-xl bg-white p-6 shadow-md"
-              >
-                <CheckCircle2 className="flex-shrink-0 text-[#C9A24D]" size={28} />
-                <p className="font-['Inter'] font-semibold text-gray-800">
-                  {point}
-                </p>
-              </motion.div>
+              isClient ? (
+                <motion.div
+                  key={point}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="flex items-center gap-4 rounded-xl bg-white p-6 shadow-md"
+                >
+                  <CheckCircle2 className="shrink-0 text-[#C9A24D]" size={28} />
+                  <p className="font-['Inter'] font-semibold text-gray-800">
+                    {point}
+                  </p>
+                </motion.div>
+              ) : (
+                <div
+                  key={point}
+                  className="flex items-center gap-4 rounded-xl bg-white p-6 shadow-md opacity-100"
+                >
+                  <CheckCircle2 className="shrink-0 text-[#C9A24D]" size={28} />
+                  <p className="font-['Inter'] font-semibold text-gray-800">
+                    {point}
+                  </p>
+                </div>
+              )
             ))}
           </div>
         </div>
@@ -392,7 +533,7 @@ export default function HomePage() {
                       className="flex items-start gap-3 font-['Inter'] text-gray-300"
                     >
                       <CheckCircle2
-                        className="mt-1 flex-shrink-0 text-[#C9A24D]"
+                        className="mt-1 shrink-0 text-[#C9A24D]"
                         size={20}
                       />
                       {item}

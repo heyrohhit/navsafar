@@ -1,10 +1,10 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import FooterPage from "./pages/footer-page";
 import { PremiumHeader } from "./components/premium-header";
 
 import { Playfair_Display, Inter } from "next/font/google";
+import { PremiumFooter } from "./components/premium-footer";
 
 export const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -94,7 +94,7 @@ export default function RootLayout({ children }) {
       <body className={`font-playfair ${geistSans.variable} ${geistMono.variable}`}>
          <PremiumHeader />
         {children}
-        <FooterPage/>
+        <PremiumFooter/>
       </body>
     </html>
   );
