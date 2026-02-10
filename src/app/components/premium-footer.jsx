@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { useState } from "react";
+import Image from "next/image"
 import Link from "next/link";
 import { 
   MapPin, 
@@ -81,8 +82,8 @@ export function PremiumFooter() {
               transition={{ duration: 0.6 }}
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#C9A24D]">
-                  <span className="font-['Playfair_Display'] text-xl font-bold text-white">N</span>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full">
+                  <Image src="/logo.png" alt="Logo" width={100} height={100} />
                 </div>
                 <div>
                   <div className="font-['Playfair_Display'] text-xl font-bold text-white">NAVSAFAR</div>

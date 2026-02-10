@@ -17,14 +17,14 @@ export function AnimatedLogo() {
     >
       {/* Animated Logo Circle */}
       <motion.div
-        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#C9A24D] via-[#B8934D] to-[#A0803D] shadow-lg"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br shadow-lg"
         whileHover={{ scale: 1.1, rotate: 5 }}
         whileTap={{ scale: 0.95 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         {/* Outer glow effect */}
         <motion.div
-          className="absolute inset-0 rounded-full  opacity-0 group-hover:opacity-100 blur-md"
+          className="absolute inset-0 rounded-full bg-gradient-to-br from-[#C9A24D] to-transparent opacity-0 group-hover:opacity-100 blur-md"
           animate={{ scale: isHovered ? [1, 1.2, 1] : 1 }}
           transition={{ duration: 2, repeat: isHovered ? Infinity : 0 }}
         />

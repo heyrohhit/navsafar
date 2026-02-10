@@ -60,19 +60,17 @@ export function PremiumLoader() {
         {/* Luxury Logo Animation */}
         {isClient ? (
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
+            initial={{ scale: 0,x:5 }}
             animate={{ 
               scale: [0.8, 1, 0.8],
-              rotate: [-180, 0, -180]
+              x:10
             }}
             transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: "easeInOut"
+              duration: 1,
             }}
-            className="mb-8 mx-auto"
+            className="mx-auto"
           >
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#C9A24D] to-[#d4b05e] flex items-center justify-center shadow-2xl">
+            <div className="w-20 h-20 flex items-center justify-center ">
               <div className="text-white font-bold text-2xl font-['Playfair_Display']">
                 <Image src="/logo.png" alt="Logo" width={100} height={100} />
               </div>
@@ -80,10 +78,8 @@ export function PremiumLoader() {
           </motion.div>
         ) : (
           <div className="mb-8 mx-auto opacity-100">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br flex items-center justify-center shadow-2xl">
-              <div className="text-white font-bold text-2xl font-['Playfair_Display']">
-                N
-              </div>
+            <div className="w-20 h-20  flex items-center justify-center">
+             <Image src="/logo.png" alt="Logo" width={100} height={100} />
             </div>
           </div>
         )}

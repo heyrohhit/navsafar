@@ -43,7 +43,7 @@ const contactMethods = [
 
 export default function ContactPage() {
   return (
-    <div className="mt-6 min-h-screen bg-gradient-to-b from-gray-50 to-[#0B1C2D]">
+    <div className="mt-6 min-h-screen bg-gradient-to-b from-gray-50 to-[#C9A24D] ">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,7 +74,7 @@ export default function ContactPage() {
                   hover:scale-105"
                 >
                   <div
-                    className={`${method.color} mb-4 inline-flex h-14 w-14 items-center justify-center rounded-lg text-white`}
+                    className={`bg-[#C9A24D]  mb-4 inline-flex h-14 w-14 items-center justify-center rounded-lg text-white`}
                   >
                     <Icon size={28} />
                   </div>
@@ -84,7 +84,7 @@ export default function ContactPage() {
                   {method.link ? (
                     <a
                       href={method.link}
-                      className="text-gray-600 hover:text-blue-600 break-words"
+                      className="text-gray-600 hover:text-[#C9A24D]  break-words"
                       target={method.link.startsWith("http") ? "_blank" : undefined}
                       rel={method.link.startsWith("http") ? "noopener noreferrer" : undefined}
                     >
@@ -103,7 +103,7 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-12 text-white"
+            className="rounded-2xl bg-gradient-to-r from-[#C9A24D]  to-[#C9A24D]  p-12 text-white"
           >
             <div className="text-center">
               <h2 className="mb-4 text-3xl font-bold">
@@ -118,14 +118,14 @@ export default function ContactPage() {
                   href="https://wa.me/919560185041"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg bg-green-500 px-8 py-3 font-semibold text-white transition-transform hover:scale-105 hover:bg-green-600"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#C9A24D]  px-8 py-3 font-semibold text-white transition-transform hover:scale-105 hover:bg-[#C9A24D] "
                 >
                   <MessageCircle size={20} />
                   Chat on WhatsApp
                 </a>
                 <a
                   href="tel:+919560185041"
-                  className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-semibold text-blue-600 transition-transform hover:scale-105"
+                  className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-3 font-semibold text-[#C9A24D]  transition-transform hover:scale-105"
                 >
                   <Phone size={20} />
                   Call Us Now
@@ -158,8 +158,8 @@ export default function ContactPage() {
                 <span>By Appointment</span>
               </div>
               <div className="mt-4 rounded-lg bg-blue-50 p-4 text-sm">
-                <strong className="text-blue-900">Note:</strong>{" "}
-                <span className="text-blue-800">
+                <strong className="text-[#C9A24D] ">Note:</strong>{" "}
+                <span className="text-[#C9A24D] ">
                   WhatsApp support is available 24/7 for emergencies and urgent
                   queries.
                 </span>

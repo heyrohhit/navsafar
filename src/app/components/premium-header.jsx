@@ -19,7 +19,7 @@ const navItems = [
       { label: "Customized Tours", path: "/services/Customized-Tours" },
     ],
   },
-  { label: "Corporate & MICE", path: "/Corporate" },
+  { label: "Corporate & MICE", path: "/corporate" },
   { label: "Contact", path: "/contact" },
 ];
 

@@ -43,7 +43,7 @@ const services = [
 
 export default function CorporatePage() {
   return (
-    <div className="mt-6 min-h-screen bg-gradient-to-b from-gray-50 to-[#0B1C2D]">
+    <div className="mt-6 min-h-screen bg-gradient-to-b from-gray-50 to-[#C9A24D] ">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,7 +74,7 @@ export default function CorporatePage() {
                   className="group rounded-xl bg-white p-8 shadow-lg transition-all hover:shadow-xl hover:-translate-y-1"
                 >
                   <div
-                    className={`${service.color} mb-4 inline-flex h-16 w-16 items-center justify-center rounded-lg text-white`}
+                    className={`bg-[#C9A24D]  mb-4 inline-flex h-16 w-16 items-center justify-center rounded-lg text-white`}
                   >
                     <Icon size={32} />
                   </div>
@@ -92,7 +92,7 @@ export default function CorporatePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="mb-16 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-12 text-white"
+            className="mb-16 rounded-2xl bg-gradient-to-r from-[#C9A24D]  to-[#C9A24D]  p-12 text-white"
           >
             <h2 className="mb-6 text-3xl font-bold">Why Choose Navsafar for Corporate Travel?</h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -144,7 +144,7 @@ export default function CorporatePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="rounded-2xl border-2 border-blue-200 bg-blue-50 p-8 text-center"
+            className="rounded-2xl border-2 border-[#C9A24D]  bg-blue-50 p-8 text-center"
           >
             <h3 className="mb-4 text-2xl font-bold text-gray-900">
               Ready to Elevate Your Corporate Travel?
@@ -156,13 +156,13 @@ export default function CorporatePage() {
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <a
                 href="/booking"
-                className="inline-block rounded-lg bg-blue-600 px-8 py-3 font-semibold text-white transition-transform hover:scale-105 hover:bg-blue-700"
+                className="inline-block rounded-lg bg-[#C9A24D]  px-8 py-3 font-semibold text-white transition-transform hover:scale-105 hover:bg-[#C9A24D] "
               >
                 Request a Quote
               </a>
               <a
                 href="tel:+919560185041"
-                className="inline-block rounded-lg border-2 border-blue-600 bg-white px-8 py-3 font-semibold text-blue-600 transition-transform hover:scale-105"
+                className="inline-block rounded-lg border-2 border-[#C9A24D] bg-white px-8 py-3 font-semibold text-[#C9A24D] transition-transform hover:scale-105"
               >
                 Call Us Now
               </a>
