@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { getPackageGradient } from "@/app/components/packages/PackageUtils";
+
 
 const Services = () => {
   const [isLoaded, setIsLoaded] = useState(false);

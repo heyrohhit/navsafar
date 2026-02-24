@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
-import PackageCard from "./PackageCard";
-import { getPackageGradient } from "./PackageUtils";
+
 import PopUpFeature from "./PopUpFeature";
 import PackageGridLayout from "./PackageGridLayout";
 

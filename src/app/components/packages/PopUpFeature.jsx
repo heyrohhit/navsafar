@@ -1,5 +1,5 @@
 "use client";
-import { getPackageGradient, getPackageIcon, handleGetQuery } from "./PackageUtils";
+import { getPackageGradient, handleGetQuery } from "./PackageUtils";
 
 const PopUpFeature = ({ selectedPackage, onClose }) => {
     const handleCloseDetails = () => {

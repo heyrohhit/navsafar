@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import navModel from "@/app/models/navigation";
+import navModel from "../../models/navigation";
 
 const Navigation = ({ mobile = false, onClose }) => {
   const [activeItem, setActiveItem] = useState(null);

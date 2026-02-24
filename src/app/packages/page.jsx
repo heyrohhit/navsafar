@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import {packages} from "@/app/api/packages"
-import Link from "next/link";
+import {packages} from "../../models/packages"
+
 
 const FeaturedPackages = () => {
   const [isLoaded, setIsLoaded] = useState(false);
