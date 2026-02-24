@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {packages} from "../../models/packages"
+import {packages} from "../api/packages"
 
 
 const FeaturedPackages = () => {
