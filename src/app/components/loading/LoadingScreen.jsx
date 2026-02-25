@@ -32,7 +32,7 @@ export default function LoadingScreen({ onComplete }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden skyBg">
 
-      {/* â˜ï¸ Moving Clouds */}
+      {/* ☁️ Moving Clouds */}
       <div className="cloud cloud1" />
       <div className="cloud cloud2" />
 
@@ -46,7 +46,7 @@ export default function LoadingScreen({ onComplete }) {
           Your Journey Begins Here
         </p>
 
-        {/* âœˆï¸ Flight Path */}
+        {/* ✈️ Flight Path */}
         <div className="relative w-80 max-w-full mx-auto mb-8 h-16">
 
           {/* Dynamic Path (Creates behind plane) */}
@@ -60,7 +60,7 @@ export default function LoadingScreen({ onComplete }) {
             className="plane"
             style={{ left: `${progress}%` }}
           >
-            âœˆ
+            ✈
           </div>
 
         </div>
@@ -73,12 +73,12 @@ export default function LoadingScreen({ onComplete }) {
 
       <style jsx>{`
 
-        /* ðŸŒ… Sky Background */
+        /* 🌅 Sky Background */
         .skyBg {
           background: linear-gradient(to top, #2193b0, #6dd5ed);
         }
 
-        /* â˜ï¸ Clouds */
+        /* ☁️ Clouds */
         .cloud {
           position: absolute;
           width: 200px;
@@ -105,7 +105,7 @@ export default function LoadingScreen({ onComplete }) {
           to { transform: translateX(120vw); }
         }
 
-        /* âœˆï¸ Dynamic Path */
+        /* ✈️ Dynamic Path */
         .pathLine {
           position: absolute;
           top: 50%;
@@ -123,7 +123,7 @@ export default function LoadingScreen({ onComplete }) {
           transform: translateY(-50%);
         }
 
-        /* âœˆï¸ Plane Proper Angle */
+        /* ✈️ Plane Proper Angle */
         .plane {
           position: absolute;
           top: 50%;
