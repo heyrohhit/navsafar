@@ -49,7 +49,7 @@ const Page = () => {
         <HeroSection isMenuOpen={isMenuOpen} />
         <FeaturedPackages />
         <ExperienceCategories />
-        <DestinationsSection />
+        <DestinationsSection limit={3} />
         <FeaturesSection />
         <CTASection />
       </div>

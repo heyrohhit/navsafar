@@ -7,3 +7,4 @@ export { travelIcons, getTravelIcon, utilityIcons } from './icons.js';
 
 // Re-export for backward compatibility
 export { default as navModel } from './navigation.js';
+export {default as mobileNav} from "./mobileNav.js"

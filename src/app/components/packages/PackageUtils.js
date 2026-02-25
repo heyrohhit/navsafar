@@ -1,24 +1,5 @@
 // Package utility functions for shared use across components
 
-// Get gradient class based on package category
-export const getPackageGradient = (category) => {
-  const gradients = {
-    'domestic': 'from-blue-500 to-cyan-600',
-    'international': 'from-purple-500 to-pink-600',
-    'religious': 'from-orange-500 to-red-600',
-    'adventure': 'from-indigo-500 to-purple-600',
-    'family': 'from-green-500 to-emerald-600',
-    'luxury': 'from-yellow-500 to-orange-600',
-    'honeymoon': 'from-pink-500 to-rose-600',
-    'wildlife': 'from-green-600 to-teal-600',
-    'cultural': 'from-amber-500 to-orange-600',
-    'beach': 'from-cyan-500 to-blue-600',
-    'hill': 'from-gray-600 to-gray-800',
-    'default': 'from-blue-500 to-purple-600'
-  };
-  
-  return gradients[category] || gradients.default;
-};
 
 // Get icon based on package category
 export const getPackageIcon = (category) => {
@@ -168,7 +149,6 @@ export const getSearchText = (packageData) => {
 };
 
 export default {
-  getPackageGradient,
   getPackageIcon,
   handleGetQuery,
   formatPrice,

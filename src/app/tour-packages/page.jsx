@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import ModernFilterSection from "../components/packages/ModernFilterSection";
-import PackageGrid from "../components/packages/PackageGrid";
+
 import { getAllPackages, getPackagesByCategory } from "../components/packages/PackageData";
+import PackageGridLayout from "../components/packages/PackageGridLayout";
 
 const TourPackages = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -173,7 +174,7 @@ const TourPackages = () => {
        
 
         {/* Package Grid */}
-        <PackageGrid
+        <PackageGridLayout
           packages={filteredPackages}
           onViewDetails={handleViewDetails}
           onGetQuery={handleGetQuery}

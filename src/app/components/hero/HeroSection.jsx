@@ -104,7 +104,7 @@ const HeroSection = ({ isMenuOpen }) => {
               transform: isClient ? `translateY(${-scrollY * 0.2}px)` : 'none',
             }}
           >
-            Curated domestic & international journeys
+            YOUR GATEWAY TO THE WORLD
           </p>
 
           {/* Smart Search Component */}

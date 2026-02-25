@@ -61,7 +61,7 @@ const Footer = () => {
     legal: [
       { name: "Terms of Service", href: "/terms" },
       { name: "Privacy Policy", href: "/privacy" },
-      { name: "Cookie Policy", href: "/cookies" },
+      // { name: "Cookie Policy", href: "/cookies" },
       { name: "Refund Policy", href: "/refund" },
       { name: "Travel Insurance", href: "/insurance" }
     ]
@@ -86,7 +86,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-black text-white">
+    <footer className="bg-gradient-to-b from-gray-900 to-black text-white overflow-x-hidden">
       {/* Newsletter Section */}
       <section className="border-b border-gray-800">
         <div className="container mx-auto px-4 py-16">
@@ -164,15 +164,15 @@ const Footer = () => {
             <div className="space-y-3 mb-6">
               <div className="flex items-center space-x-3 text-gray-400">
                 <Phone className="w-5 h-5 text-amber-400" />
-                <span>+91 98765 43210</span>
+                <span>+91 8882129640</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400">
                 <Mail className="w-5 h-5 text-amber-400" />
-                <span>info@navsafar.com</span>
+                <span>info@navsafartravels.com</span>
               </div>
               <div className="flex items-center space-x-3 text-gray-400">
                 <MapPin className="w-5 h-5 text-amber-400" />
-                <span>Mumbai, India</span>
+                <span>WZ-447, FIRST FLOOR,<br/>LEFT SIDE NANGAL RAYA DELHI <br/>110046</span>
               </div>
             </div>
 
@@ -204,9 +204,9 @@ const Footer = () => {
               <h4 className="text-lg font-semibold mb-6 capitalize">
                 {category === "company" ? "Company" : category === "explore" ? "Explore" : category === "support" ? "Support" : ""}
               </h4>
-              <ul className={`space-y-3 ${category === "legal" ? "w-screen flex-wrap h-aut flex justify-around items-center" : ""}`}>
+              <ul className={`${category === "legal" ? "w-screen flex-wrap h-aut flex justify-around items-center" : ""}`}>
                 {links.map((link) => (
-                  <li key={link.name}>
+                  <li key={link.name} className={`space-y-3 ${category === "legal" ? "w-[18%] h-auto flex justify-center items-center" : ""}`}>
                     <motion.a
                       href={link.href}
                       whileHover={{ x: 5 }}

@@ -3,7 +3,7 @@ import { blogPosts } from "../api/blog"
 
 const page = () => {
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-100 pt-24">
+    <section className="relative w-full min-h-screen bg-gradient-to-br from-blue-50 via-white to-sky-100 pt-24">
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-6 text-center mb-16">
@@ -28,7 +28,7 @@ const page = () => {
       {/* Blog Grid */}
       <PackageGridLayout packages={blogPosts} btn={true} />
 
-    </div>
+    </section>
   )
 }
 

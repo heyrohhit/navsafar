@@ -77,7 +77,7 @@ export default function BookingPage() {
       `📝 *Additional Requirements:* ${formData.message || "None"}%0A%0A` +
       `--------------------`;
 
-    const whatsappUrl = `https://wa.me/918700750589?text=${message}`;
+    const whatsappUrl = `https://wa.me/918882129640?text=${message}`;
     window.open(whatsappUrl, "_blank");
 
     setSubmitted(true);
@@ -120,7 +120,7 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen mt-12 bg-gradient-to-b from-gray-50 to-[#0B1C2D] py-12 px-4 sm:px-6 lg:px-8">
+    <section className="min-h-screen mt-12 bg-gradient-to-b from-gray-50 to-[#0B1C2D] py-12 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -460,6 +460,6 @@ export default function BookingPage() {
           </div>
         </motion.form>
       </div>
-    </div>
+    </section>
   );
 }

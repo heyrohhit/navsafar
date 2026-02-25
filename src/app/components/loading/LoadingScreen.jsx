@@ -53,7 +53,7 @@ const LoadingScreen = ({ onComplete }) => {
         </h1>
 
         <p className="text-blue-200 mb-12 text-lg tracking-wide animate-fadeIn">
-          Exploring The World With You
+          Your Gateway to Limitiess Jurneys
         </p>
 
         {/* Airplane Section */}

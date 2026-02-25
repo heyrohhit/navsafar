@@ -13,11 +13,11 @@ const ModernFilterSection = ({
 }) => {
   const categories = [
     { value: "all", label: "All Categories", icon: "🌍", color: "gray" },
-    { value: "domestic", label: "Domestic Travel", icon: "🇮🇳", color: "blue" },
-    { value: "international", label: "International Travel", icon: "✈️", color: "purple" },
-    { value: "religious", label: "Religious Travel", icon: "🕉️", color: "orange" },
+    { value: "domestic", label: "Domestic", icon: "🇮🇳", color: "blue" },
+    { value: "international", label: "International", icon: "✈️", color: "purple" },
+    { value: "religious", label: "Religious", icon: "🕉️", color: "orange" },
     { value: "family", label: "Family Holiday", icon: "👨‍👩‍👧‍👦", color: "green" },
-    { value: "adventure", label: "Adventure Travel", icon: "🏔️", color: "indigo" }
+    { value: "adventure", label: "Adventure", icon: "🏔️", color: "indigo" }
   ];
 
   const getColorClasses = (color) => {
@@ -74,7 +74,7 @@ const ModernFilterSection = ({
             <button
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value)}
-              className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg ${
+              className={`px-6 py-3 w-[150px] rounded-3xl text-sm flex flex-col md:font-medium transition-all duration-300 transform hover:scale-105 shadow-lg ${
                 selectedCategory === cat.value
                   ? `bg-gradient-to-r ${cat.color === 'blue' ? 'from-blue-500 to-blue-600' : 
                                   cat.color === 'purple' ? 'from-purple-500 to-purple-600' :

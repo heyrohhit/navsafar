@@ -1,4 +1,4 @@
-const navModel = [
+const mobileNav = [
     {
         name: "Home",
         path: "/",
@@ -29,30 +29,30 @@ const navModel = [
     //     description: "Discover local treasures",
     //     keywords: "domestic tours, local travel, national trips"
     // },
-    {
-        name: "Hotels & Resorts",
-        path: "/hotels-resorts",
-        description: "Premium accommodation options",
-        keywords: "hotels, resorts, accommodation, lodging"
-    },
-    {
-        name: "Flights",
-        path: "/flights",
-        description: "Book flights worldwide",
-        keywords: "flights, airlines, air tickets, booking"
-    },
-    {
-        name: "Visa Services",
-        path: "/visa-services",
-        description: "Complete visa assistance",
-        keywords: "visa, immigration, travel documents"
-    },
-    {
-        name: "Travel Insurance",
-        path: "/travel-insurance",
-        description: "Comprehensive travel coverage",
-        keywords: "travel insurance, coverage, protection"
-    },
+    // {
+    //     name: "Hotels & Resorts",
+    //     path: "/hotels-resorts",
+    //     description: "Premium accommodation options",
+    //     keywords: "hotels, resorts, accommodation, lodging"
+    // },
+    // {
+    //     name: "Flights",
+    //     path: "/flights",
+    //     description: "Book flights worldwide",
+    //     keywords: "flights, airlines, air tickets, booking"
+    // },
+    // {
+    //     name: "Visa Services",
+    //     path: "/visa-services",
+    //     description: "Complete visa assistance",
+    //     keywords: "visa, immigration, travel documents"
+    // },
+    // {
+    //     name: "Travel Insurance",
+    //     path: "/travel-insurance",
+    //     description: "Comprehensive travel coverage",
+    //     keywords: "travel insurance, coverage, protection"
+    // },
     {
         name: "About Us",
         path: "/pages/about-us",
@@ -73,5 +73,4 @@ const navModel = [
     }
 ]
 
-
-export default navModel;
+export default mobileNav;

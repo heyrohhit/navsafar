@@ -5,7 +5,7 @@ const BlogShow = ({ selectedBlog, onClose }) => {
     if (!selectedBlog) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 rounded">
+        <section className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 rounded">
             
             {/* Modal Container */}
             <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl relative">
@@ -81,7 +81,7 @@ const BlogShow = ({ selectedBlog, onClose }) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
     );
 };
 
