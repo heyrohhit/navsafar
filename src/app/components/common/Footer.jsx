@@ -105,7 +105,7 @@ const Footer = () => {
               Subscribe to our newsletter and get exclusive offers and travel tips delivered to your inbox
             </p>
             
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto p-5">
               <input
                 type="email"
                 value={email}
