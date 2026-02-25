@@ -34,7 +34,7 @@ const PopUpFeature = ({ selectedPackage, onClose, buttons = [] }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50 overflow-auto animate-fade-in">
-      <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[85vh] shadow-2xl flex flex-col md:flex-row overflow-hidden relative">
+      <div className="bg-white rounded-3xl w-full max-w-6xl max-h-[85vh] shadow-2xl flex flex-col md:flex-row overflow-hidden">
         
         {/* IMAGE LEFT SIDE */}
         {selectedPackage.image && (
@@ -70,7 +70,7 @@ const PopUpFeature = ({ selectedPackage, onClose, buttons = [] }) => {
         )}
 
         {/* CONTENT RIGHT SIDE */}
-        <div className="w-full md:w-1/2 p-4 sm:p-6 flex flex-col overflow-y-auto relative">
+        <div className="w-full md:w-1/2 p-4 sm:p-6 flex flex-col overflow-y-auto overfloe-x-hidden relative">
           
           {/* TITLE */}
           <div className="flex flex-col gap-2 mb-2">
@@ -203,7 +203,7 @@ const PopUpFeature = ({ selectedPackage, onClose, buttons = [] }) => {
             ))}
 
           {/* BUTTONS FIXED BOTTOM RIGHT */}
-          <div className="fixed bottom-20 max-[780px]:left-[75%] flex flex-col sm:flex-row gap-3 z-20">
+          <div className="sticky bottom-1 right-0 justify-end items-end flex flex-col sm:flex-row gap-3 z-20">
             {buttons.length > 0 ? (
               buttons.map((btn, i) => (
                 <button

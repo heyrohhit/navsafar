@@ -1,7 +1,7 @@
 import BookingPageClient from "./BookingPageClient";
-import { generateSeoMetadata } from "../lib/seo";
+import { getStaticMetadata } from "../lib/seo";
 
-export const getInfo = generateSeoMetadata("booking");
+export const getInfo = getStaticMetadata("booking");
 
 export default function page() {
   return <BookingPageClient />;

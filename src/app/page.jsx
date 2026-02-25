@@ -4,7 +4,7 @@ import LoadingScreen from "./components/loading/LoadingScreen";
 import HeroSection from "./components/hero/HeroSection";
 import FeaturesSection from "./components/features/FeaturesSection";
 import FeaturedPackages from "./components/packages/FeaturedPackages";
-import ExperienceCategories from "./components/experiences/ExperienceCategories";
+import ExperienceCategories from "./experiences/ExperienceCategories";
 import DestinationsSection from "./destinations/page";
 import CTASection from "./components/cta/CTASection";
 

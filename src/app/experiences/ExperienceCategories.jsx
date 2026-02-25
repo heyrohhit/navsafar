@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import {categories} from "../api/experienc";
+import Link from "next/link";
 
 const ExperienceCategories = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -20,68 +22,7 @@ const ExperienceCategories = () => {
     setTimeout(() => setIsLoaded(true), 400);
   }, []);
 
-  const categories = [
-    {
-      id: 1,
-      name: "Adventure",
-      icon: "🏔️",
-      image: "/images/experiences/adventure.jpg",
-      gradient: "from-green-500 to-emerald-600",
-      description: "Thrilling outdoor activities",
-      packageCount: 25,
-      features: ["Mountain Trekking", "River Rafting", "Rock Climbing", "Paragliding"]
-    },
-    {
-      id: 2,
-      name: "Honeymoon",
-      icon: "💕",
-      image: "/images/experiences/honeymoon.jpg",
-      gradient: "from-pink-500 to-rose-600",
-      description: "Romantic getaways for couples",
-      packageCount: 18,
-      features: ["Private Villas", "Candlelight Dinners", "Spa Sessions", "Beach Walks"]
-    },
-    {
-      id: 3,
-      name: "Family Trips",
-      icon: "👨‍👩‍👧‍👦",
-      image: "/images/experiences/family.jpg",
-      gradient: "from-orange-500 to-red-500",
-      description: "Fun for the whole family",
-      packageCount: 32,
-      features: ["Theme Parks", "Kids Activities", "Family Suites", "Guided Tours"]
-    },
-    {
-      id: 4,
-      name: "International",
-      icon: "✈️",
-      image: "/images/experiences/international.jpg",
-      gradient: "from-blue-500 to-indigo-600",
-      description: "Explore the world",
-      packageCount: 45,
-      features: ["City Tours", "Cultural Experiences", "Shopping", "Local Cuisine"]
-    },
-    {
-      id: 5,
-      name: "Weekend Getaways",
-      icon: "🌅",
-      image: "/images/experiences/weekend.jpg",
-      gradient: "from-teal-500 to-cyan-600",
-      description: "Quick refreshing breaks",
-      packageCount: 28,
-      features: ["Beach Resorts", "Hill Stations", "Heritage Sites", "Adventure Sports"]
-    },
-    {
-      id: 6,
-      name: "Cultural Tours",
-      icon: "🏛️",
-      image: "/images/experiences/cultural.jpg",
-      gradient: "from-purple-500 to-pink-600",
-      description: "Discover heritage & traditions",
-      packageCount: 22,
-      features: ["Museum Tours", "Temple Visits", "Folk Shows", "Art Workshops"]
-    }
-  ];
+ 
 
   const handleCategoryHover = (id) => {
     setHoveredCategory(id);
@@ -159,21 +100,16 @@ const ExperienceCategories = () => {
         </div>
         
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="w-full  flex flex-col flex-wrap gap-8 p-3">
           {categories.map((category, index) => (
-            <div 
+            <Link 
               key={category.id}
-              className={`group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 transform cursor-pointer ${
-                isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-              } ${hoveredCategory === category.id ? 'scale-105 -rotate-1' : ''}`}
-              style={{
-                transitionDelay: `${index * 150}ms`,
-              }}
-              onMouseEnter={() => handleCategoryHover(category.id)}
-              onMouseLeave={handleCategoryLeave}
+              href={`/experiences/${category.name.toLowerCase().replace(/\s+/g, '-')}`}
+              className={`group flex flex-wrap max-[660px]:h-45 relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl w-full h-[100px] max-[990px]:h-[150px]  relative p-4 gap-5 max-[660px]:gap-3 cursor-pointer`}
+              
             >
               {/* Image Background */}
-              <div className={`relative h-80 bg-gradient-to-br ${category.gradient} overflow-hidden`}>
+              <div className={`max-[660px]:w-full w-[25%] bg-gradient-to-br ${category.gradient} overflow-hidden rounded-2xl`}>
                 {/* Animated Background Pattern */}
                 <div className="absolute inset-0">
                   <div className="absolute top-4 right-4 w-16 h-16 bg-white/10 rounded-full animate-pulse"></div>
@@ -182,31 +118,23 @@ const ExperienceCategories = () => {
                 </div>
                 
                 {/* Content */}
-                <div className="relative z-10 h-full flex flex-col items-center justify-center text-white p-6">
-                  <div className="text-6xl mb-4 transform transition-transform duration-500 group-hover:scale-110">
+                <div className="h-full flex flex-wrap items-center justify-center p-2">
+                  <div className="text-2xl transform transition-transform duration-500 group-hover:scale-110">
                     {category.icon}
                   </div>
-                  <h3 className="text-2xl font-bold mb-2 text-center">{category.name}</h3>
-                  <p className="text-white/90 text-center text-sm">{category.description}</p>
+                  <h3 className="text-xl font-bold text-center">{category.name}</h3>
+                  <p className=" text-white/90 text-center text-sm w-full">{category.description}</p>
                 </div>
-                
-                {/* Package Count Badge */}
-                <div className="absolute top-4 right-4">
-                  <span className="px-4 py-2 bg-white/90 backdrop-blur-sm text-gray-800 text-sm font-bold rounded-full shadow-lg">
-                    {category.packageCount}+ Packages
-                  </span>
-                </div>
+              </div>
 
-                {/* Features List */}
+              {/* Features List */}
                 <div 
-                  className={`absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent transition-all duration-500 ${
-                    hoveredCategory === category.id ? 'translate-y-0' : 'translate-y-full'
-                  }`}
+                  className={`max-[660px]:w-full w-[70%]  to-transparent transition-all duration-500 relative`}
                 >
-                  <h4 className="text-white font-semibold mb-3">What's Included:</h4>
+                  <h4 className="text-gray-600 font-semibold mb-3">What's Included:</h4>
                   <div className="grid grid-cols-2 gap-2">
                     {category.features.map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2 text-white/80 text-xs">
+                      <div key={i} className="flex items-center gap-2 text-gray-500 text-xs">
                         <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
@@ -214,8 +142,13 @@ const ExperienceCategories = () => {
                       </div>
                     ))}
                   </div>
+                  {/* Package Count Badge */}
+                <div className="absolute top-0 right-4">
+                  <span className="px-4 py-2 bg-white/90 backdrop-blur-sm text-gray-800 text-sm font-bold rounded-full shadow-lg">
+                    {category.packageCount}+ Packages
+                  </span>
                 </div>
-              </div>
+                </div>
               
               {/* Hover Glow Effect */}
               <div 
@@ -223,7 +156,7 @@ const ExperienceCategories = () => {
                   hoveredCategory === category.id ? 'opacity-100' : 'opacity-0'
                 }`}
               />
-            </div>
+            </Link>
           ))}
         </div>
 

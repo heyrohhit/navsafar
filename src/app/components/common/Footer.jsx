@@ -147,12 +147,12 @@ const Footer = () => {
             className="lg:col-span-2"
           >
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-                <Globe className="w-6 h-6 text-white" />
+              <div className="w-50 h-12 to-orange-500 rounded-full flex items-center justify-center">
+                 <img src="/assets/logo.png" alt="/assets/logo.png" className="object-fill"/>
               </div>
               <div>
-                <h4 className="text-2xl font-bold">Navsafar</h4>
-                <p className="text-amber-400 text-sm">Premium Travel Solutions</p>
+                {/* <h4 className="text-2xl font-bold">Navsafar</h4>
+                <p className="text-amber-400 text-sm">Premium Travel Solutions</p> */}
               </div>
             </div>
             

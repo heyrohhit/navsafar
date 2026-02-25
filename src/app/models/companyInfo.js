@@ -4,10 +4,10 @@ export const companyInfo = {
     tagline: "Your Trusted Travel Partner",
     description: "We are a leading travel agency dedicated to creating unforgettable travel experiences. With years of expertise in the travel industry, we offer customized tour packages, international and domestic tours, and complete travel solutions.",
     contact: {
-        phone: "+91 98765 43210",
-        email: "info@navsafar.com",
-        address: "123, Travel Street, Mumbai, Maharashtra 400001, India",
-        website: "www.navsafar.com"
+        phone: "+91 8882129640",
+        email: "info@navsafartrevals.com",
+        address: "WZ-447 FIRST FLOOR, LEFT SIDE NANGAL RAYA, DELHI -110046a",
+        website: "www.navsafars.vercel.com"
     },
     social: {
         facebook: "https://facebook.com/navsafar",

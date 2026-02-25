@@ -23,23 +23,21 @@ const Header = () => {
   return (
     <>
       {/* Desktop Header */}
-      <header className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+      <header className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-[#0F6177] border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="shrink-0">
               <Link href="/">
-              <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              <div className="flex items-center gap-2 relative`">
+                  <div className="w-50 h-8 rounded-lg flex items-center justify-center">
+                  <img src="/assets/logo.png" alt="/assets/logo.png" className="object-fill"/>
                 </div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex flex-col line-2 cursor-pointer">
+                  {/* <h1 className="absolute `text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex flex-col line-2 cursor-pointer">
                   Navsafar
                   <br/>
                     <span className="text-[12px] text-gray-600 ml-2">Travel Agency</span>
-                    </h1>
+                    </h1> */}
                   
               </div>
             </Link>
@@ -51,12 +49,12 @@ const Header = () => {
             </div>
             
             {/* Contact Info */}
-            <div className="hidden lg:flex items-center gap-4">
-              <a href="tel:+919876543210" className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
+            <div className="hidden lg:flex items-center gap-4 text-white">
+              <a href="tel:+919876543210" className="flex items-center gap-2 text-sm text-white hover:text-blue-600 transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                +91 98765 43210
+                +91 88821 29640
               </a>
               <Link href="/booking">
               <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105">
@@ -69,19 +67,17 @@ const Header = () => {
       </header>
 
       {/* Mobile/Tablet Header */}
-      <header className="xl:hidden fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+      <header className="xl:hidden fixed top-0 left-0 right-0 z-50 bg-[#0F6177] backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
         <div className="flex justify-between items-center h-16 px-4">
           {/* Mobile/Tablet Logo */}
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <div className="w-50 h-8 rounded-lg flex items-center justify-center">
+                  <img src="/assets/logo.png" alt="/assets/logo.png" className="object-fill"/>
+                </div>
+            {/* <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Navsafar
-            </h1>
+            </h1> */}
             </Link>
           </div>
 
@@ -92,17 +88,17 @@ const Header = () => {
             aria-label="Toggle menu"
           >
             <span
-              className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ${
+              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
                 isMenuOpen ? "rotate-45 translate-y-2" : ""
               }`}
             />
             <span
-              className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ${
+              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
                 isMenuOpen ? "opacity-0" : ""
               }`}
             />
             <span
-              className={`block w-6 h-0.5 bg-gray-800 transition-all duration-300 ${
+              className={`block w-6 h-0.5 bg-white transition-all duration-300 ${
                 isMenuOpen ? "-rotate-45 -translate-y-2" : ""
               }`}
             />
@@ -111,7 +107,7 @@ const Header = () => {
 
         {/* Mobile Menu */}
         <div
-          className={`absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-gray-200/50 transition-all duration-300 ${
+          className={`absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-white transition-all duration-300 ${
             isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
@@ -124,11 +120,13 @@ const Header = () => {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                +91 98765 43210
+                +91 88821 29640
               </a>
+              <Link href="wa.me/+918882129640">
               <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300">
                 Book Now
               </button>
+              </Link>
             </div>
           </div>
         </div>

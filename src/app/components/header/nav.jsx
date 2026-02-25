@@ -55,7 +55,7 @@ const Nav = ({ mobile = false, onClose }) => {
   return (
     <nav className="relative" role="navigation" aria-label="Main navigation">
       {/* Desktop Navigation - Grouped Menu */}
-      <div className="hidden xl:flex items-center space-x-2 ">
+      <div className="hidden xl:flex items-center space-x-2 text-white">
         {/* Main Items */}
         {mainItems.map((item, idx) => (
           <Link
@@ -64,8 +64,8 @@ const Nav = ({ mobile = false, onClose }) => {
             onClick={() => handleItemClick(idx, item.path)}
             onMouseEnter={() => setHoveredItem(idx)}
             onMouseLeave={() => setHoveredItem(null)}
-            className={`relative px-3 py-2 text-gray-700 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
-              activeItem === idx ? "text-blue-600 bg-blue-50" : ""
+            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
+              activeItem === idx ? "text-blue-600 bg-white" : ""
             }`}
             title={item.description}
             aria-label={`${item.name} - ${item.description}`}
@@ -82,11 +82,11 @@ const Nav = ({ mobile = false, onClose }) => {
         ))}
 
         {/* Services Dropdown */}
-        <div className="relative">
+        <div className="relative text-white">
           <button
             onMouseEnter={() => setIsServicesOpen(true)}
             onMouseLeave={() => setIsServicesOpen(false)}
-            className={`relative px-3 py-2 text-gray-700 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
+            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
               isServicesOpen ? "text-blue-600 bg-blue-50" : ""
             }`}
           >
@@ -98,7 +98,7 @@ const Nav = ({ mobile = false, onClose }) => {
           
           {isServicesOpen && (
             <div 
-              className="absolute top-full left-0 mt-1 w-56 bg-gray-500 rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
+              className="absolute text-white top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => setIsServicesOpen(false)}
             >
@@ -108,7 +108,7 @@ const Nav = ({ mobile = false, onClose }) => {
                     key={idx}
                     href={item.path}
                     onClick={() => handleItemClick(navModel.indexOf(item), item.path)}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                    className="block px-4 py-2 text-sm text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 text-gray-500">
@@ -128,7 +128,7 @@ const Nav = ({ mobile = false, onClose }) => {
           <button
             onMouseEnter={() => setIsToursOpen(true)}
             onMouseLeave={() => setIsToursOpen(false)}
-            className={`relative px-3 py-2 text-gray-700 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
+            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
               isToursOpen ? "text-blue-600 bg-blue-50" : ""
             }`}
           >
