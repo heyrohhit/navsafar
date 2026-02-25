@@ -30,168 +30,102 @@ export default function LoadingScreen({ onComplete }) {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden skyBg">
 
-      {/* 🌌 Animated Aurora Background */}
-      <div className="absolute inset-0 aurora" />
+      {/* ☁️ Moving Clouds */}
+      <div className="cloud cloud1" />
+      <div className="cloud cloud2" />
 
-      {/* ✨ Floating Particles */}
-      <div className="particles">
-        {[...Array(20)].map((_, i) => (
-          <span key={i} />
-        ))}
-      </div>
-
-      {/* 🔮 Center Content */}
+      {/* ✈️ Center Content */}
       <div className="relative z-10 text-center px-6">
 
-        {/* Brand */}
-        <h1 className="text-6xl md:text-7xl font-extrabold mb-6 tracking-wider text-white">
-          <span className="gradientText">NavSafar</span>
+        <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white tracking-wide">
+          NavSafar
         </h1>
 
-        <p className="text-gray-300 mb-12 text-lg tracking-wide opacity-80">
-          Crafting Limitless Journeys
+        <p className="text-white/80 mb-10 text-lg">
+          Your Journey Begins Here
         </p>
 
-        {/* 🌀 3D Rotating Ring */}
-        <div className="relative w-40 h-40 mx-auto mb-14">
-          <div className="ringOuter" />
-          <div className="ringInner" />
-          <div className="ringCore" />
+        {/* ✈️ Flight Path */}
+        <div className="relative w-80 max-w-full mx-auto mb-8 h-16">
+
+          <div className="pathLine" />
+
+          <div
+            className="plane"
+            style={{ left: `${progress}%` }}
+          >
+            ✈️
+          </div>
+
         </div>
 
-        {/* 💎 Glass Progress Capsule */}
-        <div className="w-80 max-w-full mx-auto">
-          <div className="glassBar">
-            <div
-              className="glassProgress"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <div className="mt-4 text-gray-300 tracking-widest text-sm">
-            {Math.floor(progress)}% INITIALIZING EXPERIENCE
-          </div>
+        {/* 🌍 Progress */}
+        <div className="text-white tracking-wider">
+          Preparing Your Journey... {Math.floor(progress)}%
         </div>
 
       </div>
 
-      {/* Animations */}
       <style jsx>{`
 
-        /* Aurora Background */
-        .aurora {
-          background: radial-gradient(circle at 20% 20%, #00f5ff22, transparent 40%),
-                      radial-gradient(circle at 80% 30%, #8b5cf622, transparent 40%),
-                      radial-gradient(circle at 50% 80%, #22d3ee22, transparent 50%);
-          animation: auroraMove 10s infinite alternate ease-in-out;
+        /* 🌅 Sky Background */
+        .skyBg {
+          background: linear-gradient(to top, #ff9966, #ff5e62, #2193b0);
         }
 
-        @keyframes auroraMove {
-          0% { transform: scale(1) rotate(0deg); }
-          100% { transform: scale(1.2) rotate(8deg); }
-        }
-
-        /* Gradient Text */
-        .gradientText {
-          background: linear-gradient(90deg,#00f5ff,#8b5cf6,#22d3ee);
-          background-size: 200% auto;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          animation: shine 4s linear infinite;
-        }
-
-        @keyframes shine {
-          from { background-position: -200% center; }
-          to { background-position: 200% center; }
-        }
-
-        /* Rings */
-        .ringOuter, .ringInner {
+        /* ☁️ Clouds */
+        .cloud {
           position: absolute;
-          inset: 0;
-          border-radius: 50%;
-          border: 2px solid rgba(255,255,255,0.1);
-        }
-
-        .ringOuter {
-          border-top: 2px solid #00f5ff;
-          animation: spin 4s linear infinite;
-        }
-
-        .ringInner {
-          inset: 20px;
-          border-bottom: 2px solid #8b5cf6;
-          animation: spinReverse 3s linear infinite;
-        }
-
-        .ringCore {
-          position: absolute;
-          inset: 45px;
-          border-radius: 50%;
-          background: radial-gradient(circle,#00f5ff55,#8b5cf633);
+          width: 200px;
+          height: 60px;
+          background: rgba(255,255,255,0.8);
+          border-radius: 100px;
           filter: blur(10px);
-          animation: pulse 2s ease-in-out infinite;
+          animation: moveClouds 30s linear infinite;
         }
 
-        @keyframes spin {
-          to { transform: rotate(360deg); }
+        .cloud1 {
+          top: 20%;
+          left: -200px;
         }
 
-        @keyframes spinReverse {
-          to { transform: rotate(-360deg); }
+        .cloud2 {
+          top: 60%;
+          left: -250px;
+          animation-duration: 45s;
         }
 
-        @keyframes pulse {
-          0%,100% { transform: scale(1); opacity: 0.7; }
-          50% { transform: scale(1.2); opacity: 1; }
+        @keyframes moveClouds {
+          from { transform: translateX(0); }
+          to { transform: translateX(120vw); }
         }
 
-        /* Glass Progress */
-        .glassBar {
-          height: 12px;
-          border-radius: 999px;
-          background: rgba(255,255,255,0.08);
-          backdrop-filter: blur(10px);
-          overflow: hidden;
-          border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .glassProgress {
-          height: 100%;
-          background: linear-gradient(90deg,#00f5ff,#8b5cf6);
-          transition: width 0.2s ease;
-        }
-
-        /* Particles */
-        .particles span {
+        /* ✈️ Path Line */
+        .pathLine {
           position: absolute;
-          width: 4px;
-          height: 4px;
-          background: white;
-          border-radius: 50%;
+          top: 50%;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: repeating-linear-gradient(
+            to right,
+            white,
+            white 6px,
+            transparent 6px,
+            transparent 12px
+          );
           opacity: 0.6;
-          animation: float 10s linear infinite;
         }
 
-        .particles span:nth-child(odd) {
-          background: #00f5ff;
-        }
-
-        .particles span:nth-child(even) {
-          background: #8b5cf6;
-        }
-
-        @keyframes float {
-          from {
-            transform: translateY(100vh) scale(0.5);
-            opacity: 0;
-          }
-          50% { opacity: 1; }
-          to {
-            transform: translateY(-10vh) scale(1);
-            opacity: 0;
-          }
+        /* ✈️ Plane */
+        .plane {
+          position: absolute;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          font-size: 28px;
+          transition: left 0.2s ease;
         }
 
       `}</style>
