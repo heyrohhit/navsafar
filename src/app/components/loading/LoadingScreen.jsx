@@ -1,13 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
 
-const TOTAL_DURATION = 6000;
-const destinations = ["Goa", "Dubai", "Paris", "Bali"];
+const TOTAL_DURATION = 5000;
 
 export default function LoadingScreen({ onComplete }) {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(true);
-  const [destinationIndex, setDestinationIndex] = useState(0);
 
   useEffect(() => {
     const start = Date.now();
@@ -16,9 +14,6 @@ export default function LoadingScreen({ onComplete }) {
       const elapsed = Date.now() - start;
       const percent = Math.min((elapsed / TOTAL_DURATION) * 100, 100);
       setProgress(percent);
-
-      const dest = Math.floor((percent / 100) * destinations.length);
-      setDestinationIndex(dest >= destinations.length ? destinations.length - 1 : dest);
 
       if (percent >= 100) {
         clearInterval(interval);
@@ -37,50 +32,35 @@ export default function LoadingScreen({ onComplete }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden skyBg">
 
-      <div className="relative z-10 text-center px-6 w-full max-w-xl">
+      {/* â˜ï¸ Moving Clouds */}
+      <div className="cloud cloud1" />
+      <div className="cloud cloud2" />
+
+      <div className="relative z-10 text-center px-6">
 
         <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white tracking-wide">
           NavSafar
         </h1>
 
-        <p className="text-white/80 mb-6 text-lg">
-          Flying to {destinations[destinationIndex]}...
+        <p className="text-white/80 mb-10 text-lg">
+          Your Journey Begins Here
         </p>
 
-        {/* ✈️ Curved Flight Path */}
-        <div className="relative w-full h-40 mb-8">
+        {/* âœˆï¸ Flight Path */}
+        <div className="relative w-80 max-w-full mx-auto mb-8 h-16">
 
-          <svg viewBox="0 0 500 150" className="absolute w-full h-full">
-            <path
-              d="M20 120 Q250 10 480 120"
-              fill="transparent"
-              stroke="rgba(255,255,255,0.3)"
-              strokeWidth="2"
-              strokeDasharray="6 8"
-            />
+          {/* Dynamic Path (Creates behind plane) */}
+          <div
+            className="pathLine"
+            style={{ width: `${progress}%` }}
+          />
 
-            <path
-              d="M20 120 Q250 10 480 120"
-              fill="transparent"
-              stroke="white"
-              strokeWidth="2"
-              strokeDasharray="1000"
-              strokeDashoffset={1000 - (progress / 100) * 1000}
-              style={{ transition: "stroke-dashoffset 0.2s ease" }}
-            />
-          </svg>
-
-          {/* ✈️ Plane */}
+          {/* Plane */}
           <div
             className="plane"
-            style={{
-              left: `${progress}%`,
-              top: `${120 - (Math.sin(progress / 100 * Math.PI) * 110)}px`
-            }}
+            style={{ left: `${progress}%` }}
           >
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
-              <path d="M2 16l20-4-20-4v3l15 1-15 1v3z" />
-            </svg>
+            âœˆ
           </div>
 
         </div>
@@ -93,20 +73,68 @@ export default function LoadingScreen({ onComplete }) {
 
       <style jsx>{`
 
+        /* ðŸŒ… Sky Background */
         .skyBg {
-          background: linear-gradient(to top, #1e3c72, #2a5298);
+          background: linear-gradient(to top, #2193b0, #6dd5ed);
         }
 
+        /* â˜ï¸ Clouds */
+        .cloud {
+          position: absolute;
+          width: 200px;
+          height: 60px;
+          background: rgba(255,255,255,0.8);
+          border-radius: 100px;
+          filter: blur(12px);
+          animation: moveClouds 35s linear infinite;
+        }
+
+        .cloud1 {
+          top: 20%;
+          left: -200px;
+        }
+
+        .cloud2 {
+          top: 60%;
+          left: -250px;
+          animation-duration: 50s;
+        }
+
+        @keyframes moveClouds {
+          from { transform: translateX(0); }
+          to { transform: translateX(120vw); }
+        }
+
+        /* âœˆï¸ Dynamic Path */
+        .pathLine {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          height: 2px;
+          background: repeating-linear-gradient(
+            to right,
+            white,
+            white 6px,
+            transparent 6px,
+            transparent 12px
+          );
+          opacity: 0.7;
+          transition: width 0.2s ease;
+          transform: translateY(-50%);
+        }
+
+        /* âœˆï¸ Plane Proper Angle */
         .plane {
           position: absolute;
-          transform: translate(-50%, -50%) rotate(15deg);
-          transition: left 0.2s linear, top 0.2s linear;
+          top: 50%;
+          transform: translate(-50%, -50%) rotate(0deg);
+          font-size: 30px;
           animation: floatPlane 2s ease-in-out infinite;
         }
 
         @keyframes floatPlane {
-          0%,100% { transform: translate(-50%, -50%) rotate(15deg); }
-          50% { transform: translate(-50%, -55%) rotate(15deg); }
+          0%,100% { transform: translate(-50%, -50%) rotate(0deg); }
+          50% { transform: translate(-50%, -55%) rotate(0deg); }
         }
 
       `}</style>
