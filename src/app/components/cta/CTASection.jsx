@@ -17,7 +17,7 @@ const CTASection = () => {
   };
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-900 to-slate-800 relative overflow-hidden">
+    <section className="py-20 px-4 sm:px-6 lg:px-8  relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
@@ -38,7 +38,7 @@ const CTASection = () => {
           </div>
           
           <h2 
-            className="text-4xl md:text-6xl font-bold text-white mb-6"
+            className="text-4xl md:text-6xl font-bold text-[#0F6177] mb-6"
             style={{ transitionDelay: '100ms' }}
           >
             Ready for Your
@@ -48,7 +48,7 @@ const CTASection = () => {
           </h2>
           
           <p 
-            className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8"
+            className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8"
             style={{ transitionDelay: '200ms' }}
           >
             Join thousands of satisfied travelers and start your journey with exclusive deals and personalized experiences
@@ -67,8 +67,8 @@ const CTASection = () => {
             }`}
           >
             <div>
-              <h3 className="text-2xl font-bold text-white mb-4">Get in Touch</h3>
-              <p className="text-gray-400 mb-6">
+              <h3 className="text-2xl font-bold text-[#0F6177] mb-4">Get in Touch</h3>
+              <p className="text-gray-500 mb-6">
                 Our travel experts are here to help you plan the perfect trip. Contact us for personalized recommendations and exclusive deals.
               </p>
             </div>
@@ -85,8 +85,8 @@ const CTASection = () => {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-white font-semibold">Call Us</div>
-                  <div className="text-gray-400">+91 98765 43210</div>
+                  <div className="text-[#0F6177] font-semibold">Call Us</div>
+                  <div className="text-gray-500">+91 88821 29640</div>
                 </div>
               </a>
 
@@ -100,8 +100,8 @@ const CTASection = () => {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-white font-semibold">Email Us</div>
-                  <div className="text-gray-400">info@navsafar.com</div>
+                  <div className="text-[#0F6177] font-semibold">Email Us</div>
+                  <div className="text-gray-500">info@navsafartravels.com</div>
                 </div>
               </a>
 
@@ -112,8 +112,8 @@ const CTASection = () => {
                   </svg>
                 </div>
                 <div>
-                  <div className="text-white font-semibold">Business Hours</div>
-                  <div className="text-gray-400">Mon - Sat: 9AM - 8PM</div>
+                  <div className="text-[#0F6177] font-semibold">Business Hours</div>
+                  <div className="text-gray-500">Mon - Sat: 9AM - 8PM</div>
                 </div>
               </div>
             </div>
@@ -126,7 +126,7 @@ const CTASection = () => {
             }`}
           >
             <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md rounded-2xl border border-white/20 p-8">
-              <h3 className="text-2xl font-bold text-white mb-4">Get Exclusive Deals</h3>
+              <h3 className="text-2xl font-bold text-[#0F6177] mb-4">Get Exclusive Deals</h3>
               <p className="text-gray-400 mb-6">
                 Subscribe to our newsletter and be the first to know about new destinations and special offers.
               </p>
@@ -137,13 +137,13 @@ const CTASection = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white/15 transition-all duration-300"
+                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-[#0F6177] placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white/15 transition-all duration-300"
                   required
                 />
                 
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25"
+                  className="w-full bg-[#0F6177] text-[#fff] py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/25"
                 >
                   Subscribe Now
                 </button>

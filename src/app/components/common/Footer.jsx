@@ -86,7 +86,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="bg-gradient-to-b from-gray-900 to-black text-white overflow-x-hidden">
+    <footer className="bg-[#fff] text-white overflow-x-hidden">
       {/* Newsletter Section */}
       <section className="border-b border-gray-800">
         <div className="container mx-auto px-4 py-16">
@@ -118,7 +118,7 @@ const Footer = () => {
                 type="submit"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                className="bg-[#0F6177] text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
               >
                 {isSubscribed ? (
                   <>
@@ -126,7 +126,7 @@ const Footer = () => {
                   </>
                 ) : (
                   <>
-                    <Send className="w-5 h-5" />
+                    <Send className="w-5 h-5 " />
                     <span>Subscribe</span>
                   </>
                 )}
@@ -137,7 +137,7 @@ const Footer = () => {
       </section>
 
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 bg-[#0F6177]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Brand Section */}
           <motion.div
@@ -204,7 +204,7 @@ const Footer = () => {
               <h4 className="text-lg font-semibold mb-6 capitalize">
                 {category === "company" ? "Company" : category === "explore" ? "Explore" : category === "support" ? "Support" : ""}
               </h4>
-              <ul className={`${category === "legal" ? "w-screen flex-wrap h-aut flex justify-around items-center" : ""}`}>
+              <ul className={`${category === "legal" ? "w-screen flex-wrap h-aut flex justify-around items-center pr-5 " : ""}`}>
                 {links.map((link) => (
                   <li key={link.name} className={`space-y-3 ${category === "legal" ? "w-[18%] h-auto flex justify-center items-center" : ""}`}>
                     <motion.a
@@ -264,7 +264,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t border-gray-800">
+      <div className="border-t border-gray-800 bg-[#0F6177]">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">

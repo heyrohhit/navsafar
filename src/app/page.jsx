@@ -47,9 +47,9 @@ const Page = () => {
       {/* Main Content */}
       <div className="relative">
         <HeroSection isMenuOpen={isMenuOpen} />
-        <FeaturedPackages />
+        <FeaturedPackages limit={5}/>
         <ExperienceCategories />
-        <DestinationsSection limit={3} />
+        <DestinationsSection limit={5} />
         <FeaturesSection />
         <CTASection />
       </div>
