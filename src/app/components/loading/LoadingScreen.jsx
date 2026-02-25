@@ -36,7 +36,6 @@ export default function LoadingScreen({ onComplete }) {
       <div className="cloud cloud1" />
       <div className="cloud cloud2" />
 
-      {/* ✈️ Center Content */}
       <div className="relative z-10 text-center px-6">
 
         <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white tracking-wide">
@@ -50,18 +49,22 @@ export default function LoadingScreen({ onComplete }) {
         {/* ✈️ Flight Path */}
         <div className="relative w-80 max-w-full mx-auto mb-8 h-16">
 
-          <div className="pathLine" />
+          {/* Dynamic Path (Creates behind plane) */}
+          <div
+            className="pathLine"
+            style={{ width: `${progress}%` }}
+          />
 
+          {/* Plane */}
           <div
             className="plane"
             style={{ left: `${progress}%` }}
           >
-            ✈️
+            ✈
           </div>
 
         </div>
 
-        {/* 🌍 Progress */}
         <div className="text-white tracking-wider">
           Preparing Your Journey... {Math.floor(progress)}%
         </div>
@@ -72,7 +75,7 @@ export default function LoadingScreen({ onComplete }) {
 
         /* 🌅 Sky Background */
         .skyBg {
-          background: linear-gradient(to top, #ff9966, #ff5e62, #2193b0);
+          background: linear-gradient(to top, #2193b0, #6dd5ed);
         }
 
         /* ☁️ Clouds */
@@ -82,8 +85,8 @@ export default function LoadingScreen({ onComplete }) {
           height: 60px;
           background: rgba(255,255,255,0.8);
           border-radius: 100px;
-          filter: blur(10px);
-          animation: moveClouds 30s linear infinite;
+          filter: blur(12px);
+          animation: moveClouds 35s linear infinite;
         }
 
         .cloud1 {
@@ -94,7 +97,7 @@ export default function LoadingScreen({ onComplete }) {
         .cloud2 {
           top: 60%;
           left: -250px;
-          animation-duration: 45s;
+          animation-duration: 50s;
         }
 
         @keyframes moveClouds {
@@ -102,12 +105,11 @@ export default function LoadingScreen({ onComplete }) {
           to { transform: translateX(120vw); }
         }
 
-        /* ✈️ Path Line */
+        /* ✈️ Dynamic Path */
         .pathLine {
           position: absolute;
           top: 50%;
           left: 0;
-          right: 0;
           height: 2px;
           background: repeating-linear-gradient(
             to right,
@@ -116,16 +118,23 @@ export default function LoadingScreen({ onComplete }) {
             transparent 6px,
             transparent 12px
           );
-          opacity: 0.6;
+          opacity: 0.7;
+          transition: width 0.2s ease;
+          transform: translateY(-50%);
         }
 
-        /* ✈️ Plane */
+        /* ✈️ Plane Proper Angle */
         .plane {
           position: absolute;
           top: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 28px;
-          transition: left 0.2s ease;
+          transform: translate(-50%, -50%) rotate(0deg);
+          font-size: 30px;
+          animation: floatPlane 2s ease-in-out infinite;
+        }
+
+        @keyframes floatPlane {
+          0%,100% { transform: translate(-50%, -50%) rotate(0deg); }
+          50% { transform: translate(-50%, -55%) rotate(0deg); }
         }
 
       `}</style>
