@@ -30,7 +30,11 @@ export default function LoadingScreen({ onComplete }) {
   if (!visible) return null;
 
   return (
+<<<<<<< HEAD
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#0F6177]">
+=======
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden skyBg">
+>>>>>>> 752387d3f42453fed2cc8cadb070ff6f1abc7d64
 
       {/* ☁️ Moving Clouds */}
       <div className="cloud cloud1" />
