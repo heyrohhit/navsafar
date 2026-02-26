@@ -148,15 +148,15 @@ const Header = () => {
               >
                 <div
                   className={`relative transition-all duration-300 ${
-                    isActive ? "transform scale-110" : "group-hover:scale-110"
+                    isActive ? "shadow-[inset_0_4px_10px_rgba(0,0,0,0.5)] -shadow-[0_4px_10px_rgba(0,0,0,0.5)]  transform scale-110 p-4 translate-y-[-20px] bg-white rounded-full "  : "group-hover:scale-110"
                   }`}
                 >
                   {getTravelIcon(item.name)}
                   {isActive && (
-                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></div>
+                    <div className="transition-all duration-200 absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></div>
                   )}
                 </div>
-                <span className="text-xs font-medium">
+                <span className={`text-xs font-medium ${isActive && "transition-all duration-200 -translate-y-3"}`}>
                   {item.name.length > 12 ? item.name.substring(0, 10) + "..." : item.name}
                 </span>
               </Link>

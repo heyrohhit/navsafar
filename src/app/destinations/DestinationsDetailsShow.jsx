@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link"; // Next.js me navigation ke liye
-import { destinations } from "../api/destinations";
+import { destinations } from "../models/objAll/destinations";
 import PackageGridLayout from "../components/packages/PackageGridLayout";
 
 const DestinationsSection = ({ limit }) => {

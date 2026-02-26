@@ -1,4 +1,13 @@
-export const adventures = [
+// Get admin data if available, otherwise use default data
+const getAdminData = () => {
+  if (typeof window !== 'undefined' && window.adminAdventureData) {
+    return window.adminAdventureData;
+  }
+  return [];
+};
+
+// Default adventures data
+const defaultAdventures = [
   {
     id: 1,
     title: "Mountain Trekking",
@@ -8,7 +17,7 @@ export const adventures = [
     // price: 12000,
     tagLine: "Explore breathtaking Himalayan trails and snow-capped peaks.",
     description:
-      "Experience the thrill of trekking in the majestic Himalayas of Manali. This 5-day guided trek takes you through scenic valleys, alpine forests, and panoramic mountain views. Perfect for adventure lovers looking to challenge themselves while enjoying nature’s beauty.",
+      "Experience the thrill of trekking in the majestic Himalayas of Manali. This 5-day guided trek takes you through scenic valleys, alpine forests, and panoramic mountain views. Perfect for adventure lovers looking to challenge themselves while enjoying nature's beauty.",
     highlights: [
       "Professional trekking guide",
       "Camp stay under the stars",
@@ -114,3 +123,6 @@ export const adventures = [
       "https://images.unsplash.com/photo-1669021820358-317111184ede?w=600&auto=format&fit=crop&q=60"
   }
 ];
+
+// Export adventures - use admin data if available, otherwise use default
+export const adventures = getAdminData().length > 0 ? getAdminData() : defaultAdventures;

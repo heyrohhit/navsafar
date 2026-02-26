@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { packages } from "../../api/packages";
+import { packages } from "../../models/objAll/packages";
 import Link from "next/link";
 import PackageGridLayout from "./PackageGridLayout";
 

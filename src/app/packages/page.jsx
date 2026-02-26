@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {packages} from "../api/packages"
+import {packages} from "../models/objAll/packages"
 import PopUpFeature from "../components/packages/PopUpFeature";
 
 

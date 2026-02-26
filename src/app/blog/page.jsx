@@ -1,5 +1,5 @@
 import PackageGridLayout from "../components/packages/PackageGridLayout"
-import { blogPosts } from "../api/blog"
+import { blogPosts } from "../models/objAll/blog"
 
 const page = () => {
   return (

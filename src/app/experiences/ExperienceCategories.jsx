@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import {categories} from "../api/experienc";
+import {categories} from "../models/objAll/experienc";
 import Link from "next/link";
 
 const ExperienceCategories = () => {

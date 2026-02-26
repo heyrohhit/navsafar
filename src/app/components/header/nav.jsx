@@ -2,19 +2,17 @@
 import { useState } from "react";
 import { navModel, getTravelIcon } from "../../models";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Nav = ({ mobile = false, onClose }) => {
-  const [activeItem, setActiveItem] = useState(null);
+  const pathname = usePathname();
+  const [activeItem, setActiveItem] = useState(pathname);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isToursOpen, setIsToursOpen] = useState(false);
 
-  const handleItemClick = (index, path) => {
-    setActiveItem(index);
-    if (mobile && onClose) {
-      onClose();
-    }
-  };
+  console.log("pathname is", pathname)
+
 
   // Group navigation items for better organization
   const mainItems = navModel.slice(0, 4); // Home, Destinations, Tour Packages, International Tours
@@ -28,16 +26,16 @@ const Nav = ({ mobile = false, onClose }) => {
           <Link
             key={idx}
             href={item.path}
-            onClick={() => handleItemClick(idx, item.path)}
+            
             className={`block px-4 py-3 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 group ${
-              activeItem === idx ? "bg-blue-50 text-blue-600 font-semibold" : ""
+              activeItem === item.path ? "bg-blue-50 text-blue-600 font-semibold" : ""
             }`}
             title={item.description}
             aria-label={`${item.name} - ${item.description}`}
           >
             <div className="flex items-center gap-3">
               <div className={`transition-all duration-200 ${
-                activeItem === idx ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600"
+                activeItem === item.path ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600"
               }`}>
                 {getTravelIcon(item.name)}
               </div>
@@ -61,11 +59,10 @@ const Nav = ({ mobile = false, onClose }) => {
           <Link
             key={idx}
             href={item.path}
-            onClick={() => handleItemClick(idx, item.path)}
             onMouseEnter={() => setHoveredItem(idx)}
             onMouseLeave={() => setHoveredItem(null)}
-            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
-              activeItem === idx ? "text-blue-600 bg-white" : ""
+            className={`relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
+              activeItem === item.path ? "text-black bg-white" : ""
             }`}
             title={item.description}
             aria-label={`${item.name} - ${item.description}`}
@@ -75,7 +72,7 @@ const Nav = ({ mobile = false, onClose }) => {
             {/* Animated underline */}
             <span
               className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 ${
-                activeItem === idx ? "w-full" : "w-0"
+                activeItem === item.path ? "w-full" : "w-0"
               }`}
             />
           </Link>
@@ -175,7 +172,7 @@ const Nav = ({ mobile = false, onClose }) => {
               href={item.path}
               onClick={() => handleItemClick(idx, item.path)}
               className={`px-3 py-2 text-xs font-medium rounded-full transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                activeItem === idx 
+                activeItem === item.path
                   ? "bg-blue-600 text-white" 
                   : "bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-600"
               }`}

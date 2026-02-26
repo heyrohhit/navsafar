@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "./components/header/header";
 import Footer from "./components/common/Footer";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -62,9 +63,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >
-        <Header />
-        {children}
-        <Footer />
+          <Header />
+          {children}
+          <Footer />
+       
       </body>
     </html>
   );

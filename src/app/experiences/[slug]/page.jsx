@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { adventures } from "../../models/AdventureExperience";
+import { adventures } from "../../models/objAll/AdventureExperience";
 import PackageGridLayout from "../../components/packages/PackageGridLayout";
 
 const ExperienceDetailPage = () => {
