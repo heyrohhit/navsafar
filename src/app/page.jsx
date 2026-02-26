@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import LoadingScreen from "./components/loading/LoadingScreen";
-import HeroSection from "./components/hero/HeroSection";
+import TripSafariHero from "./components/hero/TripSafariHero";
 import FeaturesSection from "./components/features/FeaturesSection";
 import FeaturedPackages from "./components/packages/FeaturedPackages";
 import ExperienceCategories from "./experiences/ExperienceCategories";
@@ -46,7 +46,7 @@ const Page = () => {
     <div className="pt-16 md:pt-16 pb-20 md:pb-0 min-h-screen bg-white overflow-hidden">
       {/* Main Content */}
       <div className="relative">
-        <HeroSection isMenuOpen={isMenuOpen} />
+        <TripSafariHero isMenuOpen={isMenuOpen} />
         <FeaturedPackages limit={5}/>
         <ExperienceCategories />
         <DestinationsSection limit={5} />

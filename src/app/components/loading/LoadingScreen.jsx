@@ -30,11 +30,11 @@ export default function LoadingScreen({ onComplete }) {
   if (!visible) return null;
 
   return (
-<<<<<<< HEAD
+
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#0F6177]">
-=======
+
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden skyBg">
->>>>>>> 752387d3f42453fed2cc8cadb070ff6f1abc7d64
+
 
       {/* ☁️ Moving Clouds */}
       <div className="cloud cloud1" />
@@ -42,11 +42,11 @@ export default function LoadingScreen({ onComplete }) {
 
       <div className="relative z-10 text-center px-6">
 
-        <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white tracking-wide">
+        <h1 className="text-5xl md:text-6xl font-bold mb-4 text-white tracking-wide reey-font">
           NavSafar
         </h1>
 
-        <p className="text-white/80 mb-10 text-lg">
+        <p className="text-white/80 mb-10 mt-10 text-lg">
           Your Journey Begins Here
         </p>
 
@@ -69,13 +69,12 @@ export default function LoadingScreen({ onComplete }) {
 
         </div>
 
-        <div className="text-white tracking-wider">
-          Preparing Your Journey... {Math.floor(progress)}%
+        <div className="text-gray-200 tracking-wider ">
+          Preparing Your Journey... <span className="reey-font">{Math.floor(progress)}</span>%
         </div>
 
       </div>
-
-      <style jsx>{`
+       <style jsx>{`
 
         /* 🌅 Sky Background */
         .skyBg {
@@ -134,6 +133,7 @@ export default function LoadingScreen({ onComplete }) {
           transform: translate(-50%, -50%) rotate(0deg);
           font-size: 30px;
           animation: floatPlane 2s ease-in-out infinite;
+          font-family: "'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif";
         }
 
         @keyframes floatPlane {
@@ -142,6 +142,8 @@ export default function LoadingScreen({ onComplete }) {
         }
 
       `}</style>
+     
+    </div>
     </div>
   );
 }

@@ -78,7 +78,7 @@ const HeroSection = ({ isMenuOpen }) => {
       </div>
 
       {/* Hero Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-2 text-center">
+      <div className="relative z-10 max-w-7xl px-4 sm:px-6 lg:px-2">
         <div className="space-y-5">
           {/* Main Heading */}
           <h1 
