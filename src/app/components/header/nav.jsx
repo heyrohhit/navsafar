@@ -11,7 +11,7 @@ const Nav = ({ mobile = false, onClose }) => {
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isToursOpen, setIsToursOpen] = useState(false);
 
-  console.log("pathname is", pathname)
+  // console.log("pathname is", pathname)
 
 
   // Group navigation items for better organization
@@ -57,9 +57,7 @@ const Nav = ({ mobile = false, onClose }) => {
           <Link
             key={idx}
             href={item.path}
-            onMouseEnter={() => setHoveredItem(idx)}
-            onMouseLeave={() => setHoveredItem(null)}
-            className={`relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-[0.7vw] whitespace-nowrap ${activeItem === item.path ? "text-black bg-white" : ""
+            className={` relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-[0.8vw] whitespace-nowrap ${activeItem === item.path ? "text-black bg-white" : ""
               }`}
             title={item.description}
             aria-label={`${item.name} - ${item.description}`}
@@ -78,7 +76,6 @@ const Nav = ({ mobile = false, onClose }) => {
         <div className="relative text-white">
           <button
             onMouseEnter={() => setIsServicesOpen(true)}
-            onMouseLeave={() => setIsServicesOpen(false)}
             className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${isServicesOpen ? "text-blue-600 bg-blue-50" : ""
               }`}
           >

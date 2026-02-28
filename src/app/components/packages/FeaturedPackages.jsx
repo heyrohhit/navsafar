@@ -22,7 +22,9 @@ const FeaturedPackages = () => {
       </div>
 
       {/* 👇 Global Layout Use */}
-      <PackageGridLayout packages={displayPackages} btns={[{"label": "View Details", "type": "viewDetails"}, {"label": "Get Query", "type": "getQuery"}]}/>
+
+      <PackageGridLayout packages={displayPackages} btns={[{ "label": "View Details", "type": "viewDetails" }, { "label": "Get Query", "type": "getQuery" }]} />
+
 
       <div className="text-center mt-12">
         <Link

@@ -14,7 +14,6 @@ export const destinations = [
     description: "Experience the breathtaking beauty of Himalayan mountains with snow-capped peaks, adventure sports, and serene valley views.",
     bestTime: "March to June",
     activities: ["Trekking", "Skiing", "Paragliding", "River Rafting"]
-    popular
   },
   {
     id: 2,

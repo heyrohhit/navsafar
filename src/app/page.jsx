@@ -28,7 +28,7 @@ const Page = () => {
     };
 
     window.addEventListener('menuToggle', handleMenuToggle);
-    
+
     return () => {
       window.removeEventListener('menuToggle', handleMenuToggle);
     };
@@ -46,8 +46,9 @@ const Page = () => {
     <div className="pt-16 md:pt-16 pb-20 md:pb-0 min-h-screen bg-white overflow-hidden">
       {/* Main Content */}
       <div className="relative">
+
         <TripSafariHero isMenuOpen={isMenuOpen} />
-        <FeaturedPackages limit={5}/>
+        <FeaturedPackages limit={5} />
         <ExperienceCategories />
         <DestinationsSection limit={5} />
         <FeaturesSection />
