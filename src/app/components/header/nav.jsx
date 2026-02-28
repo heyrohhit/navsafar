@@ -21,22 +21,20 @@ const Nav = ({ mobile = false, onClose }) => {
 
   if (mobile) {
     return (
-      <div className="flex flex-col space-y-1 p-4 bg-white">
+      <div className="flex flex-col space-y-1 p-[5vw] bg-white">
         {navModel.map((item, idx) => (
           <Link
             key={idx}
             href={item.path}
-            
-            className={`block px-4 py-3 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 group ${
-              activeItem === item.path ? "bg-blue-50 text-blue-600 font-semibold" : ""
-            }`}
+
+            className={`block px-4 py-3 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 group ${activeItem === item.path ? "bg-blue-50 text-blue-600 font-semibold" : ""
+              }`}
             title={item.description}
             aria-label={`${item.name} - ${item.description}`}
           >
             <div className="flex items-center gap-3">
-              <div className={`transition-all duration-200 ${
-                activeItem === item.path ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600"
-              }`}>
+              <div className={`transition-all duration-200 ${activeItem === item.path ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600"
+                }`}>
                 {getTravelIcon(item.name)}
               </div>
               <div className="flex-1">
@@ -51,9 +49,9 @@ const Nav = ({ mobile = false, onClose }) => {
   }
 
   return (
-    <nav className="relative" role="navigation" aria-label="Main navigation">
+    <nav className="relative h-full w-full flex justify-center items-center" role="navigation" aria-label="Main navigation">
       {/* Desktop Navigation - Grouped Menu */}
-      <div className="hidden xl:flex items-center space-x-2 text-white">
+      <div className="w-full h-full hidden xl:flex items-center justify-around text-white">
         {/* Main Items */}
         {mainItems.map((item, idx) => (
           <Link
@@ -61,19 +59,17 @@ const Nav = ({ mobile = false, onClose }) => {
             href={item.path}
             onMouseEnter={() => setHoveredItem(idx)}
             onMouseLeave={() => setHoveredItem(null)}
-            className={`relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
-              activeItem === item.path ? "text-black bg-white" : ""
-            }`}
+            className={`relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-[0.7vw] whitespace-nowrap ${activeItem === item.path ? "text-black bg-white" : ""
+              }`}
             title={item.description}
             aria-label={`${item.name} - ${item.description}`}
           >
-            <span className="text-xs leading-tight">{item.name}</span>
-            
+            <span className="text-[0.7vw] leading-tight">{item.name}</span>
+
             {/* Animated underline */}
             <span
-              className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 ${
-                activeItem === item.path ? "w-full" : "w-0"
-              }`}
+              className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 ${activeItem === item.path ? "w-full" : "w-0"
+                }`}
             />
           </Link>
         ))}
@@ -83,19 +79,18 @@ const Nav = ({ mobile = false, onClose }) => {
           <button
             onMouseEnter={() => setIsServicesOpen(true)}
             onMouseLeave={() => setIsServicesOpen(false)}
-            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
-              isServicesOpen ? "text-blue-600 bg-blue-50" : ""
-            }`}
+            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${isServicesOpen ? "text-blue-600 bg-blue-50" : ""
+              }`}
           >
-            <span className="text-xs leading-tight">Services</span>
+            <span className="text-[0.7vw] leading-tight">Services</span>
             <svg className="w-4 h-4 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          
+
           {isServicesOpen && (
-            <div 
-              className="absolute text-white top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
+            <div
+              className="absolute text-white top-full left-0 mt-1 w-[8vw] bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => setIsServicesOpen(false)}
             >
@@ -105,7 +100,7 @@ const Nav = ({ mobile = false, onClose }) => {
                     key={idx}
                     href={item.path}
                     onClick={() => handleItemClick(navModel.indexOf(item), item.path)}
-                    className="block px-4 py-2 text-sm text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                    className="block px-4 py-2 text-[0.7vw] text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   >
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 text-gray-500">
@@ -125,19 +120,18 @@ const Nav = ({ mobile = false, onClose }) => {
           <button
             onMouseEnter={() => setIsToursOpen(true)}
             onMouseLeave={() => setIsToursOpen(false)}
-            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${
-              isToursOpen ? "text-blue-600 bg-blue-50" : ""
-            }`}
+            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${isToursOpen ? "text-blue-600 bg-blue-50" : ""
+              }`}
           >
-            <span className="text-xs leading-tight">More</span>
+            <span className="text-[0.7vw] leading-tight">More</span>
             <svg className="w-4 h-4 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
-          
+
           {isToursOpen && (
-            <div 
-              className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
+            <div
+              className="absolute top-full left-0 mt-1 w-[8vw] bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
               onMouseEnter={() => setIsToursOpen(true)}
               onMouseLeave={() => setIsToursOpen(false)}
             >
@@ -147,10 +141,10 @@ const Nav = ({ mobile = false, onClose }) => {
                     key={idx}
                     href={item.path}
                     onClick={() => handleItemClick(navModel.indexOf(item), item.path)}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
+                    className="block px-4 py-2 text-[0.7vw] text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200"
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 text-gray-500">
+                    <div className="flex items-center gap-2 ">
+                      <div className="w-5 h-5 text-[0.7vw] text-gray-500">
                         {getTravelIcon(item.name)}
                       </div>
                       <span>{item.name}</span>
@@ -171,11 +165,10 @@ const Nav = ({ mobile = false, onClose }) => {
               key={idx}
               href={item.path}
               onClick={() => handleItemClick(idx, item.path)}
-              className={`px-3 py-2 text-xs font-medium rounded-full transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${
-                activeItem === item.path
-                  ? "bg-blue-600 text-white" 
-                  : "bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-600"
-              }`}
+              className={`px-3 py-2 text-xs font-medium rounded-full transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap flex-shrink-0 ${activeItem === item.path
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-600"
+                }`}
             >
               <div className="w-4 h-4 flex-shrink-0">
                 {getTravelIcon(item.name)}

@@ -1,7 +1,7 @@
 export const destinations = [
   {
     id: 1,
-    name: "Manali",
+    title: "Manali",
     tagline: "Valley of Gods",
     gradient: "from-green-500 to-emerald-600",
     price: "₹12,999",
@@ -14,10 +14,11 @@ export const destinations = [
     description: "Experience the breathtaking beauty of Himalayan mountains with snow-capped peaks, adventure sports, and serene valley views.",
     bestTime: "March to June",
     activities: ["Trekking", "Skiing", "Paragliding", "River Rafting"]
+    popular
   },
   {
     id: 2,
-    name: "Goa",
+    title: "Goa",
     tagline: "Beach Paradise",
     gradient: "from-blue-500 to-cyan-600",
     price: "₹15,999",
@@ -33,7 +34,7 @@ export const destinations = [
   },
   {
     id: 3,
-    name: "Kerala",
+    title: "Kerala",
     tagline: "God's Own Country",
     gradient: "from-purple-500 to-pink-600",
     price: "₹18,999",
@@ -49,7 +50,7 @@ export const destinations = [
   },
   {
     id: 4,
-    name: "Dubai",
+    title: "Dubai",
     tagline: "City of Gold",
     gradient: "from-amber-500 to-orange-600",
     price: "₹45,999",
@@ -65,7 +66,7 @@ export const destinations = [
   },
   {
     id: 5,
-    name: "Singapore",
+    title: "Singapore",
     tagline: "Lion City",
     gradient: "from-red-500 to-pink-600",
     price: "₹38,999",
@@ -81,7 +82,7 @@ export const destinations = [
   },
   {
     id: 6,
-    name: "Bali",
+    title: "Bali",
     tagline: "Island of Gods",
     gradient: "from-teal-500 to-green-600",
     price: "₹42,999",
@@ -96,35 +97,35 @@ export const destinations = [
     activities: ["Beach Clubs", "Temple Tours", "Rice Terrace Trek", "Traditional Dance"]
   },
   {
-  id: 7,
-  name: "Maldives",
-  tagline: "Tropical Paradise",
-  gradient: "from-cyan-500 to-blue-600",
-  price: "₹55,999",
-  duration: "5 Days / 4 Nights",
-  rating: "4.9",
-  image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=1000&auto=format&fit=crop&q=60",
-  highlights: ["Overwater Villas", "Crystal Clear Water", "Private Beaches"],
-  discount: "28% OFF",
-  packages: 10,
-  description: "Experience luxury in overwater villas surrounded by crystal-clear turquoise waters and pristine white sand beaches.",
-  bestTime: "November to April",
-  activities: ["Snorkeling", "Scuba Diving", "Island Hopping", "Sunset Cruise"]
-},
-{
-  id: 8,
-  name: "Rajasthan",
-  tagline: "Land of Royals",
-  gradient: "from-yellow-500 to-orange-600",
-  price: "₹22,999",
-  duration: "6 Days / 5 Nights",
-  rating: "4.8",
-  image: "https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1000&auto=format&fit=crop&q=60",
-  highlights: ["Royal Palaces", "Desert Safari", "Heritage Hotels"],
-  discount: "24% OFF",
-  packages: 20,
-  description: "Explore majestic forts, royal palaces, desert landscapes, and experience the rich cultural heritage of Rajasthan.",
-  bestTime: "October to March",
-  activities: ["Camel Safari", "Palace Tour", "Cultural Show", "Desert Camping"]
-}
+    id: 7,
+    title: "Maldives",
+    tagline: "Tropical Paradise",
+    gradient: "from-cyan-500 to-blue-600",
+    price: "₹55,999",
+    duration: "5 Days / 4 Nights",
+    rating: "4.9",
+    image: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=1000&auto=format&fit=crop&q=60",
+    highlights: ["Overwater Villas", "Crystal Clear Water", "Private Beaches"],
+    discount: "28% OFF",
+    packages: 10,
+    description: "Experience luxury in overwater villas surrounded by crystal-clear turquoise waters and pristine white sand beaches.",
+    bestTime: "November to April",
+    activities: ["Snorkeling", "Scuba Diving", "Island Hopping", "Sunset Cruise"]
+  },
+  {
+    id: 8,
+    title: "Rajasthan",
+    tagline: "Land of Royals",
+    gradient: "from-yellow-500 to-orange-600",
+    price: "₹22,999",
+    duration: "6 Days / 5 Nights",
+    rating: "4.8",
+    image: "https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1000&auto=format&fit=crop&q=60",
+    highlights: ["Royal Palaces", "Desert Safari", "Heritage Hotels"],
+    discount: "24% OFF",
+    packages: 20,
+    description: "Explore majestic forts, royal palaces, desert landscapes, and experience the rich cultural heritage of Rajasthan.",
+    bestTime: "October to March",
+    activities: ["Camel Safari", "Palace Tour", "Cultural Show", "Desert Camping"]
+  }
 ]

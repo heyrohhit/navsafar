@@ -27,7 +27,7 @@ const DestinationsSection = ({ limit }) => {
   const handleQueryClick = (destination) => {
     const message = `
 *Destination:* ${destination.name}
-*Tagline:* ${destination.tagline}
+*Tagline:* ${destination.tagline} 
 *Price:* ${destination.price}
 *Duration:* ${destination.duration}
 *Rating:* ${destination.rating}
@@ -62,7 +62,7 @@ const DestinationsSection = ({ limit }) => {
         <PackageGridLayout
           packages={displayedDestinations}
           onExplore={handleExploreDestination}
-          btns={[{"label": "View Details", "type": "viewDetails"}, {"label": "Get Query", "type": "getQuery"}]}
+          btns={[{ "label": "View Details", "type": "viewDetails" }, { "label": "Get Query", "type": "getQuery" }]}
         />
 
         {/* View All Button → Redirect */}

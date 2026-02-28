@@ -16,6 +16,8 @@ const geistMono = Geist_Mono({
 
 // Professional SEO Metadata
 export const metadata = {
+  name:"viewport",
+  content:"width=device-width, initial-scale=1, maxmium-scale=1, user-scalable=no",
   title: "Navsafar | Travel, Tours & Services",
   description: "Explore the best travel packages, domestic & international tours, hotels, flights, and more with Your Company Name. Plan your perfect trip today!",
   keywords: [
@@ -60,6 +62,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >

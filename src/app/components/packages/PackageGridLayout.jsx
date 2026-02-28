@@ -38,9 +38,8 @@ const PackageGridLayout = ({ packages, btns = [] }) => {
           {packages.map((pkg, index) => (
             <div
               key={pkg.id}
-              className={`w-full break-inside-avoid mb-6 group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform overflow-hidden ${
-                hoveredCard === pkg.id ? "-translate-y-2" : ""
-              }`}
+              className={`w-full break-inside-avoid mb-6 group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform overflow-hidden ${hoveredCard === pkg.id ? "-translate-y-2" : ""
+                }`}
               style={{ transitionDelay: `${index * 100}ms` }}
               onMouseEnter={() => setHoveredCard(pkg.id)}
               onMouseLeave={() => setHoveredCard(null)}
@@ -62,7 +61,14 @@ const PackageGridLayout = ({ packages, btns = [] }) => {
                 {pkg.discount && (
                   <div className="absolute top-3 right-3">
                     <span className="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
-                      {pkg.discount}% OFF
+                      {pkg.discount}
+                    </span>
+                  </div>
+                )}
+                {pkg.popular && (
+                  <div className="absolute bottom-3 right-3">
+                    <span className="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                      Most Popular
                     </span>
                   </div>
                 )}
@@ -73,24 +79,26 @@ const PackageGridLayout = ({ packages, btns = [] }) => {
                 <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-sky-600 transition-colors duration-300">
                   {pkg.title}
                 </h3>
+                <span className="text-blue-400">
+                  {pkg.tagline || pkg.excerpt}
+                </span>
                 <p className="text-sm text-gray-600 mb-4">
                   {pkg.description || pkg.excerpt}
                 </p>
                 <div className="space-y-2">
                   {btns.length > 0
                     ? btns.map((btn, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => handleBtnClick(btn, pkg)}
-                          className={`w-full px-4 py-2 rounded-lg transition ${
-                            btn.type === "getQuery"
-                              ? "border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
-                              : "bg-gradient-to-r from-sky-500 to-blue-500 text-white hover:scale-105"
+                      <button
+                        key={idx}
+                        onClick={() => handleBtnClick(btn, pkg)}
+                        className={`w-full px-4 py-2 rounded-lg transition ${btn.type === "getQuery"
+                          ? "border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white"
+                          : "bg-gradient-to-r from-sky-500 to-blue-500 text-white hover:scale-105"
                           }`}
-                        >
-                          {btn.label}
-                        </button>
-                      ))
+                      >
+                        {btn.label}
+                      </button>
+                    ))
                     : (
                       <button
                         onClick={() => setSelectedItem(pkg)}
