@@ -39,17 +39,17 @@ const DURATION_OPTIONS = [
 const ModernFilterSection = ({
   selectedCategory,
   setSelectedCategory,
-  selectedPriceRange,
-  setPriceRange,
-  selectedDuration,
+  // selectedPriceRange,
+  // setPriceRange,
+  // selectedDuration,
   setDuration,
   filteredCount,
   onResetFilters,
 }) => {
   const activeFilters = [
     selectedCategory !== "all" && { key: "category", label: CATEGORIES.find(c => c.value === selectedCategory)?.label, icon: CATEGORIES.find(c => c.value === selectedCategory)?.icon, clear: () => setSelectedCategory("all") },
-    selectedPriceRange !== "all" && { key: "price", label: PRICE_OPTIONS.find(p => p.value === selectedPriceRange)?.label, icon: "💰", clear: () => setPriceRange("all") },
-    selectedDuration !== "all" && { key: "duration", label: DURATION_OPTIONS.find(d => d.value === selectedDuration)?.label, icon: "🗓", clear: () => setDuration("all") },
+    // selectedPriceRange !== "all" && { key: "price", label: PRICE_OPTIONS.find(p => p.value === selectedPriceRange)?.label, icon: "💰", clear: () => setPriceRange("all") },
+    // selectedDuration !== "all" && { key: "duration", label: DURATION_OPTIONS.find(d => d.value === selectedDuration)?.label, icon: "🗓", clear: () => setDuration("all") },
   ].filter(Boolean);
 
   return (
@@ -299,9 +299,9 @@ const ModernFilterSection = ({
         <div className="mf-divider" />
 
         {/* ── Row 2: Price + Duration side by side ── */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+        {/* <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}> */}
           {/* Price */}
-          <div>
+          {/*<div>
             <p className="mf-row-label">💰 Budget Range</p>
             <div className="mf-seg">
               {PRICE_OPTIONS.map((p) => (
@@ -314,10 +314,10 @@ const ModernFilterSection = ({
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* Duration */}
-          <div>
+          {/* <div>
             <p className="mf-row-label">🗓 Trip Duration</p>
             <div className="mf-seg">
               {DURATION_OPTIONS.map((d) => (
@@ -330,8 +330,8 @@ const ModernFilterSection = ({
                 </button>
               ))}
             </div>
-          </div>
-        </div>
+          </div> 
+        </div> */}
 
         {/* ── Row 3: @mobile stack ── */}
         <style>{`

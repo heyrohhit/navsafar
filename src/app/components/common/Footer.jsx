@@ -1,22 +1,22 @@
 "use client"
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Youtube, 
-  Linkedin, 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Youtube,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
   Send,
-  Globe,
   Heart,
   ArrowUp,
   Shield,
   Award,
-  Users
+  Users,
+  CheckCircle
 } from "lucide-react"
 
 const Footer = () => {
@@ -61,74 +61,71 @@ const Footer = () => {
     legal: [
       { name: "Terms of Service", href: "/terms" },
       { name: "Privacy Policy", href: "/privacy" },
-      // { name: "Cookie Policy", href: "/cookies" },
       { name: "Refund Policy", href: "/refund" },
       { name: "Travel Insurance", href: "/insurance" }
     ]
   }
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Youtube, href: "#", label: "Youtube" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" }
+    { icon: Facebook, href: "#", label: "Facebook", color: "hover:bg-blue-600" },
+    { icon: Twitter, href: "#", label: "Twitter", color: "hover:bg-sky-500" },
+    { icon: Instagram, href: "#", label: "Instagram", color: "hover:bg-pink-600" },
+    { icon: Youtube, href: "#", label: "Youtube", color: "hover:bg-red-600" },
+    { icon: Linkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" }
   ]
 
-  const paymentMethods = [
-    "Visa", "Mastercard", "American Express", "PayPal", "UPI", "NetBanking"
-  ]
+  const paymentMethods = ["Visa", "Mastercard", "American Express", "PayPal", "UPI", "NetBanking"]
 
   const trustBadges = [
-    { icon: Shield, text: "Secure Booking" },
-    { icon: Award, text: "Award Winning" },
-    { icon: Users, text: "50K+ Happy Customers" }
+    { icon: Shield, text: "100% Secure Booking", sub: "SSL Encrypted" },
+    { icon: Award, text: "Award Winning", sub: "Best Travel Agency 2024" },
+    { icon: Users, text: "50K+ Happy Customers", sub: "And counting..." }
   ]
 
   return (
-    <footer className="bg-[#fff] text-white overflow-x-hidden">
-      {/* Newsletter Section */}
-      <section className="border-b border-gray-800">
-        <div className="container mx-auto px-4 py-16">
+    <footer className="overflow-x-hidden font-sans">
+
+      {/* ── NEWSLETTER STRIP ── */}
+      <section className="bg-gradient-to-r from-[#0d5567] via-[#0f6477] to-[#0d7a8a] relative overflow-hidden">
+        {/* decorative circles */}
+        <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-10 right-20 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 max-w-5xl mx-auto px-6 py-16 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="max-w-4xl mx-auto text-center"
           >
-            <h3 className="text-2xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-400 to-blue-500 bg-clip-text text-transparent">
-                Stay Updated with Travel Deals
-              </span>
+            <span className="inline-block bg-white/15 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5 border border-white/20">
+              ✉️ Newsletter
+            </span>
+            <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-3 leading-tight">
+              Get Exclusive Travel Deals
             </h3>
-            <p className="text-gray-400 mb-8">
-              Subscribe to our newsletter and get exclusive offers and travel tips delivered to your inbox
+            <p className="text-white/70 mb-10 max-w-lg mx-auto text-base">
+              Subscribe and receive handpicked offers, travel tips, and destination guides straight to your inbox.
             </p>
-            
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto p-5">
+
+            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
+                placeholder="Your email address"
                 required
-                className="flex-1 px-6 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 focus:bg-white/20 transition-all"
+                className="flex-1 px-5 py-3.5 rounded-xl bg-white/10 border border-white/25 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/20 transition-all text-sm"
               />
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-[#0F6177] text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+                className="flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-gray-900 font-bold px-7 py-3.5 rounded-xl shadow-lg shadow-amber-500/30 transition-all duration-300 text-sm whitespace-nowrap"
               >
                 {isSubscribed ? (
-                  <>
-                    <span>Subscribed!</span>
-                  </>
+                  <><CheckCircle className="w-4 h-4" /><span>Subscribed!</span></>
                 ) : (
-                  <>
-                    <Send className="w-5 h-5 " />
-                    <span>Subscribe</span>
-                  </>
+                  <><Send className="w-4 h-4" /><span>Subscribe</span></>
                 )}
               </motion.button>
             </form>
@@ -136,159 +133,178 @@ const Footer = () => {
         </div>
       </section>
 
-      {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-16 bg-[#0F6177]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
-          {/* Brand Section */}
+      {/* ── MAIN FOOTER ── */}
+      <div className="bg-[#0f6477]">
+        <div className="max-w-7xl mx-auto px-6 pt-16 pb-10">
+
+          {/* top grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 pb-12 border-b border-white/10">
+
+            {/* Brand */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="lg:col-span-2"
+            >
+              <div className="mb-5">
+                <img src="/assets/logo.png" alt="Navsafar" className="h-12 object-contain" />
+              </div>
+
+              <p className="text-white/60 mb-7 leading-relaxed text-sm">
+                Your trusted partner for unforgettable travel experiences. We curate the world's most amazing destinations and create memories that last a lifetime.
+              </p>
+
+              {/* Contact */}
+              <ul className="space-y-3 mb-8">
+                {[
+                  { icon: Phone, text: "+91 8882129640" },
+                  { icon: Mail, text: "info@navsafartravels.com" },
+                  { icon: MapPin, text: "WZ-447, First Floor, Left Side\nNangal Raya, Delhi 110046" }
+                ].map(({ icon: Icon, text }, i) => (
+                  <li key={i} className="flex items-start gap-3 text-white/60 text-sm">
+                    <span className="mt-0.5 w-8 h-8 rounded-lg bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-4 h-4 text-amber-400" />
+                    </span>
+                    <span className="whitespace-pre-line">{text}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Social */}
+              <div className="flex gap-2 flex-wrap">
+                {socialLinks.map((s) => (
+                  <motion.a
+                    key={s.label}
+                    href={s.href}
+                    aria-label={s.label}
+                    whileHover={{ y: -3, scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className={`w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white/70 hover:text-white ${s.color} hover:border-transparent transition-all duration-300`}
+                  >
+                    <s.icon className="w-4 h-4" />
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Links — Company, Explore, Support */}
+            {["company", "explore", "support"].map((cat, idx) => (
+              <motion.div
+                key={cat}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <h4 className="text-white font-bold text-sm uppercase tracking-widest mb-5 flex items-center gap-2">
+                  <span className="w-4 h-0.5 rounded-full bg-amber-400 inline-block" />
+                  {cat === "company" ? "Company" : cat === "explore" ? "Explore" : "Support"}
+                </h4>
+                <ul className="space-y-3">
+                  {footerLinks[cat].map((link) => (
+                    <li key={link.name}>
+                      <motion.a
+                        href={link.href}
+                        whileHover={{ x: 4 }}
+                        className="text-white/55 hover:text-amber-400 transition-colors duration-300 text-sm inline-flex items-center gap-1.5 group"
+                      >
+                        <span className="w-1 h-1 rounded-full bg-amber-400/0 group-hover:bg-amber-400 transition-all duration-300 inline-block flex-shrink-0" />
+                        {link.name}
+                      </motion.a>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Trust Badges */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-2"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 py-10 border-b border-white/10"
           >
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-50 h-12 to-orange-500 rounded-full flex items-center justify-center">
-                 <img src="/assets/logo.png" alt="/assets/logo.png" className="object-fill"/>
-              </div>
-              <div>
-                {/* <h4 className="text-2xl font-bold">Navsafar</h4>
-                <p className="text-amber-400 text-sm">Premium Travel Solutions</p> */}
-              </div>
-            </div>
-            
-            <p className="text-gray-400 mb-6 leading-relaxed">
-              Your trusted partner for unforgettable travel experiences. We curate the world's most amazing destinations and create memories that last a lifetime.
-            </p>
+            {trustBadges.map((badge, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ scale: 1.02 }}
+                className="flex items-center gap-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/30 rounded-2xl p-4 transition-all duration-300"
+              >
+                <div className="w-12 h-12 rounded-xl bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                  <badge.icon className="w-6 h-6 text-amber-400" />
+                </div>
+                <div>
+                  <div className="text-white font-semibold text-sm">{badge.text}</div>
+                  <div className="text-white/45 text-xs mt-0.5">{badge.sub}</div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
 
-            {/* Contact Info */}
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center space-x-3 text-gray-400">
-                <Phone className="w-5 h-5 text-amber-400" />
-                <span>+91 8882129640</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-400">
-                <Mail className="w-5 h-5 text-amber-400" />
-                <span>info@navsafartravels.com</span>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-400">
-                <MapPin className="w-5 h-5 text-amber-400" />
-                <span>WZ-447, FIRST FLOOR,<br/>LEFT SIDE NANGAL RAYA DELHI <br/>110046</span>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className="flex space-x-3">
-              {socialLinks.map((social, index) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  whileHover={{ scale: 1.1, y: -3 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 bg-white/10 border border-white/20 rounded-lg flex items-center justify-center hover:bg-amber-500/20 hover:border-amber-400 transition-all"
+          {/* Payment Methods */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="py-8 border-b border-white/10"
+          >
+            <h4 className="text-white/50 text-xs uppercase tracking-widest font-bold mb-4">We Accept</h4>
+            <div className="flex flex-wrap gap-2">
+              {paymentMethods.map((m) => (
+                <span
+                  key={m}
+                  className="px-4 py-1.5 bg-white/8 border border-white/15 rounded-lg text-white/65 text-xs font-medium hover:bg-white/15 hover:text-white hover:border-amber-400/40 transition-all duration-200 cursor-default"
                 >
-                  <social.icon className="w-5 h-5" />
-                </motion.a>
+                  {m}
+                </span>
               ))}
             </div>
           </motion.div>
 
-          {/* Footer Links */}
-          {Object.entries(footerLinks).map(([category, links], index) => (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <h4 className="text-lg font-semibold mb-6 capitalize">
-                {category === "company" ? "Company" : category === "explore" ? "Explore" : category === "support" ? "Support" : ""}
-              </h4>
-              <ul className={`${category === "legal" ? "w-screen flex-wrap h-aut flex justify-around items-center pr-5 " : ""}`}>
-                {links.map((link) => (
-                  <li key={link.name} className={`space-y-3 ${category === "legal" ? "w-[18%] h-auto flex justify-center items-center" : ""}`}>
-                    <motion.a
-                      href={link.href}
-                      whileHover={{ x: 5 }}
-                      className="text-gray-400 hover:text-amber-400 transition-all duration-300 inline-block"
-                    >
-                      {link.name}
-                    </motion.a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Trust Badges */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 pt-8 border-t border-gray-800"
-        >
-          {trustBadges.map((badge, index) => (
-            <motion.div
-              key={badge.text}
-              whileHover={{ scale: 1.02 }}
-              className="flex items-center space-x-3 bg-white/5 rounded-lg p-4 border border-white/10"
-            >
-              <badge.icon className="w-8 h-8 text-amber-400" />
-              <span className="font-medium">{badge.text}</span>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Payment Methods */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 pt-8 border-t border-gray-800"
-        >
-          <h4 className="text-lg font-semibold mb-4">We Accept</h4>
-          <div className="flex flex-wrap gap-3">
-            {paymentMethods.map((method) => (
-              <div
-                key={method}
-                className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-sm"
-              >
-                {method}
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Bottom Footer */}
-      <div className="border-t border-gray-800 bg-[#0F6177]">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-            <div className="text-gray-400 text-sm">
-              © {new Date().getFullYear()} Navsafar. All rights reserved.
+          {/* Legal Links */}
+          <div className="pt-6 pb-2 border-b border-white/10">
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
+              {footerLinks.legal.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-white/40 hover:text-amber-400 text-xs transition-colors duration-200"
+                >
+                  {link.name}
+                </a>
+              ))}
             </div>
-            
-            <div className="flex items-center space-x-2 text-gray-400 text-sm">
-              <span>Made with</span>
-              <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-              <span>in India</span>
-            </div>
-
-            {/* Scroll to Top */}
-            <motion.button
-              onClick={scrollToTop}
-              whileHover={{ scale: 1.1, y: -3 }}
-              whileTap={{ scale: 0.9 }}
-              className="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg hover:shadow-amber-500/30 transition-all"
-            >
-              <ArrowUp className="w-5 h-5 text-white" />
-            </motion.button>
           </div>
         </div>
       </div>
+
+      {/* ── BOTTOM BAR ── */}
+      <div className="bg-[#0d5567]">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-white/45 text-sm">
+            © {new Date().getFullYear()} <span className="text-white/70 font-semibold">Navsafar</span>. All rights reserved.
+          </p>
+
+          <div className="flex items-center gap-1.5 text-white/45 text-sm">
+            <span>Made with</span>
+            <Heart className="w-4 h-4 text-red-400 fill-red-400" />
+            <span>in India</span>
+          </div>
+
+          <motion.button
+            onClick={scrollToTop}
+            whileHover={{ scale: 1.1, y: -2 }}
+            whileTap={{ scale: 0.9 }}
+            className="w-10 h-10 bg-amber-400 hover:bg-amber-300 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/30 transition-all duration-300"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-5 h-5 text-gray-900" />
+          </motion.button>
+        </div>
+      </div>
+
     </footer>
   )
 }
