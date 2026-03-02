@@ -41,13 +41,13 @@ export default function LoadingScreen({ onComplete }) {
     >
       {/* === LAYERED SKY BACKGROUND === */}
       <div className="absolute inset-0" style={{
-        background: "linear-gradient(180deg, #0a1628 0%, #0d2444 15%, #1a3a6b 35%, #c0622a 60%, #e8843a 75%, #f5c842 90%, #fde68a 100%)"
+        background: "#0f6477"
       }} />
 
       {/* Sun Glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{
         width: "600px", height: "300px",
-        background: "radial-gradient(ellipse at center bottom, rgba(255,200,50,0.5) 0%, rgba(255,130,30,0.2) 40%, transparent 70%)",
+        background: "#0f6476",
         filter: "blur(20px)"
       }} />
 
@@ -55,31 +55,31 @@ export default function LoadingScreen({ onComplete }) {
       <div className="absolute" style={{
         bottom: "28%", left: "50%", transform: "translateX(-50%)",
         width: "80px", height: "80px",
-        background: "radial-gradient(circle, #fff7a0 0%, #f5c842 40%, #e8843a 80%)",
+        background: "#0f6475",
         borderRadius: "50%",
         boxShadow: "0 0 60px 30px rgba(245,200,66,0.4), 0 0 120px 60px rgba(232,132,58,0.2)",
         animation: "pulse 3s ease-in-out infinite"
       }} />
 
       {/* === MOUNTAIN SILHOUETTES === */}
-      <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 250" preserveAspectRatio="none" style={{ height: "250px" }}>
+      {/* <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 250" preserveAspectRatio="none" style={{ height: "250px" }}> */}
         {/* Back mountains */}
-        <polygon points="0,250 200,80 350,160 500,60 650,150 800,50 950,140 1100,70 1250,130 1440,90 1440,250" fill="#0d2444" opacity="0.6" />
+        {/* <polygon points="0,250 200,80 350,160 500,60 650,150 800,50 950,140 1100,70 1250,130 1440,90 1440,250" fill="#0d2444" opacity="0.6" /> */}
         {/* Front mountains */}
-        <polygon points="0,250 150,140 280,200 420,110 580,190 720,100 880,180 1020,120 1200,170 1350,120 1440,150 1440,250" fill="#0a1628" opacity="0.85" />
+        {/* <polygon points="0,250 150,140 280,200 420,110 580,190 720,100 880,180 1020,120 1200,170 1350,120 1440,150 1440,250" fill="#0a1628" opacity="0.85" /> */}
         {/* Ground */}
-        <rect x="0" y="210" width="1440" height="40" fill="#060e1a" />
+        {/* <rect x="0" y="210" width="1440" height="40" fill="#060e1a" /> */}
         {/* Trees silhouette */}
-        {[50, 130, 210, 300, 400, 500, 620, 750, 850, 960, 1080, 1180, 1280, 1380].map((x, i) => (
+        {/* {[50, 130, 210, 300, 400, 500, 620, 750, 850, 960, 1080, 1180, 1280, 1380].map((x, i) => (
           <g key={i}>
             <polygon points={`${x},210 ${x + 10},170 ${x + 20},210`} fill="#040b14" opacity="0.9" />
             <polygon points={`${x + 2},185 ${x + 10},155 ${x + 18},185`} fill="#040b14" opacity="0.9" />
           </g>
         ))}
-      </svg>
+      </svg> */}
 
       {/* === ANIMATED CLOUDS === */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 overflow-x-hidden pointer-events-none">
         {/* Cloud layer 1 */}
         <div style={{
           position: "absolute", top: "18%", left: "-300px",
@@ -165,25 +165,25 @@ export default function LoadingScreen({ onComplete }) {
         </div>
 
         {/* Brand name */}
-        <div className="relative mb-2">
+        <div className="relative z-100 mb-5">
           <h1
             className="reey-font"
             style={{
               fontSize: "clamp(52px, 12vw, 96px)",
               fontWeight: "700",
-              letterSpacing: "0.06em",
-              lineHeight: 1,
-              background: "linear-gradient(135deg, #fde68a 0%, #f5c842 30%, #e8843a 70%, #fff7a0 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
+              // height:"max-content",
+              // background: "linear-gradient(135deg, #fde68a 0%, #f5c842 30%, #e8843a 70%, #fff7a0 100%)",
+              // WebkitBackgroundClip: "text",
+              // WebkitTextFillColor: "transparent",
+              // backgroundClip: "text",
+              
               filter: "drop-shadow(0 2px 20px rgba(245,200,66,0.4))",
               animation: "titleReveal 1s ease forwards"
             }}>
             NavSafar
           </h1>
           {/* Decorative line under name */}
-          <div className="flex items-center gap-3 mt-1 justify-center">
+          <div className="flex items-center gap-3 mt-5 justify-center">
             <div style={{ flex: 1, maxWidth: "80px", height: "1px", background: "linear-gradient(to right, transparent, rgba(245,200,66,0.6))" }} />
             <span style={{ color: "rgba(245,200,66,0.8)", fontSize: "14px" }}>✦</span>
             <div style={{ flex: 1, maxWidth: "80px", height: "1px", background: "linear-gradient(to left, transparent, rgba(245,200,66,0.6))" }} />
