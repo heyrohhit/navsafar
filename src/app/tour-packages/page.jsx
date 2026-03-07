@@ -1,224 +1,260 @@
 "use client";
-import { useState, useEffect } from "react";
-import ModernFilterSection from "../components/packages/ModernFilterSection";
-import { getAllPackages, getPackagesByCategory } from "../components/packages/PackageData";
+import { useState, useEffect, useMemo } from "react";
+import { packages } from "../models/objAll/packages";
+import ModernFilterSection, { applyFilters } from "../components/packages/ModernFilterSection";
 import PackageGridLayout from "../components/packages/PackageGridLayout";
+import { Link } from "lucide-react";
 
 const TourPackages = () => {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [priceRange, setPriceRange] = useState("all");
-  const [duration, setDuration] = useState("all");
-  const [packages, setPackages] = useState([]);
+  const [isLoaded, setIsLoaded]                     = useState(false);
 
+  // ── Filter state (lifted here, passed down to ModernFilterSection) ──
+  const [selectedCategory,    setSelectedCategory]    = useState("all");
+  const [selectedTourismType, setSelectedTourismType] = useState("all");
+  const [sortBy,              setSortBy]              = useState("default");
   useEffect(() => {
-    setTimeout(() => setIsLoaded(true), 400);
-    setPackages(getAllPackages());
+    const t = setTimeout(() => setIsLoaded(true), 400);
+    return () => clearTimeout(t);
   }, []);
 
-  const filterPackages = () => {
-    let filtered = getAllPackages();
-
-    if (selectedCategory !== "all") {
-      filtered = getPackagesByCategory(selectedCategory);
-    }
-
-    if (priceRange !== "all") {
-      filtered = filtered.filter(pkg => {
-        const price = parseInt(pkg.price.replace(/[₹,]/g, ''));
-        switch (priceRange) {
-          case "budget":
-            return price < 20000;
-          case "moderate":
-            return price >= 20000 && price < 50000;
-          case "premium":
-            return price >= 50000 && price < 100000;
-          case "luxury":
-            return price >= 100000;
-          default:
-            return true;
-        }
-      });
-    }
-
-    if (duration !== "all") {
-      filtered = filtered.filter(pkg => {
-        const days = parseInt(pkg.duration.split(' ')[0]);
-        switch (duration) {
-          case "short":
-            return days <= 3;
-          case "medium":
-            return days >= 4 && days <= 6;
-          case "long":
-            return days >= 7;
-          default:
-            return true;
-        }
-      });
-    }
-
-    return filtered;
-  };
-
-  const filteredPackages = filterPackages();
+  // ── Derived filtered list (recalculates whenever filters change) ──
+  const filteredPackages = useMemo(
+    () =>
+      applyFilters(packages, {
+        category:    selectedCategory,
+        tourismType: selectedTourismType,
+        sortBy,
+      }),
+    [selectedCategory, selectedTourismType, sortBy]
+  );
 
   const handleResetFilters = () => {
     setSelectedCategory("all");
-    setPriceRange("all");
-    setDuration("all");
-  };
-
-  const handleViewDetails = (pkg) => {
-    console.log("View details for:", pkg);
-  };
-
-  const handleGetQuery = (pkg) => {
-    const whatsappNumber = "+918700750589";
-    const message = `Package Query:\n\nPackage: ${pkg.title}\nLocation: ${pkg.location}\nDuration: ${pkg.duration}\nPrice: ${pkg.price}\nOriginal Price: ${pkg.originalPrice}\nRating: ${pkg.rating}\n\nPlease provide more details about this package!`;
-    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^\d]/g, '')}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    setSelectedTourismType("all");
+    setSortBy("default");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Hero Section */}
+    <div
+      className="min-h-screen bg-[#fff]"
+    >
+      {/* ── Hero Section ── */}
       <div className="relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500 rounded-full filter blur-3xl"></div>
+        {/* Ambient background blobs */}
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <div
+            className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl"
+            style={{ background: "rgba(56,189,248,0.07)" }}
+          />
+          <div
+            className="absolute top-1/2 -right-24 w-80 h-80 rounded-full blur-3xl"
+            style={{ background: "rgba(139,92,246,0.07)" }}
+          />
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center">
+
             {/* Badge */}
-            <div 
-              className={`inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 mb-8 transition-all duration-1000 ${
-                isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-              }`}
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 transition-all duration-700"
+              style={{
+                background:   "rgba(14,165,233,0.08)",
+                borderColor:  "rgba(14,165,233,0.25)",
+                opacity:       isLoaded ? 1 : 0,
+                transform:     isLoaded ? "translateY(0)" : "translateY(16px)",
+              }}
             >
-              <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-              <span className="text-blue-700 text-sm font-medium">✈️ Premium Travel Packages</span>
+              <span
+                className="w-2 h-2 rounded-full animate-pulse"
+                style={{ background: "#38bdf8" }}
+              />
+              <span style={{ color: "#7dd3fc", fontSize: "0.85rem", fontWeight: 600 }}>
+                ✈️ Premium Travel Packages
+              </span>
             </div>
-            
-            {/* Main Heading */}
-            <h1 
-              className={`text-5xl md:text-7xl font-bold text-gray-900 mb-6 transition-all duration-1000 ${
-                isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-              }`}
-              style={{ transitionDelay: '100ms' }}
+
+            {/* Heading */}
+            <h1
+              className="text-5xl md:text-7xl font-black text-black mb-6 leading-tight transition-all duration-700"
+              style={{
+                transitionDelay: "100ms",
+                opacity:   isLoaded ? 1 : 0,
+                transform: isLoaded ? "translateY(0)" : "translateY(16px)",
+              }}
             >
               Discover Your
-              <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <span
+                className="block"
+                style={{
+                  background: "linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #f472b6 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
                 Dream Destination
               </span>
             </h1>
-            
+
             {/* Subheading */}
-            <p 
-              className={`text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed transition-all duration-1000 ${
-                isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-              }`}
-              style={{ transitionDelay: '200ms' }}
+            <p
+              className="text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed transition-all duration-700"
+              style={{
+                transitionDelay: "200ms",
+                opacity:   isLoaded ? 1 : 0,
+                transform: isLoaded ? "translateY(0)" : "translateY(16px)",
+              }}
             >
-              Explore handpicked travel experiences with exclusive deals and unforgettable memories
+              Handpicked travel experiences across 50 destinations — price customised
+              to your budget after a quick conversation.
             </p>
 
             {/* Stats */}
-            <div 
-              className={`flex flex-wrap justify-center gap-8 mt-12 transition-all duration-1000 ${
-                isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-              }`}
-              style={{ transitionDelay: '300ms' }}
+            <div
+              className="flex flex-wrap justify-center gap-10 mt-12 transition-all duration-700"
+              style={{
+                transitionDelay: "300ms",
+                opacity:   isLoaded ? 1 : 0,
+                transform: isLoaded ? "translateY(0)" : "translateY(16px)",
+              }}
             >
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600">20+</div>
-                <div className="text-gray-600">Premium Packages</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">5</div>
-                <div className="text-gray-600">Travel Categories</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-pink-600">50+</div>
-                <div className="text-gray-600">Destinations</div>
-              </div>
+              {[
+                { num: "50+",  label: "Destinations",       color: "#38bdf8" },
+                { num: "5",    label: "Travel Categories",   color: "#818cf8" },
+                { num: "100%", label: "Custom Pricing",      color: "#f472b6" },
+              ].map((s) => (
+                <div key={s.label} className="text-center">
+                  <div className="text-3xl font-black" style={{ color: s.color }}>{s.num}</div>
+                  <div className="text-slate-500 text-sm mt-1">{s.label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Modern Filter Section */}
-        <div 
-          className={`bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 mb-12 transition-all duration-1000 ${
-            isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-          }`}
-          style={{ transitionDelay: '400ms' }}
+      {/* ── Main Content ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+
+        {/* Filter Section */}
+        <div
+          className="mb-10 transition-all duration-700"
+          style={{
+            transitionDelay: "400ms",
+            opacity:   isLoaded ? 1 : 0,
+            transform: isLoaded ? "translateY(0)" : "translateY(16px)",
+          }}
         >
           <ModernFilterSection
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
-            // selectedPriceRange={priceRange}
-            // setPriceRange={setPriceRange}
-            // selectedDuration={duration}
-            // setDuration={setDuration}
+            selectedTourismType={selectedTourismType}
+            setSelectedTourismType={setSelectedTourismType}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
             filteredCount={filteredPackages.length}
             onResetFilters={handleResetFilters}
           />
         </div>
 
-        {/* Results Header */}
-       
+        {/* Empty State */}
+        {filteredPackages.length === 0 && (
+          <div className="text-center py-24">
+            <p className="text-6xl mb-4">🗺️</p>
+            <h3 className="text-white text-xl font-bold mb-2">
+              No packages found
+            </h3>
+            <p className="text-slate-500 text-sm mb-6">
+              Try changing the filters to explore more destinations.
+            </p>
+            <button
+              onClick={handleResetFilters}
+              className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105"
+              style={{ background: "linear-gradient(135deg, #0ea5e9, #06b6d4)" }}
+            >
+              Clear All Filters
+            </button>
+          </div>
+        )}
 
         {/* Package Grid */}
-        <PackageGridLayout
-          packages={filteredPackages}
-          onViewDetails={handleViewDetails}
-          onGetQuery={handleGetQuery}
-          isLoaded={isLoaded}
-          selectedCategory={selectedCategory}
-        />
-
-        {/* CTA Section */}
         {filteredPackages.length > 0 && (
-          <div 
-            className={`mt-16 text-center transition-all duration-1000 ${
-              isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-            }`}
-            style={{ transitionDelay: '600ms' }}
+          <PackageGridLayout
+            packages={filteredPackages}
+            btns={[
+              { label: "View Details",  type: "viewDetails" },
+              { label: "📲 Get Query", type: "getQuery"     },
+            ]}
+          />
+        )}
+
+        {/* CTA Banner */}
+        {filteredPackages.length > 0 && (
+          <div
+            className="mt-16 rounded-3xl p-12 text-center transition-all duration-700"
+            style={{
+              background:    "linear-gradient(135deg, rgba(14,165,233,0.15), rgba(129,140,248,0.15))",
+              border:        "1px solid rgba(14,165,233,0.2)",
+              transitionDelay: "600ms",
+              opacity:   isLoaded ? 1 : 0,
+              transform: isLoaded ? "translateY(0)" : "translateY(16px)",
+            }}
           >
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-white">
-              <h3 className="text-3xl font-bold mb-4">Can't find what you're looking for?</h3>
-              <p className="text-xl mb-8 text-blue-100">
-                Let us create a custom package tailored just for you
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-gray-100 transition-colors duration-300">
-                  📞 Contact Us
-                </button>
-                <button className="px-8 py-4 bg-blue-700 text-white font-semibold rounded-xl hover:bg-blue-800 transition-colors duration-300">
-                  ✨ Customize Trip
-                </button>
-              </div>
+            <h3 className="text-2xl font-bold text-[#0f6177] mb-3">
+              Can't find what you're looking for?
+            </h3>
+            <p className="text-slate-400 mb-8">
+              Let us build a custom package tailored to your exact budget & dates.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="tel:+918882128640"
+                className="px-8 py-3.5 rounded-2xl font-semibold text-[#0f6177] transition-all hover:scale-105"
+                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)" }}
+              >
+                📞 Call Us
+              </Link>
+              <Link
+                href={`https://wa.me/918882128640?text=${encodeURIComponent("Hi! I need help planning a custom trip.")}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-8 py-3.5 rounded-2xl font-semibold text-white transition-all hover:scale-105"
+                style={{
+                  background: "linear-gradient(135deg, #25d366, #128c7e)",
+                  boxShadow: "0 4px 20px rgba(37,211,102,0.3)",
+                }}
+              >
+                💬 WhatsApp Us
+              </Link>
             </div>
           </div>
         )}
       </div>
 
-      {/* Footer CTA */}
-      <div className="bg-gray-900 text-white py-16 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-3xl font-bold mb-4">Ready to Start Your Journey?</h3>
-          <p className="text-xl text-gray-300 mb-8">
-            Book now and get exclusive discounts on all packages
+      {/* ── Footer CTA ── */}
+      {/* <div
+        className="py-16 text-center"
+        style={{ background: "rgba(0,0,0,0.4)", borderTop: "1px solid rgba(255,255,255,0.05)" }}
+      >
+        <div className="max-w-7xl mx-auto px-4">
+          <h3 className="text-3xl font-bold text-white mb-3">
+            Ready to Start Your Journey?
+          </h3>
+          <p className="text-slate-400 mb-8">
+            Every price is tailored to you — tell us your budget and we'll make it happen.
           </p>
-          <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
-            🚀 Explore All Packages
-          </button>
+          <a
+            href="tel:+918700750589"
+            className="inline-block px-10 py-4 rounded-2xl font-bold text-white transition-all hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, #0ea5e9, #818cf8)",
+              boxShadow: "0 8px 30px rgba(14,165,233,0.35)",
+            }}
+          >
+            🚀 Plan My Trip
+          </a>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
