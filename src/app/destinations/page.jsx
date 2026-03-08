@@ -1,9 +1,13 @@
-import DestinationsSection from "./DestinationsDetailsShow";
-import { getStaticMetadata } from "../lib/seo";
+/**
+ * FILE: src/app/destinations/page.jsx
+ *
+ * Server Component wrapper — NO "use client", NO metadata here.
+ * Metadata is handled by destinations/layout.jsx
+ * UI is handled by DestinationsDetailsShow.jsx (Client Component)
+ */
 
-// Fully static metadata export — Next.js compatible
-export const metadataget = getStaticMetadata("destinations");
+import DestinationsDetailsShow from "./DestinationsDetailsShow";
 
-export default function Page( {limit} ) {
-  return <DestinationsSection limit={limit}/>;
+export default function DestinationsPage() {
+  return <DestinationsDetailsShow />;
 }

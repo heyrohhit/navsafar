@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 const slides = [
@@ -13,11 +13,11 @@ const slides = [
 ];
 
 const badges = [
-  { icon: "🌍", label: "150+ Destinations" },
-  { icon: "🏨", label: "Premium Hotels" },
-  { icon: "🎯", label: "Expert Guidance" },
-  { icon: "💎", label: "Best Prices" },
-  { icon: "🕐", label: "24/7 Support" },
+  { icon: "🌍", label: "50+ Destinations",path:"/destinations"},
+  { icon: "🏨", label: "Premium Hotels",path:"/tour-packages" },
+  { icon: "🎯", label: "Expert Guidance",path:"https://wa.me/+918882128640" },
+  { icon: "💎", label: "Best Prices",path:"https://wa.me/+918882128640" },
+  { icon: "🕐", label: "24/7 Support",path:"tel:+918882128640" },
 ];
 
 const curtainVariants = {
@@ -43,12 +43,7 @@ const pillVariants = {
 };
 
 export default function HeroSection() {
-  const router = useRouter();
   const [index, setIndex] = useState(0);
-  const [travelers, setTravelers] = useState(2);
-  const [destination, setDestination] = useState("");
-  const [date, setDate] = useState("");
-  const [focusedField, setFocusedField] = useState(null);
   const slide = slides[index];
 
   const mouseX = useMotionValue(0);
@@ -70,22 +65,11 @@ export default function HeroSection() {
     return () => clearInterval(t);
   }, []);
 
-  const handleSearch = () => {
-    if (!destination.trim()) return;
-    const params = new URLSearchParams({ q: destination.trim(), date: date || "", travelers: travelers.toString() });
-    router.push(`/search?${params.toString()}`);
-  };
 
-  const handleCustomTrip = () => {
-    const text = encodeURIComponent(
-      `Namaste! Main ek custom trip plan karna chahta/chahti hoon.\n\nDestination: ${destination || "Not specified"}\nDate: ${date || "Not specified"}\nTravelers: ${travelers}\n\nPlease help me plan!`
-    );
-    window.open(`https://wa.me/918700750589?text=${text}`, "_blank");
-  };
 
   return (
     <section
-      className="relative w-full overflow-hidden text-white min-h-svh"
+      className="relative w-full overflow-hidden text-white"
       style={{ fontFamily: "'Georgia', serif" }}
       onMouseMove={handleMouseMove}
     >
@@ -204,8 +188,12 @@ export default function HeroSection() {
           {/* Badges */}
           <div className="hidden sm:flex flex-col gap-2.5 items-start">
             {badges.map((b, i) => (
+              <Link 
+              href={b.path}
+              key={b.label}
+              >
               <motion.div
-                key={b.label}
+                
                 variants={badgeAnim(i)} initial="hidden" animate="visible"
                 whileHover={{ x: -6, scale: 1.06, transition: { duration: 0.25 } }}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-sans text-white/90 whitespace-nowrap cursor-default backdrop-blur-xl"
@@ -220,146 +208,10 @@ export default function HeroSection() {
                 </motion.span>
                 {b.label}
               </motion.div>
+              </Link>
             ))}
           </div>
         </div>
-
-        {/* ── SEARCH FORM ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 50, scale: 0.97, filter: "blur(8px)" }}
-          animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.55 }}
-          className="rounded-2xl p-5 md:p-8 backdrop-blur-2xl shadow-2xl"
-          style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
-        >
-          {/* Inputs Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-5">
-
-            {/* Destination */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col gap-1.5"
-            >
-              <label className="text-[11px] uppercase tracking-widest text-white/50 font-sans">Destination</label>
-              <input
-                type="text"
-                value={destination}
-                onChange={(e) => setDestination(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder="Where to?"
-                onFocus={() => setFocusedField("dest")}
-                onBlur={() => setFocusedField(null)}
-                className={`w-full rounded-xl px-4 py-3 text-white text-[15px] font-sans outline-none transition-all duration-300 ${focusedField === "dest" ? slide.borderClass + " ring-2 ring-current/20" : "border-white/20"
-                  }`}
-                style={{
-                  background: "rgba(255,255,255,0.1)",
-                  border: `1px solid ${focusedField === "dest" ? slide.color : "rgba(255,255,255,0.2)"}`,
-                  boxShadow: focusedField === "dest" ? `0 0 0 3px ${slide.color}22` : "none",
-                }}
-              />
-            </motion.div>
-
-            {/* Date */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col gap-1.5"
-            >
-              <label className="text-[11px] uppercase tracking-widest text-white/50 font-sans">Departure Date</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                onFocus={() => setFocusedField("date")}
-                onBlur={() => setFocusedField(null)}
-                className="w-full rounded-xl px-4 py-3 text-white text-[15px] font-sans outline-none transition-all duration-300"
-                style={{
-                  background: "rgba(255,255,255,0.1)",
-                  border: `1px solid ${focusedField === "date" ? slide.color : "rgba(255,255,255,0.2)"}`,
-                  boxShadow: focusedField === "date" ? `0 0 0 3px ${slide.color}22` : "none",
-                  colorScheme: "dark",
-                }}
-              />
-            </motion.div>
-
-            {/* Travelers */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="flex flex-col gap-1.5"
-            >
-              <label className="text-[11px] uppercase tracking-widest text-white/50 font-sans">Travelers</label>
-              <div
-                className="flex items-center justify-between gap-3 rounded-xl px-4 py-3"
-                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}
-              >
-                <motion.button
-                  onClick={() => setTravelers((t) => Math.max(1, t - 1))}
-                  whileTap={{ scale: 0.88 }}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-white text-lg flex-shrink-0 cursor-pointer border-0"
-                  style={{ background: "rgba(255,255,255,0.15)" }}
-                >−</motion.button>
-
-                <AnimatePresence mode="wait">
-                  <motion.span
-                    key={travelers}
-                    initial={{ opacity: 0, y: -12, scale: 0.7 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 12, scale: 0.7 }}
-                    transition={{ duration: 0.25, ease: [0.34, 1.56, 0.64, 1] }}
-                    className="text-xl font-bold min-w-6 text-center inline-block"
-                  >{travelers}</motion.span>
-                </AnimatePresence>
-
-                <motion.button
-                  onClick={() => setTravelers((t) => t + 1)}
-                  whileTap={{ scale: 0.88 }}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-black text-lg flex-shrink-0 font-bold cursor-pointer border-0"
-                  style={{ background: slide.color, boxShadow: `0 2px 12px ${slide.color}66` }}
-                >+</motion.button>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Action Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.05, duration: 0.6 }}
-            className="flex flex-wrap gap-3 items-center justify-between"
-          >
-            <div className="flex flex-wrap gap-3">
-              <motion.button
-                onClick={handleSearch}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-6 py-3.5 rounded-xl text-sm font-bold uppercase tracking-widest text-black font-sans cursor-pointer border-0 transition-all duration-300"
-                style={{ background: slide.color, boxShadow: `0 4px 20px ${slide.color}44` }}
-              >
-                🔍 Search Packages
-              </motion.button>
-
-              <motion.button
-                onClick={handleCustomTrip}
-                whileHover={{ scale: 1.04, background: "rgba(255,255,255,0.18)" }}
-                whileTap={{ scale: 0.96 }}
-                className="px-6 py-3.5 rounded-xl text-sm font-semibold text-white font-sans cursor-pointer transition-all duration-200"
-                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}
-              >
-                ✏️ Custom Trip
-              </motion.button>
-            </div>
-
-            <motion.button
-              onClick={() => { setDestination(""); setDate(""); setTravelers(2); }}
-              whileHover={{ color: "rgba(255,255,255,0.75)", scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              className="bg-transparent text-white/40 text-sm tracking-wide font-sans px-2 py-1 cursor-pointer border-0 transition-colors duration-200"
-            >
-              Reset
-            </motion.button>
-          </motion.div>
-        </motion.div>
 
         {/* ── INDICATORS ── */}
         <motion.div

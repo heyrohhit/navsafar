@@ -45,7 +45,7 @@ const AboutUs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0f6477] font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-[#0f6477] font-sans overflow-x-hidden mt-[5%]">
 
       {/* ── HERO ── */}
       <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
@@ -81,16 +81,16 @@ const AboutUs = () => {
             Trusted Since 2008
           </div>
 
-          <h1 className="text-5xl md:text-8xl font-extrabold text-white mb-4 leading-none tracking-tight drop-shadow-xl">
+          <h1 className="text-3xl md:text-3xl reey-font font-extrabold text-white mb-4 leading-none tracking-tight drop-shadow-xl">
             About
           </h1>
-          <h2 className="text-6xl md:text-9xl font-black tracking-widest mb-8"
+          <h2 className="text-3xl md:text-6xl font-black tracking-widest mb-8 mt-5"
             style={{
               background: "linear-gradient(90deg, #ffffff, #a8edcc, #ffffff)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               textShadow: "none",
-              letterSpacing: "0.08em"
+              letterSpacing: "0.5em"
             }}>
             NAVSAFAR
           </h2>
@@ -115,19 +115,19 @@ const AboutUs = () => {
       <section className="relative py-20 bg-white">
         <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#04b586]/10 to-transparent pointer-events-none" />
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10">
+          <div className="flex justify-around items-center flex-wrap gap-3 md:gap-8">
             {stats.map((stat, i) => (
               <div
                 key={i}
-                className={`group relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl border border-gray-100 cursor-default transition-all duration-500 hover:-translate-y-2 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+                className={`group w-[220px] relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl border border-gray-100 cursor-default transition-all duration-500 hover:-translate-y-2 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
                 style={{ transitionDelay: `${200 + i * 120}ms` }}
               >
                 <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
                 <div className="text-4xl mb-3">{stat.icon}</div>
-                <div className={`text-4xl md:text-5xl font-black mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}>
+                <div className={`text-3xl md:text-3xl font-black mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}>
                   {stat.number}
                 </div>
-                <div className="text-gray-500 font-medium text-sm uppercase tracking-wider">
+                <div className="text-gray-500 font-medium text-[12px] uppercase tracking-wider">
                   {stat.label}
                 </div>
               </div>
@@ -137,7 +137,7 @@ const AboutUs = () => {
       </section>
 
       {/* ── STORY ── */}
-      <section className="py-24 bg-[#f0f6ff] relative overflow-hidden">
+      <section className="py-24 bg-[#f0f6ff] relative overflow-hidden p-5">
         <div className="absolute right-[-120px] top-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-blue-100 to-teal-100 blur-3xl opacity-60 pointer-events-none" />
 
         <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -150,7 +150,7 @@ const AboutUs = () => {
               </h2>
               <div className="space-y-5 text-gray-600 leading-relaxed text-lg">
                 <p>
-                  Founded in <strong className="text-gray-800">2008</strong>, Navsafar started with a simple mission — to make travel accessible and joyful for everyone. What began as a small travel agency has grown into one of India's most trusted travel companies.
+                  Founded in <strong className="text-gray-800">2026</strong>, Navsafar started with a simple mission — to make travel accessible and joyful for everyone. What began as a small travel agency has grown into one of India's most trusted travel companies.
                 </p>
                 <p>
                   We believe travel is not just about reaching a destination, but about <em className="text-blue-600 not-italic font-semibold">the journey itself</em>. Our team works tirelessly to ensure that every trip becomes a cherished memory.
@@ -212,11 +212,11 @@ const AboutUs = () => {
               Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-[#04b586]">Mission</span>
             </h2>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="flex justify-around items-center flex-wrap gap-10">
             {values.map((v, i) => (
               <div
                 key={i}
-                className={`group relative rounded-3xl p-8 ${v.bg} border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-default overflow-hidden`}
+                className={`group w-[250px] relative rounded-3xl p-8 ${v.bg} border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-default overflow-hidden`}
               >
                 <div className={`absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br ${v.gradient} opacity-10 blur-2xl -translate-y-8 translate-x-8 group-hover:opacity-20 transition-opacity`} />
                 <div className={`inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br ${v.gradient} items-center justify-center text-2xl shadow-lg mb-6`}>

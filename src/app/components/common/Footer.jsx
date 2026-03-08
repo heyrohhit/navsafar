@@ -158,7 +158,7 @@ const Footer = () => {
               {/* Contact */}
               <ul className="space-y-3 mb-8">
                 {[
-                  { icon: Phone, text: "+91 8882129640" },
+                  { icon: Phone, text: "+91 8882128640" },
                   { icon: Mail, text: "info@navsafartravels.com" },
                   { icon: MapPin, text: "WZ-447, First Floor, Left Side\nNangal Raya, Delhi 110046" }
                 ].map(({ icon: Icon, text }, i) => (

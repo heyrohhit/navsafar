@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { categories } from "../../models/objAll/experienc";
 import { packages } from "../../models/objAll/packages";
 import PackageGridLayout from "../../components/packages/PackageGridLayout";
 
@@ -101,7 +100,7 @@ const ExperienceDetailPage = () => {
     <>
       <style>{pageCSS}</style>
 
-      <div className="edp-root">
+      <div className="edp-root ">
 
         {/* ── Hero ────────────────────────────────────────────────────── */}
         <section className={`edp-hero bg-gradient-to-br ${cat.gradient}`}>
@@ -133,7 +132,7 @@ const ExperienceDetailPage = () => {
               {cat.badge}
             </div>
 
-            <h1 className="edp-hero-title">{cat.name}</h1>
+            <h1 className="edp-hero-title ">{cat.name}</h1>
             <p className="edp-hero-desc">{cat.description}</p>
 
             {/* Best time pill */}
@@ -188,7 +187,7 @@ const ExperienceDetailPage = () => {
         </div>
 
         {/* ── Packages Section ─────────────────────────────────────────── */}
-        <section className="edp-packages-section">
+        <section className="edp-packages-section p-5">
           <div className="edp-packages-inner">
 
             {/* Section heading */}

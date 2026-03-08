@@ -21,7 +21,7 @@ const Nav = ({ mobile = false, onClose }) => {
 
   if (mobile) {
     return (
-      <div className="flex flex-col space-y-1 p-[5vw] bg-white">
+      <div className="flex flex-col space-y-1 p-[5vw] bg-white max-h-[max-content]">
         {navModel.map((item, idx) => (
           <Link
             key={idx}

@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { handleGetQuery } from "./PopUpFeature";
 import PopUpFeature from "./PopUpFeature";
 
 // ─── Card accent gradients ─────────────────────────────────────────
@@ -56,9 +55,6 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
       case "readMore":
         setSelectedItem(pkg);
         break;
-      case "getQuery":
-        handleGetQuery(pkg);
-        break;
       case "callMe":
         window.location.href = `tel:${btn.number || "+911234567890"}`;
         break;
@@ -71,7 +67,7 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
 
   return (
     <>
-      <div className="min-h-screen py-8 px-4">
+      <div className="min-h-screen">
         {/* Ambient blobs */}
         <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
           <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl"

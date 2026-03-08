@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 
+// full screen data show
+import { createPortal } from "react-dom";
+
 // ─── WhatsApp Query Handler ──────────────────────────────────────────────────
 export function handleGetQuery(pkg) {
   const lines = [
@@ -20,6 +23,8 @@ export function handleGetQuery(pkg) {
 
   window.open(`https://wa.me/918882128640?text=${encodeURIComponent(lines)}`, "_blank");
 }
+
+
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 function Stars({ rating }) {
@@ -49,6 +54,13 @@ function Stars({ rating }) {
 const PopUpFeature = ({ selectedPackage: pkg, onClose }) => {
   const [tab, setTab] = useState("overview");
   const overlayRef   = useRef(null);
+
+  // components mount states
+const [mounted, setMounted] = useState(false);
+
+useEffect(() => {
+  setMounted(true);
+}, []);
 
   // ESC to close
   useEffect(() => {
@@ -81,8 +93,10 @@ const PopUpFeature = ({ selectedPackage: pkg, onClose }) => {
     activities: "linear-gradient(135deg, #0f6477, #0f766e)",
   };
 
-  return (
-    <>
+ if (!mounted) return null;
+
+  return createPortal(
+  <>
       {/* ── Scoped CSS ─────────────────────────────────────────────── */}
       <style>{`
         .pu-overlay {
@@ -108,6 +122,7 @@ const PopUpFeature = ({ selectedPackage: pkg, onClose }) => {
         .pu-modal {
           position: relative;
           width: 95%;
+          padding-bottom:15%;
           border-radius: 24px 24px 0 0;   /* mobile: bottom sheet */
           overflow: hidden;
           display: flex;
@@ -662,8 +677,9 @@ const PopUpFeature = ({ selectedPackage: pkg, onClose }) => {
           </div>{/* end pu-right */}
         </div>{/* end pu-modal */}
       </div>{/* end pu-overlay */}
-    </>
-  );
+      </>,
+  document.body
+);
 };
 
 export default PopUpFeature;

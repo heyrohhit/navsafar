@@ -9,30 +9,46 @@ export default function LoadingScreen({ onComplete }) {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
+
+    // 🔒 SCROLL LOCK
+    document.body.style.overflow = "hidden";
+
     const start = Date.now();
     const interval = setInterval(() => {
       const elapsed = Date.now() - start;
       const percent = Math.min((elapsed / TOTAL_DURATION) * 100, 100);
       setProgress(percent);
+
       if (percent >= 100) {
         clearInterval(interval);
         setTimeout(() => {
           setFadeOut(true);
           setTimeout(() => {
             setVisible(false);
+
+            // 🔓 SCROLL UNLOCK
+            document.body.style.overflow = "";
+
             onComplete?.();
           }, 800);
         }, 400);
       }
     }, 16);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearInterval(interval);
+
+      // cleanup
+      document.body.style.overflow = "";
+    };
   }, [onComplete]);
 
   if (!visible) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 overflow-hidden flex items-center justify-center"
+   <div className="overflow-hidden">
+     <div
+      className="fixed inset-0 scroll z-50 flex items-center justify-center h-screen w-screen"
       style={{
         opacity: fadeOut ? 0 : 1,
         transition: "opacity 0.8s ease",
@@ -364,6 +380,7 @@ export default function LoadingScreen({ onComplete }) {
           50% { opacity: 0.8; }
         }
       `}</style>
+    </div>
     </div>
   );
 }

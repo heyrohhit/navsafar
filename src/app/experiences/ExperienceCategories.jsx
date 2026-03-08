@@ -1,866 +1,386 @@
 "use client";
-import { useState, useEffect } from "react";
-import { categories } from "../models/objAll/experienc";
-import Link from "next/link";
 
-// ─── WhatsApp Query Submit ────────────────────────────────────────────────────
-function buildWhatsAppUrl(data) {
-  const msg = [
-    `✈️ *Travel Recommendation Request*`,
-    ``,
-    `👤 *Name:* ${data.name}`,
-    `📧 *Email:* ${data.email}`,
-    `📞 *Phone:* ${data.phone}`,
-    ``,
-    `🗺️ *Destination:* ${data.destination || "Flexible"}`,
-    `📅 *Travel Date:* ${data.travelDate || "Not decided"}`,
-    `💰 *Budget:* ${data.budget || "To be discussed"}`,
-    `👥 *Travelers:* ${data.travelers || "Not specified"}`,
-    `📝 *Message:* ${data.message || "Please suggest best packages"}`,
-    ``,
-    `_Please provide personalised recommendations!_`,
-  ].join("\n");
-  return `https://wa.me/918700750589?text=${encodeURIComponent(msg)}`;
+import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { packages } from "../models/objAll/packages";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ROW 1 — MAIN CATEGORIES META
+// ─────────────────────────────────────────────────────────────────────────────
+const CAT_META = {
+  international: { label: "International", emoji: "✈️",  tagline: "50+ destinations worldwide", accent: "#60a5fa", href: "/packages?category=international" },
+  family:        { label: "Family",         emoji: "👨‍👩‍👧‍👦", tagline: "Memories built together",    accent: "#fb923c", href: "/packages?category=family"        },
+  religion:      { label: "Religious",      emoji: "🕌",  tagline: "Sacred journeys & pilgrimages", accent: "#fbbf24", href: "/packages?category=religion"      },
+  domestic:      { label: "Domestic",       emoji: "🇮🇳", tagline: "Explore incredible India",      accent: "#4ade80", href: "/packages?category=domestic"      },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ROW 2 — TOURISM TYPE META (only top ones with good counts)
+// ─────────────────────────────────────────────────────────────────────────────
+const TYPE_META = {
+  Cultural:     { emoji: "🏛️", accent: "#c084fc", href: "/packages?type=Cultural"     },
+  Urban:        { emoji: "🏙️", accent: "#60a5fa", href: "/packages?type=Urban"        },
+  Beach:        { emoji: "🏖️", accent: "#22d3ee", href: "/packages?type=Beach"        },
+  Heritage:     { emoji: "🏰", accent: "#fbbf24", href: "/packages?type=Heritage"     },
+  Nature:       { emoji: "🌿", accent: "#4ade80", href: "/packages?type=Nature"       },
+  Adventure:    { emoji: "🧗", accent: "#f97316", href: "/packages?type=Adventure"    },
+  Luxury:       { emoji: "💎", accent: "#e879f9", href: "/packages?type=Luxury"       },
+  Romantic:     { emoji: "💑", accent: "#fb7185", href: "/packages?type=Romantic"     },
+  Religious:    { emoji: "🙏", accent: "#fde68a", href: "/packages?type=Religious"    },
+  Historical:   { emoji: "🗿", accent: "#a3a3a3", href: "/packages?type=Historical"   },
+  Shopping:     { emoji: "🛍️", accent: "#2dd4bf", href: "/packages?type=Shopping"    },
+  Nightlife:    { emoji: "🎆", accent: "#a78bfa", href: "/packages?type=Nightlife"    },
+  Wildlife:     { emoji: "🦁", accent: "#86efac", href: "/packages?type=Wildlife"     },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD DATA
+// ─────────────────────────────────────────────────────────────────────────────
+function buildCategoryCards() {
+  const map = {};
+  packages.forEach((pkg) => {
+    (pkg.category ?? []).forEach((cat) => {
+      if (!map[cat]) map[cat] = { id: cat, images: [], cities: [], count: 0 };
+      map[cat].count++;
+      if (map[cat].images.length < 5) map[cat].images.push(pkg.image);
+      if (map[cat].cities.length < 6) map[cat].cities.push(pkg.city);
+    });
+  });
+  return Object.entries(map)
+    .filter(([key]) => CAT_META[key])
+    .map(([key, data]) => ({ ...data, ...CAT_META[key], id: key }));
 }
 
-const EMPTY_FORM = {
-  name: "", email: "", phone: "",
-  destination: "", travelDate: "",
-  budget: "", travelers: "", message: "",
-};
+function buildTypeCards() {
+  const map = {};
+  packages.forEach((pkg) => {
+    (pkg.tourism_type ?? []).forEach((t) => {
+      if (!TYPE_META[t]) return; // only keep defined types
+      if (!map[t]) map[t] = { id: t, images: [], cities: [], count: 0 };
+      map[t].count++;
+      if (map[t].images.length < 5) map[t].images.push(pkg.image);
+      if (map[t].cities.length < 5) map[t].cities.push(pkg.city);
+    });
+  });
+  return Object.entries(map)
+    .sort((a, b) => b[1].count - a[1].count)
+    .map(([key, data]) => ({ ...data, label: key, ...TYPE_META[key], id: key }));
+}
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-const ExperienceCategories = () => {
-  const [isLoaded,       setIsLoaded]       = useState(false);
-  const [showForm,       setShowForm]       = useState(false);
-  const [formData,       setFormData]       = useState(EMPTY_FORM);
-  const [hoveredId,      setHoveredId]      = useState(null);
+const CAT_CARDS  = buildCategoryCards();
+const TYPE_CARDS = buildTypeCards();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CARD COMPONENT — used for both rows (slightly different sizes)
+// ─────────────────────────────────────────────────────────────────────────────
+function SliderCard({ item, cardW, cardH, showCities = true }) {
+  const [imgIdx,  setImgIdx]  = useState(0);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoaded(true), 350);
-    return () => clearTimeout(t);
-  }, []);
-
-  const handleField = (key, val) =>
-    setFormData((prev) => ({ ...prev, [key]: val }));
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    window.open(buildWhatsAppUrl(formData), "_blank");
-    setFormData(EMPTY_FORM);
-    setShowForm(false);
-  };
+    if (item.images.length < 2) return;
+    const id = setInterval(() => setImgIdx((p) => (p + 1) % item.images.length), 3000 + Math.random() * 1000);
+    return () => clearInterval(id);
+  }, [item.images.length]);
 
   return (
-    <>
-      {/* ── Scoped CSS ───────────────────────────────────────────────────── */}
-      <style>{`
-        /* ── Section ── */
-        .ec-section {
-          padding: 80px 16px;
-          background: linear-gradient(180deg, #f0fafb 0%, #e8f5f7 100%);
-          font-family: 'DM Sans', system-ui, sans-serif;
-        }
-        @media (min-width: 640px)  { .ec-section { padding: 80px 24px; } }
-        @media (min-width: 1024px) { .ec-section { padding: 100px 32px; } }
+    <div
+      style={{
+        position:     "relative",
+        width:         cardW,
+        height:        cardH,
+        borderRadius:  18,
+        overflow:      "hidden",
+        flexShrink:    0,
+        border:        `1px solid ${hovered ? item.accent + "55" : "rgba(255,255,255,0.06)"}`,
+        transform:     hovered ? "translateY(-5px) scale(1.01)" : "translateY(0) scale(1)",
+        boxShadow:     hovered ? `0 24px 56px rgba(0,0,0,0.55), 0 0 0 1px ${item.accent}20` : "0 4px 20px rgba(0,0,0,0.3)",
+        transition:    "all 0.38s cubic-bezier(0.4,0,0.2,1)",
+        cursor:        "pointer",
+        scrollSnapAlign: "start",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Crossfade images */}
+      {item.images.map((src, i) => (
+        <div key={src} style={{ position: "absolute", inset: 0, opacity: i === imgIdx ? 1 : 0, transition: "opacity 1.3s ease" }}>
+          <Image src={src} alt={item.label} fill sizes={`${cardW}px`} className="object-cover"
+            style={{ transform: hovered && i === imgIdx ? "scale(1.1)" : "scale(1.04)", transition: "transform 6s ease" }}
+            priority={i === 0} />
+        </div>
+      ))}
 
-        .ec-inner { max-width: 1200px; margin: 0 auto; }
+      {/* Overlays */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.93) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0.1) 100%)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 35%)" }} />
 
-        /* ── Header ── */
-        .ec-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 16px;
-          border-radius: 100px;
-          background: rgba(15,100,119,0.1);
-          border: 1px solid rgba(15,100,119,0.25);
-          margin-bottom: 20px;
-          font-size: 0.8rem;
-          font-weight: 600;
-          color: #0f6477;
-          letter-spacing: 0.04em;
-        }
-        .ec-badge-dot {
-          width: 8px; height: 8px;
-          border-radius: 50%;
-          background: #0f6477;
-          animation: ecPulse 2s infinite;
-        }
-        @keyframes ecPulse {
-          0%,100% { opacity: 1; transform: scale(1); }
-          50%      { opacity: 0.5; transform: scale(1.3); }
-        }
-        .ec-title {
-          font-size: clamp(2rem, 5vw, 3rem);
-          font-weight: 900;
-          color: #0a2d36;
-          line-height: 1.15;
-          margin: 0 0 16px;
-        }
-        .ec-title-accent {
-          display: block;
-          background: linear-gradient(135deg, #0f6477 0%, #2db3cc 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        .ec-subtitle {
-          font-size: clamp(0.95rem, 2vw, 1.1rem);
-          color: #5a7f87;
-          max-width: 580px;
-          margin: 0 auto;
-          line-height: 1.7;
-        }
-
-        /* ── Grid ── */
-        .ec-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          margin-top: 52px;
-        }
-
-        /* ── Card ── */
-        .ec-card {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          border-radius: 22px;
-          overflow: hidden;
-          background: #ffffff;
-          border: 1px solid rgba(15,100,119,0.12);
-          box-shadow: 0 4px 24px rgba(15,100,119,0.07);
-          transition: transform 0.28s ease, box-shadow 0.28s ease;
-          text-decoration: none;
-          color: inherit;
-        }
-        .ec-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 48px rgba(15,100,119,0.14);
-          border-color: rgba(15,100,119,0.28);
-        }
-        /* tablet: horizontal layout */
-        @media (min-width: 600px) {
-          .ec-card {
-            flex-direction: row;
-            min-height: 148px;
-          }
-        }
-
-        /* ── Card Left (icon panel) ── */
-        .ec-card-left {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 24px 20px;
-          gap: 6px;
-          overflow: hidden;
-          flex-shrink: 0;
-        }
-        /* mobile: full width strip */
-        .ec-card-left {
-          width: 100%;
-          min-height: 110px;
-        }
-        @media (min-width: 600px) {
-          .ec-card-left {
-            width: 200px;
-            min-height: unset;
-          }
-        }
-        @media (min-width: 900px) {
-          .ec-card-left { width: 230px; }
-        }
-
-        /* decoration circles */
-        .ec-deco-circle {
-          position: absolute;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.1);
-          pointer-events: none;
-        }
-
-        .ec-card-icon {
-          font-size: 2.2rem;
-          line-height: 1;
-          z-index: 1;
-          transition: transform 0.3s ease;
-        }
-        .ec-card:hover .ec-card-icon { transform: scale(1.15) rotate(-4deg); }
-
-        .ec-card-name {
-          font-size: 1rem;
-          font-weight: 800;
-          color: #fff;
-          z-index: 1;
-          text-align: center;
-          letter-spacing: 0.01em;
-        }
-        .ec-card-desc {
-          font-size: 0.72rem;
-          color: rgba(255,255,255,0.85);
-          text-align: center;
-          z-index: 1;
-          line-height: 1.4;
-          max-width: 180px;
-        }
-
-        /* ── Card Right (content) ── */
-        .ec-card-right {
-          flex: 1;
-          padding: 18px 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          position: relative;
-          min-width: 0;
-        }
-        @media (min-width: 600px) {
-          .ec-card-right { padding: 16px 24px; }
-        }
-
-        /* Top row */
-        .ec-card-top {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 10px;
-        }
-        .ec-cat-badge {
-          font-size: 0.65rem;
-          font-weight: 800;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          padding: 4px 12px;
-          border-radius: 100px;
-          background: rgba(15,100,119,0.1);
-          border: 1px solid rgba(15,100,119,0.22);
-          color: #0f6477;
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-        .ec-pkg-count {
-          font-size: 0.72rem;
-          font-weight: 700;
-          padding: 4px 12px;
-          border-radius: 100px;
-          background: rgba(15,100,119,0.08);
-          border: 1px solid rgba(15,100,119,0.18);
-          color: #0f6477;
-          white-space: nowrap;
-        }
-
-        /* Feature grid */
-        .ec-features {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 5px 14px;
-        }
-        @media (min-width: 900px) {
-          .ec-features { grid-template-columns: repeat(3, 1fr); }
-        }
-        .ec-feature-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.72rem;
-          color: #4a7a85;
-        }
-        .ec-check {
-          width: 14px; height: 14px;
-          border-radius: 50%;
-          background: rgba(15,100,119,0.12);
-          border: 1.5px solid rgba(15,100,119,0.3);
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0;
-          font-size: 0.55rem;
-          color: #0f6477;
-          font-weight: 900;
-        }
-
-        /* Bottom row: types + best time */
-        .ec-card-bottom {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          gap: 6px;
-          margin-top: 2px;
-        }
-        .ec-type-chip {
-          font-size: 0.65rem;
-          padding: 3px 9px;
-          border-radius: 100px;
-          background: rgba(15,100,119,0.07);
-          border: 1px solid rgba(15,100,119,0.15);
-          color: #2d8fa3;
-          font-weight: 500;
-        }
-        .ec-time-chip {
-          font-size: 0.65rem;
-          padding: 3px 9px;
-          border-radius: 100px;
-          background: rgba(234,88,12,0.07);
-          border: 1px solid rgba(234,88,12,0.2);
-          color: #c2410c;
-          font-weight: 600;
-          display: flex; align-items: center; gap: 4px;
-          margin-left: auto;
-        }
-
-        /* Arrow icon */
-        .ec-arrow {
-          position: absolute;
-          bottom: 16px; right: 16px;
-          width: 32px; height: 32px;
-          border-radius: 50%;
-          background: rgba(15,100,119,0.08);
-          border: 1.5px solid rgba(15,100,119,0.2);
-          display: flex; align-items: center; justify-content: center;
-          color: #0f6477;
-          font-size: 0.85rem;
-          transition: all 0.25s ease;
-        }
-        .ec-card:hover .ec-arrow {
-          background: #0f6477;
-          color: #fff;
-          border-color: #0f6477;
-          transform: translateX(3px);
-        }
-
-        /* ── CTA Banner ── */
-        .ec-cta {
-          margin-top: 56px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 16px;
-          padding: 32px 24px;
-          border-radius: 24px;
-          background: linear-gradient(135deg, rgba(15,100,119,0.07) 0%, rgba(15,100,119,0.12) 100%);
-          border: 1px solid rgba(15,100,119,0.2);
-          text-align: center;
-        }
-        @media (min-width: 640px) {
-          .ec-cta {
-            flex-direction: row;
-            text-align: left;
-            justify-content: space-between;
-            gap: 24px;
-          }
-        }
-        .ec-cta-text {
-          font-size: 1.05rem;
-          font-weight: 700;
-          color: #0a2d36;
-        }
-        .ec-cta-sub {
-          font-size: 0.82rem;
-          color: #5a7f87;
-          margin-top: 4px;
-        }
-        .ec-cta-btn {
-          padding: 13px 28px;
-          border-radius: 14px;
-          background: linear-gradient(135deg, #0f6477 0%, #1a8fa6 100%);
-          color: #fff;
-          font-weight: 800;
-          font-size: 0.88rem;
-          border: none;
-          cursor: pointer;
-          letter-spacing: 0.02em;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-          box-shadow: 0 6px 22px rgba(15,100,119,0.35);
-          white-space: nowrap;
-          flex-shrink: 0;
-          font-family: inherit;
-        }
-        .ec-cta-btn:hover {
-          transform: translateY(-2px) scale(1.03);
-          box-shadow: 0 10px 32px rgba(15,100,119,0.45);
-        }
-
-        /* ── Modal Overlay ── */
-        .ec-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0,0,0,0.72);
-          backdrop-filter: blur(8px);
-          z-index: 9999;
-          display: flex;
-          align-items: flex-end;
-          justify-content: center;
-          padding: 0;
-          animation: ecFadeIn 0.2s ease;
-        }
-        @media (min-width: 640px) {
-          .ec-overlay {
-            align-items: center;
-            padding: 16px;
-          }
-        }
-        @keyframes ecFadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* ── Modal Shell ── */
-        .ec-modal {
-          width: 100%;
-          max-width: 620px;
-          border-radius: 24px 24px 0 0;
-          background: #ffffff;
-          overflow: hidden;
-          box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-          max-height: 96dvh;
-          display: flex;
-          flex-direction: column;
-          animation: ecSlideUp 0.3s cubic-bezier(0.22,1,0.36,1);
-        }
-        @media (min-width: 640px) {
-          .ec-modal {
-            border-radius: 24px;
-            animation: ecPopIn 0.28s ease;
-          }
-        }
-        @keyframes ecSlideUp {
-          from { transform: translateY(100%); opacity: 0; }
-          to   { transform: translateY(0);    opacity: 1; }
-        }
-        @keyframes ecPopIn {
-          from { transform: scale(0.96); opacity: 0; }
-          to   { transform: scale(1);    opacity: 1; }
-        }
-
-        /* Drag handle (mobile) */
-        .ec-handle {
-          display: flex;
-          justify-content: center;
-          padding: 10px 0 0;
-          background: #fff;
-        }
-        .ec-handle-bar {
-          width: 40px; height: 4px;
-          border-radius: 100px;
-          background: rgba(15,100,119,0.2);
-        }
-        @media (min-width: 640px) { .ec-handle { display: none; } }
-
-        /* Modal header */
-        .ec-modal-head {
-          padding: 20px 24px 16px;
-          background: linear-gradient(135deg, #0f6477 0%, #1a8fa6 100%);
-          position: relative;
-          flex-shrink: 0;
-        }
-        .ec-modal-title {
-          font-size: 1.15rem;
-          font-weight: 900;
-          color: #fff;
-          margin: 0 0 4px;
-        }
-        .ec-modal-sub {
-          font-size: 0.78rem;
-          color: rgba(255,255,255,0.8);
-          margin: 0;
-        }
-        .ec-modal-close {
-          position: absolute;
-          top: 18px; right: 18px;
-          width: 32px; height: 32px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.2);
-          border: none;
-          color: #fff;
-          font-size: 1.1rem;
-          cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          transition: background 0.2s;
-          font-family: inherit;
-        }
-        .ec-modal-close:hover { background: rgba(255,255,255,0.35); }
-
-        /* Form body */
-        .ec-form-body {
-          overflow-y: auto;
-          padding: 20px 24px 24px;
-          flex: 1;
-          scrollbar-width: thin;
-          scrollbar-color: rgba(15,100,119,0.3) transparent;
-        }
-        .ec-form-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 14px;
-        }
-        @media (min-width: 480px) {
-          .ec-form-grid { grid-template-columns: 1fr 1fr; }
-        }
-        .ec-form-full { grid-column: 1 / -1; }
-
-        .ec-label {
-          display: block;
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #0a2d36;
-          margin-bottom: 6px;
-          letter-spacing: 0.03em;
-        }
-        .ec-input, .ec-select, .ec-textarea {
-          width: 100%;
-          padding: 10px 14px;
-          border-radius: 12px;
-          border: 1.5px solid rgba(15,100,119,0.2);
-          background: rgba(15,100,119,0.03);
-          font-size: 0.83rem;
-          color: #0a2d36;
-          font-family: inherit;
-          transition: border-color 0.2s, box-shadow 0.2s;
-          outline: none;
-          box-sizing: border-box;
-        }
-        .ec-input:focus, .ec-select:focus, .ec-textarea:focus {
-          border-color: #0f6477;
-          box-shadow: 0 0 0 3px rgba(15,100,119,0.12);
-        }
-        .ec-textarea { resize: none; }
-
-        /* Form buttons */
-        .ec-form-btns {
-          display: flex;
-          gap: 10px;
-          margin-top: 18px;
-        }
-        .ec-submit-btn {
-          flex: 1;
-          padding: 12px 20px;
-          border-radius: 14px;
-          background: linear-gradient(135deg, #0f6477, #1a8fa6);
-          color: #fff;
-          font-weight: 800;
-          font-size: 0.88rem;
-          border: none;
-          cursor: pointer;
-          font-family: inherit;
-          transition: transform 0.2s, box-shadow 0.2s;
-          box-shadow: 0 4px 18px rgba(15,100,119,0.35);
-        }
-        .ec-submit-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 28px rgba(15,100,119,0.45);
-        }
-        .ec-cancel-btn {
-          padding: 12px 20px;
-          border-radius: 14px;
-          background: rgba(15,100,119,0.08);
-          border: 1.5px solid rgba(15,100,119,0.2);
-          color: #0f6477;
-          font-weight: 700;
-          font-size: 0.88rem;
-          cursor: pointer;
-          font-family: inherit;
-          transition: background 0.2s;
-        }
-        .ec-cancel-btn:hover { background: rgba(15,100,119,0.14); }
-
-        /* Fade-in animation for cards */
-        .ec-fade {
-          opacity: 0;
-          transform: translateY(18px);
-          transition: opacity 0.6s ease, transform 0.6s ease;
-        }
-        .ec-fade.ec-visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      `}</style>
-
-      <section className="ec-section">
-        <div className="ec-inner">
-
-          {/* ── Header ───────────────────────────────────────────────── */}
-          <div style={{ textAlign: "center" }}>
-            <div
-              className="ec-badge ec-fade"
-              style={{
-                opacity:   isLoaded ? 1 : 0,
-                transform: isLoaded ? "translateY(0)" : "translateY(16px)",
-                transition: "opacity 0.6s ease, transform 0.6s ease",
-              }}
-            >
-              <span className="ec-badge-dot" />
-              Experience Categories
-            </div>
-
-            <h2
-              className="ec-title ec-fade"
-              style={{
-                opacity:   isLoaded ? 1 : 0,
-                transform: isLoaded ? "translateY(0)" : "translateY(16px)",
-                transition: "opacity 0.6s 0.1s ease, transform 0.6s 0.1s ease",
-              }}
-            >
-              Choose Your
-              <span className="ec-title-accent">Travel Style</span>
-            </h2>
-
-            <p
-              className="ec-subtitle"
-              style={{
-                opacity:   isLoaded ? 1 : 0,
-                transform: isLoaded ? "translateY(0)" : "translateY(16px)",
-                transition: "opacity 0.6s 0.2s ease, transform 0.6s 0.2s ease",
-              }}
-            >
-              50 destinations · 12 travel styles · 1 promise — the perfect trip for you
-            </p>
-          </div>
-
-          {/* ── Categories List ───────────────────────────────────────── */}
-          <div className="ec-grid">
-            {categories.map((cat, idx) => (
-              <Link
-                key={cat.id}
-                href={`/experiences/${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
-                className="ec-card"
-                style={{
-                  opacity:   isLoaded ? 1 : 0,
-                  transform: isLoaded ? "translateY(0)" : "translateY(20px)",
-                  transition: `opacity 0.55s ${0.05 * idx + 0.25}s ease, transform 0.55s ${0.05 * idx + 0.25}s ease`,
-                  textDecoration: "none",
-                }}
-                onMouseEnter={() => setHoveredId(cat.id)}
-                onMouseLeave={() => setHoveredId(null)}
-              >
-                {/* ── Left gradient panel ── */}
-                <div
-                  className={`ec-card-left bg-gradient-to-br ${cat.gradient}`}
-                >
-                  {/* Deco circles */}
-                  <div className="ec-deco-circle" style={{ width:70, height:70, top:-16, right:-16 }} />
-                  <div className="ec-deco-circle" style={{ width:44, height:44, bottom:10, left:-12 }} />
-                  <div className="ec-deco-circle" style={{ width:28, height:28, top:"35%", left:"20%" }} />
-
-                  <span className="ec-card-icon">{cat.icon}</span>
-                  <span className="ec-card-name">{cat.name}</span>
-                  <span className="ec-card-desc">{cat.description}</span>
-                </div>
-
-                {/* ── Right content panel ── */}
-                <div className="ec-card-right">
-
-                  {/* Top row */}
-                  <div className="ec-card-top">
-                    <span className="ec-cat-badge">{cat.badge}</span>
-                    <span className="ec-pkg-count">{cat.packageCount}+ Packages</span>
-                  </div>
-
-                  {/* Features grid */}
-                  <div className="ec-features">
-                    {cat.features.slice(0, 6).map((f, i) => (
-                      <div key={i} className="ec-feature-item">
-                        <span className="ec-check">✓</span>
-                        {f}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Bottom: types + best time */}
-                  <div className="ec-card-bottom">
-                    {cat.tourismTypes.slice(0, 3).map((t, i) => (
-                      <span key={i} className="ec-type-chip">{t}</span>
-                    ))}
-                    <span className="ec-time-chip">
-                      🗓️ {cat.bestTime}
-                    </span>
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="ec-arrow">→</div>
-
-                </div>
-              </Link>
+      {/* Top — count + dots */}
+      <div style={{ position: "absolute", top: 12, left: 12, right: 12, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <span style={{
+          fontSize: 9, fontWeight: 900, letterSpacing: "0.15em", textTransform: "uppercase",
+          padding: "4px 10px", borderRadius: 100, backdropFilter: "blur(8px)",
+          background: `${item.accent}22`, border: `1px solid ${item.accent}50`, color: item.accent,
+        }}>
+          {item.count} Packages
+        </span>
+        {item.images.length > 1 && (
+          <div style={{ display: "flex", gap: 3 }}>
+            {item.images.map((_, i) => (
+              <div key={i} style={{
+                width: i === imgIdx ? 14 : 4, height: 4, borderRadius: 100,
+                background: i === imgIdx ? item.accent : "rgba(255,255,255,0.3)",
+                transition: "all 0.35s",
+              }} />
             ))}
           </div>
+        )}
+      </div>
 
-          {/* ── CTA Banner ───────────────────────────────────────────── */}
-          <div
-            className="ec-cta"
-            style={{
-              opacity:   isLoaded ? 1 : 0,
-              transform: isLoaded ? "translateY(0)" : "translateY(20px)",
-              transition: "opacity 0.6s 1s ease, transform 0.6s 1s ease",
-            }}
-          >
-            <div>
-              <p className="ec-cta-text">Can't decide your perfect trip?</p>
-              <p className="ec-cta-sub">
-                Tell us your budget & preferences — we'll craft a custom package just for you.
-              </p>
-            </div>
-            <button className="ec-cta-btn" onClick={() => setShowForm(true)}>
-              💬 Get Recommendations
-            </button>
-          </div>
-
+      {/* Bottom content */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "16px 14px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <span style={{ fontSize: cardH > 260 ? 22 : 18 }}>{item.emoji}</span>
+          <h3 style={{
+            fontFamily: "Georgia, serif", fontSize: cardH > 260 ? 20 : 16,
+            fontWeight: 900, color: hovered ? item.accent : "white",
+            lineHeight: 1.1, margin: 0, transition: "color 0.3s",
+          }}>
+            {item.label}
+          </h3>
         </div>
-      </section>
 
-      {/* ── Query Form Modal ─────────────────────────────────────────────── */}
-      {showForm && (
-        <div className="ec-overlay" onClick={(e) => e.target.classList.contains("ec-overlay") && setShowForm(false)}>
-          <div className="ec-modal">
+        {item.tagline && (
+          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontStyle: "italic", marginBottom: 8 }}>
+            {item.tagline}
+          </p>
+        )}
 
-            {/* Drag handle */}
-            <div className="ec-handle">
-              <div className="ec-handle-bar" />
-            </div>
-
-            {/* Header */}
-            <div className="ec-modal-head">
-              <h3 className="ec-modal-title">Get Personalised Recommendations</h3>
-              <p className="ec-modal-sub">
-                Share your dream trip details — we'll suggest the best packages!
-              </p>
-              <button className="ec-modal-close" onClick={() => setShowForm(false)} aria-label="Close">✕</button>
-            </div>
-
-            {/* Form */}
-            <div className="ec-form-body">
-              <form onSubmit={handleSubmit}>
-                <div className="ec-form-grid">
-
-                  <div>
-                    <label className="ec-label">Your Name *</label>
-                    <input
-                      type="text" required
-                      className="ec-input"
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={(e) => handleField("name", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="ec-label">Email Address *</label>
-                    <input
-                      type="email" required
-                      className="ec-input"
-                      placeholder="john@example.com"
-                      value={formData.email}
-                      onChange={(e) => handleField("email", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="ec-label">Phone Number *</label>
-                    <input
-                      type="tel" required
-                      className="ec-input"
-                      placeholder="+91 98765 43210"
-                      value={formData.phone}
-                      onChange={(e) => handleField("phone", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="ec-label">Preferred Destination</label>
-                    <input
-                      type="text"
-                      className="ec-input"
-                      placeholder="Paris, Bali, Goa…"
-                      value={formData.destination}
-                      onChange={(e) => handleField("destination", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="ec-label">Travel Date</label>
-                    <input
-                      type="date"
-                      className="ec-input"
-                      value={formData.travelDate}
-                      onChange={(e) => handleField("travelDate", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="ec-label">Budget Range</label>
-                    <select
-                      className="ec-select"
-                      value={formData.budget}
-                      onChange={(e) => handleField("budget", e.target.value)}
-                    >
-                      <option value="">Select Budget</option>
-                      <option>Under ₹50,000</option>
-                      <option>₹50,000 – ₹1,00,000</option>
-                      <option>₹1,00,000 – ₹1,50,000</option>
-                      <option>₹1,50,000+</option>
-                      <option>To be discussed</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="ec-label">Number of Travellers</label>
-                    <select
-                      className="ec-select"
-                      value={formData.travelers}
-                      onChange={(e) => handleField("travelers", e.target.value)}
-                    >
-                      <option value="">Select</option>
-                      <option value="1">Solo Traveller</option>
-                      <option value="2">Couple</option>
-                      <option value="3-4">Small Group (3–4)</option>
-                      <option value="5-8">Medium Group (5–8)</option>
-                      <option value="9+">Large Group (9+)</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="ec-label">Travel Category</label>
-                    <select
-                      className="ec-select"
-                      value={formData.category}
-                      onChange={(e) => handleField("category", e.target.value)}
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.name}>{c.icon} {c.name}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="ec-form-full">
-                    <label className="ec-label">Additional Message</label>
-                    <textarea
-                      rows={3}
-                      className="ec-textarea"
-                      placeholder="Tell us more about your preferences, must-see places, special requirements…"
-                      value={formData.message}
-                      onChange={(e) => handleField("message", e.target.value)}
-                    />
-                  </div>
-
-                </div>
-
-                <div className="ec-form-btns">
-                  <button type="submit" className="ec-submit-btn">
-                    📲 Send via WhatsApp
-                  </button>
-                  <button
-                    type="button"
-                    className="ec-cancel-btn"
-                    onClick={() => setShowForm(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-
+        {showCities && item.cities.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
+            {item.cities.slice(0, 3).map((city) => (
+              <span key={city} style={{
+                fontSize: 9, fontWeight: 600, padding: "2px 8px", borderRadius: 100,
+                background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.15)",
+                color: "rgba(255,255,255,0.6)",
+              }}>{city}</span>
+            ))}
           </div>
-        </div>
-      )}
-    </>
+        )}
+
+        <Link href={item.href} onClick={(e) => e.stopPropagation()}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "9px 12px", borderRadius: 10,
+            background: hovered ? item.accent : `${item.accent}18`,
+            border: `1px solid ${item.accent}40`,
+            color: hovered ? "#000" : item.accent,
+            fontSize: 9, fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase",
+            textDecoration: "none", transition: "all 0.3s",
+            boxShadow: hovered ? `0 6px 20px ${item.accent}40` : "none",
+          }}
+        >
+          Explore
+          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            style={{ transform: hovered ? "translateX(3px)" : "none", transition: "transform 0.3s" }}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </Link>
+      </div>
+    </div>
   );
-};
+}
 
-export default ExperienceCategories;
+// ─────────────────────────────────────────────────────────────────────────────
+// CAROUSEL ROW — reusable for both rows
+// ─────────────────────────────────────────────────────────────────────────────
+function CarouselRow({ items, cardW, cardH, showCities, label, accent, autoDelay = 4000 }) {
+  const trackRef                = useRef(null);
+  const autoRef                 = useRef(null);
+  const [current, setCurrent]   = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dragStart               = useRef(0);
+  const scrollStart             = useRef(0);
+  const STEP                    = cardW + 16;
+
+  const scrollTo = useCallback((idx) => {
+    const n = ((idx % items.length) + items.length) % items.length;
+    setCurrent(n);
+    trackRef.current?.scrollTo({ left: n * STEP, behavior: "smooth" });
+  }, [items.length, STEP]);
+
+  const startAuto = useCallback(() => {
+    if (autoRef.current) clearInterval(autoRef.current);
+    autoRef.current = setInterval(() => {
+      setCurrent((p) => {
+        const n = (p + 1) % items.length;
+        trackRef.current?.scrollTo({ left: n * STEP, behavior: "smooth" });
+        return n;
+      });
+    }, autoDelay);
+  }, [items.length, STEP, autoDelay]);
+
+  const stopAuto = useCallback(() => { if (autoRef.current) clearInterval(autoRef.current); }, []);
+
+  useEffect(() => { startAuto(); return stopAuto; }, [startAuto, stopAuto]);
+
+  const onScroll = useCallback(() => {
+    if (!trackRef.current) return;
+    setCurrent(Math.round(trackRef.current.scrollLeft / STEP) % items.length);
+  }, [STEP, items.length]);
+
+  const onMouseDown = (e) => { setDragging(true); stopAuto(); dragStart.current = e.clientX; scrollStart.current = trackRef.current?.scrollLeft ?? 0; };
+  const onMouseMove = (e) => { if (!dragging || !trackRef.current) return; trackRef.current.scrollLeft = scrollStart.current - (e.clientX - dragStart.current); };
+  const onMouseUp   = () => { setDragging(false); onScroll(); startAuto(); };
+  const touchStart  = useRef(0);
+  const onTouchStart = (e) => { stopAuto(); touchStart.current = e.touches[0].clientX; };
+  const onTouchEnd   = (e) => {
+    const diff = touchStart.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 44) diff > 0 ? scrollTo(current + 1) : scrollTo(current - 1);
+    else startAuto();
+  };
+
+  const activeAccent = items[current]?.accent ?? accent;
+
+  return (
+    <div>
+      {/* Row header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 3, height: 22, borderRadius: 4, background: activeAccent, transition: "background 0.5s" }} />
+          <span style={{ fontSize: 11, fontWeight: 900, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.5)" }}>
+            {label}
+          </span>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* Dots */}
+          <div style={{ display: "flex", gap: 4 }}>
+            {items.map((_, i) => (
+              <button key={i} onClick={() => { stopAuto(); scrollTo(i); startAuto(); }}
+                style={{
+                  width: i === current ? 20 : 5, height: 5, borderRadius: 100, border: "none", cursor: "pointer", padding: 0,
+                  background: i === current ? activeAccent : "rgba(255,255,255,0.15)",
+                  boxShadow: i === current ? `0 0 10px ${activeAccent}60` : "none",
+                  transition: "all 0.35s ease",
+                }} />
+            ))}
+          </div>
+          {/* Arrows */}
+          {[
+            { d: "M15 19l-7-7 7-7", fn: () => { stopAuto(); scrollTo(current - 1); startAuto(); } },
+            { d: "M9 5l7 7-7 7",    fn: () => { stopAuto(); scrollTo(current + 1); startAuto(); } },
+          ].map(({ d, fn }, i) => (
+            <button key={i} onClick={fn} style={{
+              width: 32, height: 32, borderRadius: "50%", border: `1px solid ${activeAccent}40`,
+              background: `${activeAccent}15`, color: activeAccent, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.3s",
+            }}>
+              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={d} />
+              </svg>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Track */}
+      <div
+        ref={trackRef}
+        onScroll={onScroll}
+        onMouseDown={onMouseDown} onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
+        onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}
+        style={{
+          display: "flex", gap: 16,
+          overflowX: "auto", scrollbarWidth: "none",
+          cursor: dragging ? "grabbing" : "grab",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+          paddingBottom: 4, userSelect: "none",
+        }}
+      >
+        {items.map((item) => (
+          <SliderCard key={item.id} item={item} cardW={cardW} cardH={cardH} showCities={showCities} />
+        ))}
+        <div style={{ width: 20, flexShrink: 0 }} />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN EXPORT
+// ─────────────────────────────────────────────────────────────────────────────
+export default function ExperienceCategories() {
+  return (
+    <section style={{ background: "#060f11", padding: "72px 0 80px", overflow: "hidden" }}>
+      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px" }}>
+
+        {/* ── Section Header ── */}
+        <div style={{ textAlign: "center", marginBottom: 52 }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            fontSize: 10, fontWeight: 900, letterSpacing: "0.3em", textTransform: "uppercase",
+            color: "#4db8cc", border: "1px solid rgba(77,184,204,0.3)", background: "rgba(77,184,204,0.08)",
+            padding: "6px 18px", borderRadius: 100, marginBottom: 16,
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4db8cc" }} />
+            Travel Categories
+          </span>
+          <h2 style={{
+            fontFamily: "Georgia, serif", fontSize: "clamp(2rem,4vw,2.8rem)",
+            fontWeight: 900, color: "white", lineHeight: 1.15, margin: "0 0 10px",
+          }}>
+            Find Your{" "}
+            <span style={{ fontStyle: "italic", color: "#4db8cc" }}>Perfect Trip</span>
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 14, margin: 0 }}>
+            {packages.length}+ packages · browse by trip type or travel style
+          </p>
+        </div>
+
+        {/* ══════════════════════════════════════════════
+            ROW 1 — MAIN CATEGORIES
+        ══════════════════════════════════════════════ */}
+        <div style={{ marginBottom: 44 }}>
+          <CarouselRow
+            items={CAT_CARDS}
+            cardW={290}
+            cardH={340}
+            showCities={true}
+            label="Browse by Trip Type"
+            accent="#4db8cc"
+            autoDelay={4200}
+          />
+        </div>
+
+        {/* Divider */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 16, marginBottom: 36,
+        }}>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
+          <span style={{ fontSize: 10, fontWeight: 900, letterSpacing: "0.25em", textTransform: "uppercase", color: "rgba(255,255,255,0.2)", whiteSpace: "nowrap" }}>
+            or explore by travel style
+          </span>
+          <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.06)" }} />
+        </div>
+
+        {/* ══════════════════════════════════════════════
+            ROW 2 — TOURISM TYPES
+        ══════════════════════════════════════════════ */}
+        <CarouselRow
+          items={TYPE_CARDS}
+          cardW={220}
+          cardH={270}
+          showCities={false}
+          label="Browse by Travel Style"
+          accent="#a78bfa"
+          autoDelay={3500}
+        />
+
+      </div>
+    </section>
+  );
+}

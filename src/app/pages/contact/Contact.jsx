@@ -32,8 +32,8 @@ const Contact = () => {
     {
       icon: "📞",
       label: "Call Us",
-      value: "+91 8882129640",
-      href: "tel:+918882129640",
+      value: "+91 8882128640",
+      href: "tel:+918882128640",
       description: "Mon–Sat: 9:00 AM – 7:00 PM",
     },
     {
@@ -53,8 +53,8 @@ const Contact = () => {
     {
       icon: "💬",
       label: "WhatsApp",
-      value: "+91 8882129640",
-      href: "https://wa.me/918882129640",
+      value: "+91 8882128640",
+      href: "https://wa.me/918882128640",
       description: "Chat Instantly",
     },
   ];

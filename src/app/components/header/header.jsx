@@ -30,7 +30,7 @@ const Header = () => {
   return (
     <>
       {/* Desktop Header */}
-      <header className="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-[#0F6177] border-b border-gray-200/50 shadow-sm">
+      <header className="hidden lg:block fixed top-0 left-0 right-0 z-[999999] bg-[#0F6177] border-b border-gray-200/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -61,7 +61,7 @@ const Header = () => {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                +91 88821 29640
+                +91 88821 28640
               </a>
               <Link href="/booking">
                 <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300 transform hover:scale-105">
@@ -74,7 +74,7 @@ const Header = () => {
       </header>
 
       {/* Mobile/Tablet Header */}
-      <header className="xl:hidden fixed top-0 left-0 right-0 z-50 bg-[#0F6177] backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+      <header className="xl:hidden fixed top-0 left-0 right-0 z-[99999] bg-[#0F6177] backdrop-blur-xl border-b border-gray-200/50 shadow-sm ">
         <div className="flex justify-between items-center h-16 px-4">
           {/* Mobile/Tablet Logo */}
           <div className="flex items-center gap-2">
@@ -111,27 +111,13 @@ const Header = () => {
 
         {/* Mobile Menu */}
         <div
-          className={`absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-white transition-all duration-300 ${isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+          className={`absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-white transition-all duration-300 ${isMenuOpen ? "h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"
             }`}
         >
           <Nav mobile={true} onClose={() => setIsMenuOpen(false)} />
 
           {/* Mobile Contact Info */}
-          <div className="px-4 py-4 border-t border-gray-200/50">
-            <div className="flex flex-col gap-3">
-              <a href="tel:+919876543210" className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                +91 88821 29640
-              </a>
-              <Link href="wa.me/+918882129640">
-                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all duration-300">
-                  Book Now
-                </button>
-              </Link>
-            </div>
-          </div>
+        
         </div>
       </header>
 
