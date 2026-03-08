@@ -103,7 +103,6 @@ useEffect(() => {
           position: fixed;
           inset: 0;
           z-index: 9999;
-          top:0%;
           display: flex;
           align-items: flex-end;       /* mobile: sheet from bottom */
           justify-content: center;
@@ -114,7 +113,7 @@ useEffect(() => {
         @media (min-width: 640px) {
           .pu-overlay {
             align-items: center;
-            padding: 106px;
+            
           }
         }
 
@@ -139,6 +138,7 @@ useEffect(() => {
             flex-direction: row;
             max-height: 100vh;
             max-width: 900px;
+            padding-bottom:0;
             animation: puFadeIn 0.28s ease;
           }
         }
