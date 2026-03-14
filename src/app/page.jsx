@@ -12,9 +12,9 @@ export default function Page() {
     <div className="pt-16 md:pt-16 pb-20 md:pb-0 min-h-screen bg-white">
       <div className="relative overflow-hidden">
         <Herosections />
-        <FeaturedPackages limit={5} />
         <ExperienceCategories />
         <FeatuersSection />
+        <FeaturedPackages limit={5} />
         <AboutUs />
         <CTASection />
       </div>

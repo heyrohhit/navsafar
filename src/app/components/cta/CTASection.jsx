@@ -33,8 +33,8 @@ const CTASection = () => {
         </svg>
       ),
       label: "Call Us",
-      value: "+91 88821 29640",
-      href: "tel:+918882129640",
+      value: "+91 88821 28640",
+      href: "tel:+918882128640",
       accent: "#0F6177",
       emoji: "📞",
     },
