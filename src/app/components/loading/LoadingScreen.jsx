@@ -60,103 +60,8 @@ export default function LoadingScreen({ onComplete }) {
         background: "#0f6477"
       }} />
 
-      {/* Sun Glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2" style={{
-        width: "600px", height: "300px",
-        background: "#0f6476",
-        filter: "blur(20px)"
-      }} />
+   
 
-      {/* Sun disc */}
-      <div className="absolute" style={{
-        bottom: "28%", left: "50%", transform: "translateX(-50%)",
-        width: "80px", height: "80px",
-        background: "#0f6475",
-        borderRadius: "50%",
-        boxShadow: "0 0 60px 30px rgba(245,200,66,0.4), 0 0 120px 60px rgba(232,132,58,0.2)",
-        animation: "pulse 3s ease-in-out infinite"
-      }} />
-
-      {/* === MOUNTAIN SILHOUETTES === */}
-      {/* <svg className="absolute bottom-0 w-full" viewBox="0 0 1440 250" preserveAspectRatio="none" style={{ height: "250px" }}> */}
-        {/* Back mountains */}
-        {/* <polygon points="0,250 200,80 350,160 500,60 650,150 800,50 950,140 1100,70 1250,130 1440,90 1440,250" fill="#0d2444" opacity="0.6" /> */}
-        {/* Front mountains */}
-        {/* <polygon points="0,250 150,140 280,200 420,110 580,190 720,100 880,180 1020,120 1200,170 1350,120 1440,150 1440,250" fill="#0a1628" opacity="0.85" /> */}
-        {/* Ground */}
-        {/* <rect x="0" y="210" width="1440" height="40" fill="#060e1a" /> */}
-        {/* Trees silhouette */}
-        {/* {[50, 130, 210, 300, 400, 500, 620, 750, 850, 960, 1080, 1180, 1280, 1380].map((x, i) => (
-          <g key={i}>
-            <polygon points={`${x},210 ${x + 10},170 ${x + 20},210`} fill="#040b14" opacity="0.9" />
-            <polygon points={`${x + 2},185 ${x + 10},155 ${x + 18},185`} fill="#040b14" opacity="0.9" />
-          </g>
-        ))}
-      </svg> */}
-
-      {/* === ANIMATED CLOUDS === */}
-      <div className="absolute inset-0 overflow-x-hidden pointer-events-none">
-        {/* Cloud layer 1 */}
-        <div style={{
-          position: "absolute", top: "18%", left: "-300px",
-          width: "320px", height: "80px",
-          background: "rgba(255,160,80,0.25)",
-          borderRadius: "100px",
-          filter: "blur(18px)",
-          animation: "cloudMove1 45s linear infinite"
-        }} />
-        <div style={{
-          position: "absolute", top: "15%", left: "-200px",
-          width: "200px", height: "50px",
-          background: "rgba(255,200,100,0.2)",
-          borderRadius: "100px",
-          filter: "blur(12px)",
-          animation: "cloudMove1 45s linear infinite 5s"
-        }} />
-        {/* Cloud layer 2 */}
-        <div style={{
-          position: "absolute", top: "30%", left: "-400px",
-          width: "400px", height: "90px",
-          background: "rgba(255,140,60,0.15)",
-          borderRadius: "100px",
-          filter: "blur(22px)",
-          animation: "cloudMove2 60s linear infinite"
-        }} />
-        <div style={{
-          position: "absolute", top: "12%", right: "-300px",
-          width: "280px", height: "70px",
-          background: "rgba(200,230,255,0.15)",
-          borderRadius: "100px",
-          filter: "blur(15px)",
-          animation: "cloudMove3 50s linear infinite reverse"
-        }} />
-        {/* Star sparkles at top */}
-        {[10, 20, 35, 50, 65, 75, 85].map((left, i) => (
-          <div key={i} style={{
-            position: "absolute",
-            top: `${3 + (i % 4) * 3}%`,
-            left: `${left}%`,
-            width: "3px", height: "3px",
-            background: "white",
-            borderRadius: "50%",
-            opacity: 0.6,
-            animation: `twinkle ${1.5 + i * 0.3}s ease-in-out infinite alternate`,
-            boxShadow: "0 0 6px white"
-          }} />
-        ))}
-      </div>
-
-      {/* === BIRDS === */}
-      <div className="absolute" style={{ top: "22%", left: "-80px", animation: "birdFly 12s linear infinite 2s" }}>
-        <svg width="60" height="20" viewBox="0 0 60 20" fill="none">
-          <path d="M5 10 Q15 2 30 10 Q45 18 55 10" stroke="rgba(255,220,150,0.9)" strokeWidth="1.5" fill="none" />
-        </svg>
-      </div>
-      <div className="absolute" style={{ top: "19%", left: "-120px", animation: "birdFly 16s linear infinite 0s" }}>
-        <svg width="40" height="14" viewBox="0 0 40 14" fill="none">
-          <path d="M3 7 Q10 1 20 7 Q30 13 37 7" stroke="rgba(255,200,120,0.7)" strokeWidth="1.2" fill="none" />
-        </svg>
-      </div>
 
       {/* === MAIN CONTENT === */}
       <div className="relative z-10 flex flex-col items-center px-8 text-center" style={{ marginBottom: "80px" }}>
@@ -187,12 +92,7 @@ export default function LoadingScreen({ onComplete }) {
             style={{
               fontSize: "clamp(52px, 12vw, 96px)",
               fontWeight: "700",
-              // height:"max-content",
-              // background: "linear-gradient(135deg, #fde68a 0%, #f5c842 30%, #e8843a 70%, #fff7a0 100%)",
-              // WebkitBackgroundClip: "text",
-              // WebkitTextFillColor: "transparent",
-              // backgroundClip: "text",
-              
+             
               filter: "drop-shadow(0 2px 20px rgba(245,200,66,0.4))",
               animation: "titleReveal 1s ease forwards"
             }}>

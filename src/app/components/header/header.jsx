@@ -114,7 +114,7 @@ const Header = () => {
           className={`absolute top-16 left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-white transition-all duration-300 ${isMenuOpen ? "h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"
             }`}
         >
-          <Nav mobile={true} onClose={() => setIsMenuOpen(false)} />
+          <Nav mobile={true} onClose={() => setIsMenuOpen(false)}/>
 
           {/* Mobile Contact Info */}
         

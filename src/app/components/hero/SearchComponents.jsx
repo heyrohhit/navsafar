@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { City } from "country-state-city";
+import { City, State, Country } from "country-state-city";
 
 const ACCENT_COLORS = [
 "#F59E0B",
@@ -25,9 +25,62 @@ const [showSuggestions,setShowSuggestions] = useState(false);
 const accentColor = ACCENT_COLORS[0];
 
 
-/* ───────── GET ALL CITIES ───────── */
+/* ───────── BUILD FULL LOCATION DATABASE ───────── */
 
-const allCities = useMemo(()=>City.getAllCities(),[]);
+const locations = useMemo(()=>{
+
+const cities = City.getAllCities();
+const states = State.getAllStates();
+const countries = Country.getAllCountries();
+
+const cityLocations = cities.map(city=>{
+
+const state = State.getStateByCodeAndCountry(
+city.stateCode,
+city.countryCode
+);
+
+const country = Country.getCountryByCode(city.countryCode);
+
+return {
+type:"city",
+city: city.name,
+state: state?.name || "",
+country: country?.name || "",
+searchText:`${city.name} ${state?.name || ""} ${country?.name || ""}`.toLowerCase()
+};
+
+});
+
+const stateLocations = states.map(state=>{
+
+const country = Country.getCountryByCode(state.countryCode);
+
+return {
+type:"state",
+city:"",
+state: state.name,
+country: country?.name || "",
+searchText:`${state.name} ${country?.name || ""}`.toLowerCase()
+};
+
+});
+
+const countryLocations = countries.map(country=>{
+
+return {
+type:"country",
+city:"",
+state:"",
+country: country.name,
+searchText:country.name.toLowerCase()
+};
+
+});
+
+return [...cityLocations,...stateLocations,...countryLocations];
+
+},[]);
 
 
 /* ───────── FILTER SUGGESTIONS ───────── */
@@ -38,16 +91,11 @@ if(!destination) return [];
 
 const q = destination.toLowerCase();
 
-return allCities
-.filter(city =>
-
-city.name.toLowerCase().includes(q) ||
-city.countryCode.toLowerCase().includes(q)
-
-)
+return locations
+.filter(loc => loc.searchText.includes(q))
 .slice(0,8);
 
-},[destination,allCities]);
+},[destination,locations]);
 
 
 /* ───────── SEARCH ───────── */
@@ -116,13 +164,24 @@ exit={{opacity:0}}
 className="absolute top-full mt-2 w-full bg-[#0f6177] border border-white/20 rounded-xl z-50 max-h-64 overflow-y-auto"
 >
 
-{suggestions.map((city,i)=>(
+{suggestions.map((loc,i)=>(
 
 <div
 key={i}
 onClick={()=>{
 
-setDestination(city.name);
+let value = "";
+
+if(loc.type==="city")
+value = `${loc.city}, ${loc.state}, ${loc.country}`;
+
+if(loc.type==="state")
+value = `${loc.state}, ${loc.country}`;
+
+if(loc.type==="country")
+value = `${loc.country}`;
+
+setDestination(value);
 setShowSuggestions(false);
 
 }}
@@ -130,11 +189,11 @@ className="px-4 py-3 hover:bg-white/10 cursor-pointer border-b border-white/10"
 >
 
 <div className="text-sm text-white font-semibold">
-{city.name}
+{loc.city || loc.state || loc.country}
 </div>
 
 <div className="text-xs text-white/60">
-{city.stateCode} • {city.countryCode}
+{loc.state && loc.city ? `${loc.state} • ${loc.country}` : loc.country}
 </div>
 
 </div>
@@ -174,6 +233,7 @@ background:"#0f6177",
 border:"1px solid rgba(255,255,255,0.2)",
 color:"#fff"
 }}
+
 >
 
 <button

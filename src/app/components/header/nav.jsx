@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { navModel, getTravelIcon } from "../../models";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -7,11 +7,14 @@ import { usePathname } from "next/navigation";
 const Nav = ({ mobile = false, onClose }) => {
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState(pathname);
-  const [hoveredItem, setHoveredItem] = useState(null);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [isToursOpen, setIsToursOpen] = useState(false);
 
   // console.log("pathname is", pathname)
+
+  useEffect(()=>{
+    setActiveItem(pathname)
+  },[pathname])
 
 
   // Group navigation items for better organization
@@ -26,7 +29,7 @@ const Nav = ({ mobile = false, onClose }) => {
           <Link
             key={idx}
             href={item.path}
-
+           onClick={()=> onClose()}
             className={`block px-4 py-3 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 group ${activeItem === item.path ? "bg-blue-50 text-blue-600 font-semibold" : ""
               }`}
             title={item.description}
@@ -49,7 +52,7 @@ const Nav = ({ mobile = false, onClose }) => {
   }
 
   return (
-    <nav className="relative h-full w-full flex justify-center items-center" role="navigation" aria-label="Main navigation">
+    <nav className="relative h-full w-[600px] flex justify-center items-center " role="navigation" aria-label="Main navigation">
       {/* Desktop Navigation - Grouped Menu */}
       <div className="w-full h-full hidden xl:flex items-center justify-around text-white">
         {/* Main Items */}
@@ -57,16 +60,18 @@ const Nav = ({ mobile = false, onClose }) => {
           <Link
             key={idx}
             href={item.path}
-            className={` relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-[0.8vw] whitespace-nowrap ${activeItem === item.path ? "text-black bg-white" : ""
+            className={` relative flex justify-around items-center hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 whitespace-nowrap ${activeItem === item.path ? "text-black bg-white" : ""
               }`}
             title={item.description}
             aria-label={`${item.name} - ${item.description}`}
           >
-            <span className="text-[0.7vw] leading-tight">{item.name}</span>
+            <span className="text-[0.9vw] p-2 leading-tight ">{item.name}</span>
 
             {/* Animated underline */}
             <span
-              className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 ${activeItem === item.path ? "w-full" : "w-0"
+              className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-300 ${activeItem === item.path
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-600"
                 }`}
             />
           </Link>
