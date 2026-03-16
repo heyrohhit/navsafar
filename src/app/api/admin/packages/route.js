@@ -1,32 +1,47 @@
 // src/app/api/admin/packages/route.js
-// ─────────────────────────────────────────────────────────────────
-// PROTECTED — Requires Authorization header with admin token
-// Supports: GET / POST / PUT / DELETE
-// ─────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// PROTECTED CRUD — requires Authorization: Bearer <ADMIN_SECRET_TOKEN>
+// GET    → read all packages (admin view, no filters)
+// POST   → create new package
+// PUT    → update existing package (id required in body)
+// DELETE → delete package (?id=xxx query param)
+// ─────────────────────────────────────────────────────────────────────────────
 import { NextResponse } from "next/server";
-import fs from "fs";
+import fs   from "fs";
 import path from "path";
 import { packages as staticPackages } from "../../../models/objAll/packages";
 
-const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
-const SECRET    = process.env.ADMIN_SECRET_TOKEN;
+export const dynamic = "force-dynamic";
 
-// ── Auth Check ────────────────────────────────────────────────────
-function isAuthorized(request) {
-  const auth = request.headers.get("Authorization");
-  return auth === `Bearer ${SECRET}`;
+const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
+
+// ── Auth helper ────────────────────────────────────────────────────
+function isAuthorized(req) {
+  const auth  = req.headers.get("Authorization") ?? "";
+  const token = process.env.ADMIN_SECRET_TOKEN;
+  return Boolean(token && auth === `Bearer ${token}`);
 }
 
-// ── File Helpers ──────────────────────────────────────────────────
+function unauthorizedResponse() {
+  return NextResponse.json(
+    { success: false, message: "Unauthorized — invalid or missing token." },
+    { status: 401 }
+  );
+}
+
+// ── File helpers ────────────────────────────────────────────────────
 function readPackages() {
   try {
     if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
+      const raw    = fs.readFileSync(DATA_FILE, "utf-8");
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
-  } catch (e) {}
-  return staticPackages; // first time: load from static model
+  } catch (e) {
+    console.error("[readPackages]", e.message);
+  }
+  // First run — seed from static model
+  return [...staticPackages];
 }
 
 function writePackages(data) {
@@ -35,135 +50,171 @@ function writePackages(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
 }
 
-function generateId(city) {
+// ── ID generator ────────────────────────────────────────────────────
+function generateId(city = "") {
   const slug = city
-    ? city.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
-    : "pkg";
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "") || "pkg";
   return `${slug}-${Date.now()}`;
 }
 
-// ── GET — Read all packages (admin view) ─────────────────────────
-export async function GET(request) {
-  if (!isAuthorized(request))
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+// ── Array normaliser ────────────────────────────────────────────────
+function toArray(val, fallback = []) {
+  if (Array.isArray(val)) return val.filter(Boolean);
+  if (typeof val === "string" && val.trim())
+    return val.split(",").map((s) => s.trim()).filter(Boolean);
+  return fallback;
+}
+
+// ── GET ─────────────────────────────────────────────────────────────
+export async function GET(req) {
+  if (!isAuthorized(req)) return unauthorizedResponse();
 
   const packages = readPackages();
   return NextResponse.json({ success: true, data: packages, total: packages.length });
 }
 
-// ── POST — Create new package ─────────────────────────────────────
-export async function POST(request) {
-  if (!isAuthorized(request))
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+// ── POST (Create) ───────────────────────────────────────────────────
+export async function POST(req) {
+  if (!isAuthorized(req)) return unauthorizedResponse();
 
   try {
-    const body = await request.json();
+    const body = await req.json();
 
-    if (!body.title)
-      return NextResponse.json({ success: false, message: "Title is required" }, { status: 400 });
+    if (!body.title?.trim()) {
+      return NextResponse.json(
+        { success: false, message: "Field 'title' is required." },
+        { status: 400 }
+      );
+    }
 
     const packages = readPackages();
 
-    const newPackage = {
-      id:                body.id || generateId(body.city),
-      city:              body.city              || "",
-      country:           body.country           || "",
-      tourism_type:      Array.isArray(body.tourism_type) ? body.tourism_type : (body.tourism_type ? body.tourism_type.split(",").map(s => s.trim()) : []),
-      famous_attractions: Array.isArray(body.famous_attractions) ? body.famous_attractions : (body.famous_attractions ? body.famous_attractions.split(",").map(s => s.trim()) : []),
-      category:          Array.isArray(body.category) ? body.category : (body.category ? body.category.split(",").map(s => s.trim()) : []),
-      image:             body.image             || "",
-      title:             body.title,
-      tagline:           body.tagline           || "",
-      description:       body.description       || "",
-      duration:          body.duration          || "",
-      popular:           body.popular === true || body.popular === "true",
-      rating:            parseFloat(body.rating) || 0,
-      bestTime:          body.bestTime          || "",
-      highlights:        Array.isArray(body.highlights) ? body.highlights : (body.highlights ? body.highlights.split(",").map(s => s.trim()) : []),
-      activities:        Array.isArray(body.activities) ? body.activities : (body.activities ? body.activities.split(",").map(s => s.trim()) : []),
-      itinerary:         Array.isArray(body.itinerary) ? body.itinerary : [],
-      createdAt:         new Date().toISOString(),
-      updatedAt:         new Date().toISOString(),
+    // Generate unique id
+    let id = body.id?.trim() || generateId(body.city);
+    if (packages.some((p) => p.id === id)) id = generateId(body.city);
+
+    const newPkg = {
+      id,
+      city:               body.city?.trim()           || "",
+      country:            body.country?.trim()         || "",
+      tourism_type:       toArray(body.tourism_type),
+      famous_attractions: toArray(body.famous_attractions),
+      category:           toArray(body.category),
+      image:              body.image?.trim()           || "",
+      title:              body.title.trim(),
+      tagline:            body.tagline?.trim()         || "",
+      description:        body.description?.trim()     || "",
+      duration:           body.duration?.trim()        || "",
+      popular:            body.popular === true || body.popular === "true",
+      rating:             parseFloat(body.rating)      || 0,
+      bestTime:           body.bestTime?.trim()        || "",
+      highlights:         toArray(body.highlights),
+      activities:         toArray(body.activities),
+      itinerary:          Array.isArray(body.itinerary) ? body.itinerary : [],
+      createdAt:          new Date().toISOString(),
+      updatedAt:          new Date().toISOString(),
     };
 
-    // Check duplicate id
-    if (packages.find((p) => p.id === newPackage.id)) {
-      newPackage.id = generateId(body.city);
-    }
-
-    packages.unshift(newPackage); // add to top
+    packages.unshift(newPkg);
     writePackages(packages);
 
-    return NextResponse.json({ success: true, data: newPackage, message: "Package created successfully" }, { status: 201 });
+    return NextResponse.json(
+      { success: true, data: newPkg, message: "Package created successfully." },
+      { status: 201 }
+    );
   } catch (err) {
+    console.error("[POST /api/admin/packages]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
 
-// ── PUT — Update existing package ────────────────────────────────
-export async function PUT(request) {
-  if (!isAuthorized(request))
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+// ── PUT (Update) ────────────────────────────────────────────────────
+export async function PUT(req) {
+  if (!isAuthorized(req)) return unauthorizedResponse();
 
   try {
-    const body = await request.json();
-    const { id } = body;
+    const body = await req.json();
 
-    if (!id)
-      return NextResponse.json({ success: false, message: "Package ID is required" }, { status: 400 });
+    if (!body.id) {
+      return NextResponse.json(
+        { success: false, message: "Field 'id' is required for update." },
+        { status: 400 }
+      );
+    }
 
     const packages = readPackages();
-    const idx = packages.findIndex((p) => p.id === id);
+    const idx      = packages.findIndex((p) => p.id === body.id);
 
-    if (idx === -1)
-      return NextResponse.json({ success: false, message: "Package not found" }, { status: 404 });
+    if (idx === -1) {
+      return NextResponse.json(
+        { success: false, message: `Package with id '${body.id}' not found.` },
+        { status: 404 }
+      );
+    }
 
+    const orig    = packages[idx];
     const updated = {
-      ...packages[idx],
+      ...orig,
       ...body,
-      id: packages[idx].id, // protect original id
-      // normalize array fields
-      tourism_type:      Array.isArray(body.tourism_type)      ? body.tourism_type      : (body.tourism_type      ? body.tourism_type.split(",").map(s => s.trim())      : packages[idx].tourism_type),
-      famous_attractions: Array.isArray(body.famous_attractions) ? body.famous_attractions : (body.famous_attractions ? body.famous_attractions.split(",").map(s => s.trim()) : packages[idx].famous_attractions),
-      category:          Array.isArray(body.category)          ? body.category          : (body.category          ? body.category.split(",").map(s => s.trim())          : packages[idx].category),
-      highlights:        Array.isArray(body.highlights)        ? body.highlights        : (body.highlights        ? body.highlights.split(",").map(s => s.trim())        : packages[idx].highlights),
-      activities:        Array.isArray(body.activities)        ? body.activities        : (body.activities        ? body.activities.split(",").map(s => s.trim())        : packages[idx].activities),
-      popular:           body.popular === true || body.popular === "true",
-      rating:            parseFloat(body.rating) || packages[idx].rating,
-      updatedAt:         new Date().toISOString(),
+      // Protected fields
+      id:                 orig.id,
+      createdAt:          orig.createdAt,
+      // Normalise arrays — use body value if provided, else keep original
+      tourism_type:       body.tourism_type       !== undefined ? toArray(body.tourism_type,       orig.tourism_type)       : orig.tourism_type,
+      famous_attractions: body.famous_attractions !== undefined ? toArray(body.famous_attractions, orig.famous_attractions) : orig.famous_attractions,
+      category:           body.category           !== undefined ? toArray(body.category,           orig.category)           : orig.category,
+      highlights:         body.highlights         !== undefined ? toArray(body.highlights,         orig.highlights)         : orig.highlights,
+      activities:         body.activities         !== undefined ? toArray(body.activities,         orig.activities)         : orig.activities,
+      itinerary:          Array.isArray(body.itinerary) ? body.itinerary : orig.itinerary,
+      popular:            body.popular === true || body.popular === "true",
+      rating:             body.rating !== undefined ? (parseFloat(body.rating) || orig.rating) : orig.rating,
+      updatedAt:          new Date().toISOString(),
     };
 
     packages[idx] = updated;
     writePackages(packages);
 
-    return NextResponse.json({ success: true, data: updated, message: "Package updated successfully" });
+    return NextResponse.json({ success: true, data: updated, message: "Package updated successfully." });
   } catch (err) {
+    console.error("[PUT /api/admin/packages]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
 
-// ── DELETE — Remove package by id ────────────────────────────────
-export async function DELETE(request) {
-  if (!isAuthorized(request))
-    return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+// ── DELETE ──────────────────────────────────────────────────────────
+export async function DELETE(req) {
+  if (!isAuthorized(req)) return unauthorizedResponse();
 
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
-    if (!id)
-      return NextResponse.json({ success: false, message: "Package ID is required" }, { status: 400 });
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Query param 'id' is required." },
+        { status: 400 }
+      );
+    }
 
     const packages = readPackages();
     const filtered = packages.filter((p) => p.id !== id);
 
-    if (filtered.length === packages.length)
-      return NextResponse.json({ success: false, message: "Package not found" }, { status: 404 });
+    if (filtered.length === packages.length) {
+      return NextResponse.json(
+        { success: false, message: `Package with id '${id}' not found.` },
+        { status: 404 }
+      );
+    }
 
     writePackages(filtered);
+    return NextResponse.json({ success: true, message: "Package deleted successfully." });
 
-    return NextResponse.json({ success: true, message: "Package deleted successfully" });
   } catch (err) {
+    console.error("[DELETE /api/admin/packages]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

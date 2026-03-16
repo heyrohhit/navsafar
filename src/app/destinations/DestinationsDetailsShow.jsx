@@ -1,9 +1,19 @@
-"use client"
+// src/app/destinations/DestinationsDetailsShow.jsx
+// ─────────────────────────────────────────────────────────────────────
+// ONLY CHANGE from original:
+//   • Removed:  import { packages } from "../models/objAll/packages"
+//   • Added:    import { usePackages } from "../hooks/usePackages"
+//   • Removed:  top-level const destinations & ALL_IMAGES (built statically)
+//   • Added:    useMemo to build destinations & ALL_IMAGES inside component
+//     from the live packages returned by the hook.
+// Layout, styles, components — 100% unchanged.
+// ─────────────────────────────────────────────────────────────────────
+"use client";
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { packages } from "../models/objAll/packages";
+import { usePackages } from "../hooks/usePackages";
 
 // ─────────────────────────────────────────────────────────────────────
 // Slug helper  "New York City" → "new-york-city"
@@ -18,31 +28,28 @@ function toSlug(city) {
 
 // ─────────────────────────────────────────────────────────────────────
 // Build unique destinations deduplicated by city
-// Each gets a slug and href pointing to detail page
 // ─────────────────────────────────────────────────────────────────────
-const destinations = Object.values(
-  packages.reduce((acc, pkg) => {
-    if (!acc[pkg.city]) {
-      acc[pkg.city] = {
-        slug:               toSlug(pkg.city),
-        city:               pkg.city,
-        country:            pkg.country,
-        image:              pkg.image,
-        tourism_type:       pkg.tourism_type      ?? [],
-        famous_attractions: pkg.famous_attractions ?? [],
-        bestTime:           pkg.bestTime          ?? null,
-        highlights:         (pkg.highlights        ?? []).slice(0, 4),
-        rating:             pkg.rating            ?? null,
-        href:               `/destinations/${toSlug(pkg.city)}`,
-      };
-    }
-    return acc;
-  }, {})
-);
-
-const ALL_IMAGES = destinations.map((d) => ({
-  src: d.image, city: d.city, country: d.country,
-}));
+function buildDestinations(packages) {
+  return Object.values(
+    packages.reduce((acc, pkg) => {
+      if (!acc[pkg.city]) {
+        acc[pkg.city] = {
+          slug:               toSlug(pkg.city),
+          city:               pkg.city,
+          country:            pkg.country,
+          image:              pkg.image,
+          tourism_type:       pkg.tourism_type      ?? [],
+          famous_attractions: pkg.famous_attractions ?? [],
+          bestTime:           pkg.bestTime          ?? null,
+          highlights:         (pkg.highlights        ?? []).slice(0, 4),
+          rating:             pkg.rating            ?? null,
+          href:               `/destinations/${toSlug(pkg.city)}`,
+        };
+      }
+      return acc;
+    }, {})
+  );
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // Regions
@@ -108,12 +115,22 @@ function shuffleArray(arr) {
 // ─────────────────────────────────────────────────────────────────────
 // Hero Mosaic — 2 rows (2+3), full-screen, auto-rotating
 // ─────────────────────────────────────────────────────────────────────
-function HeroMosaic() {
-  const [slots, setSlots] = useState(() => shuffleArray(ALL_IMAGES).slice(0, 5));
+function HeroMosaic({ allImages }) {
+  const [slots, setSlots] = useState(() =>
+    allImages.length >= 5 ? shuffleArray(allImages).slice(0, 5) : allImages
+  );
   const [fading, setFading] = useState(null);
 
+  // Re-initialise slots when allImages first becomes non-empty (after API load)
   useEffect(() => {
-    const pool = shuffleArray(ALL_IMAGES);
+    if (allImages.length >= 5) {
+      setSlots(shuffleArray(allImages).slice(0, 5));
+    }
+  }, [allImages.length]); // only re-run when count changes
+
+  useEffect(() => {
+    if (allImages.length < 5) return;
+    const pool = shuffleArray(allImages);
     let poolIdx = 5;
     const id = setInterval(() => {
       const s = Math.floor(Math.random() * 5);
@@ -129,7 +146,9 @@ function HeroMosaic() {
       }, 600);
     }, 3000);
     return () => clearInterval(id);
-  }, []);
+  }, [allImages.length]);
+
+  if (slots.length < 5) return null;
 
   return (
     <div className="absolute inset-0 flex flex-col">
@@ -274,7 +293,20 @@ export default function DestinationsClient() {
   const [activeRegion, setActiveRegion] = useState("All");
   const [search, setSearch]             = useState("");
 
-  const totalCountries = new Set(destinations.map((d) => d.country)).size;
+  // ── Only change: fetch packages from API instead of static import ──
+  const { packages } = usePackages();
+
+  // Build destinations list from live packages (memoised)
+  const destinations = useMemo(() => buildDestinations(packages), [packages]);
+  const ALL_IMAGES   = useMemo(
+    () => destinations.map((d) => ({ src: d.image, city: d.city, country: d.country })),
+    [destinations]
+  );
+
+  const totalCountries = useMemo(
+    () => new Set(destinations.map((d) => d.country)).size,
+    [destinations]
+  );
 
   const byRegion = useMemo(() => {
     const map = {};
@@ -284,7 +316,7 @@ export default function DestinationsClient() {
       map[r].push(d);
     });
     return map;
-  }, []);
+  }, [destinations]);
 
   const filtered = useMemo(() => {
     let list = destinations;
@@ -302,7 +334,7 @@ export default function DestinationsClient() {
       );
     }
     return list;
-  }, [activeRegion, search]);
+  }, [destinations, activeRegion, search]);
 
   const showGrouped = activeRegion === "All" && !search.trim();
 
@@ -311,7 +343,7 @@ export default function DestinationsClient() {
 
       {/* ═══ HERO ═══ */}
       <section className="relative h-screen min-h-[600px] overflow-hidden">
-        <HeroMosaic />
+        <HeroMosaic allImages={ALL_IMAGES} />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/75 pointer-events-none" />
         <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0f6477]/20 to-transparent pointer-events-none" />
 

@@ -1,38 +1,42 @@
 // src/app/api/packages/route.js
-// ─────────────────────────────────────────────────────────────────
-// PUBLIC — Anyone can GET packages (for frontend components)
-// ─────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// PUBLIC READ-ONLY API — no authentication required.
+// Used by all frontend components via usePackages() hook.
+// Supports query params: id | category | tourism_type | popular | search | limit
+// ─────────────────────────────────────────────────────────────────────────────
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { packages as staticPackages } from "../../models/objAll/packages";
+import { filterPackages } from "../../lib/getPackages";
 
-const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
-
-function readPackages() {
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {}
-  return staticPackages;
-}
+// Always fetch fresh — no edge-cache stale data
+export const dynamic = "force-dynamic";
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const id       = searchParams.get("id");
-  const category = searchParams.get("category");
-  const popular  = searchParams.get("popular");
-  const limit    = searchParams.get("limit");
+  try {
+    const { searchParams } = new URL(request.url);
 
-  let data = readPackages();
+    const id           = searchParams.get("id");
+    const category     = searchParams.get("category")     ?? undefined;
+    const tourism_type = searchParams.get("tourism_type") ?? undefined;
+    const popular      = searchParams.get("popular") === "true" ? true : undefined;
+    const search       = searchParams.get("search")       ?? undefined;
+    const limit        = searchParams.get("limit")
+      ? parseInt(searchParams.get("limit"), 10)
+      : undefined;
 
-  if (id)       data = data.filter((p) => p.id === id);
-  if (category) data = data.filter((p) => Array.isArray(p.category) ? p.category.includes(category) : p.category === category);
-  if (popular)  data = data.filter((p) => p.popular === true || p.popular === "true");
-  if (limit)    data = data.slice(0, parseInt(limit));
+    // Single package by id
+    if (id) {
+      const all  = filterPackages({});
+      const item = all.find((p) => p.id === id);
+      if (!item)
+        return NextResponse.json({ success: false, message: "Package not found" }, { status: 404 });
+      return NextResponse.json({ success: true, data: item });
+    }
 
-  return NextResponse.json({ success: true, data, total: data.length });
+    const data = filterPackages({ category, tourism_type, popular, search, limit });
+    return NextResponse.json({ success: true, data, total: data.length });
+
+  } catch (err) {
+    console.error("[GET /api/packages]", err);
+    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
+  }
 }
