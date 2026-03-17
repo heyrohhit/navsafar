@@ -83,7 +83,7 @@ const Footer = () => {
   ]
 
   return (
-    <footer className="overflow-x-hidden font-sans">
+    <footer className="overflow-x-hidden font-sans relative z-[2]">
 
       {/* ── NEWSLETTER STRIP ── */}
       <section className="bg-gradient-to-r from-[#0d5567] via-[#0f6477] to-[#0d7a8a] relative overflow-hidden">

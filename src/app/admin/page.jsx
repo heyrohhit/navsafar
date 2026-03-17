@@ -1,76 +1,91 @@
 // src/app/admin/page.jsx
-// ─────────────────────────────────────────────────────────────────────────────
-// NavSafar Admin Panel — Production Level
-// Route: /admin
-// Auth:  POST /api/admin/auth  → token stored in sessionStorage
-// CRUD:  GET/POST/PUT/DELETE /api/admin/packages
-//        GET/PUT/DELETE       /api/admin/contacts
-// ─────────────────────────────────────────────────────────────────────────────
+// NavSafar Admin Panel — Production · Tailwind CSS · Fully Responsive
+// Header offset: pt-16 (h-16 site header)
+// Mobile bottom nav offset: pb-16 (xl:pb-0)
+// Sidebar starts at top-16 to sit below site header
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PACKAGE FORM FIELD DEFINITIONS
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Minimal global CSS (only what Tailwind can't do) ─────────────────────────
+const G = `
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+  #ns-admin-root, #ns-admin-root * { font-family:'Plus Jakarta Sans',system-ui,sans-serif; box-sizing:border-box; }
+  #ns-admin-root ::-webkit-scrollbar { width:4px; height:4px; }
+  #ns-admin-root ::-webkit-scrollbar-thumb { background:#334155; border-radius:99px; }
+  @keyframes ns-spin { to { transform:rotate(360deg); } }
+  @keyframes ns-up   { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes ns-in   { from { opacity:0; transform:translateX(-6px); } to { opacity:1; transform:translateX(0); } }
+  .ns-up  { animation: ns-up  .35s ease both; }
+  .ns-in  { animation: ns-in  .2s  ease both; }
+  .ns-spin{ animation: ns-spin .7s linear infinite; }
+`;
+
+// ─── Colours (used only in style={{}} where Tailwind can't reach) ─────────────
+const C = {
+  amber:"#f59e0b", amberL:"#fbbf24", amberD:"#d97706",
+  teal:"#0ea5e9",  tealD:"#0284c7",
+  red:"#f43f5e", green:"#10b981",
+  bg:"#070d1a", bg2:"#0d1526", surf:"#111c30", surf2:"#162036",
+  bdr:"rgba(255,255,255,.07)", bdr2:"rgba(255,255,255,.12)",
+  tx:"#f0f6ff", tx2:"#8b9bb4", tx3:"#4a5568",
+};
+
+// ─── Package form fields ───────────────────────────────────────────────────────
 const PKG_FIELDS = [
-  { k: "title",               l: "Title *",                                  type: "text",     col: "full", required: true },
-  { k: "city",                l: "City",                                      type: "text",     col: "half" },
-  { k: "country",             l: "Country",                                   type: "text",     col: "half" },
-  { k: "duration",            l: "Duration  (e.g. 5N / 6D)",                 type: "text",     col: "half" },
-  { k: "rating",              l: "Rating  (1 – 5)",                          type: "number",   col: "half" },
-  { k: "bestTime",            l: "Best Time to Visit",                        type: "text",     col: "half" },
-  { k: "popular",             l: "Mark as Popular?",                          type: "select",   col: "half", opts: ["false", "true"] },
-  { k: "category",            l: "Category  (comma-separated)  e.g. domestic,family", type: "text", col: "full" },
-  { k: "tourism_type",        l: "Tourism Type  (comma-separated)  e.g. Beach,Cultural", type: "text", col: "full" },
-  { k: "famous_attractions",  l: "Famous Attractions  (comma-separated)",     type: "text",     col: "full" },
-  { k: "image",               l: "Image URL",                                 type: "text",     col: "full" },
-  { k: "tagline",             l: "Tagline",                                   type: "text",     col: "full" },
-  { k: "description",         l: "Description",                               type: "textarea", col: "full" },
-  { k: "highlights",          l: "Highlights  (comma-separated)",              type: "textarea", col: "full" },
-  { k: "activities",          l: "Activities  (comma-separated)",              type: "textarea", col: "full" },
+  { k:"title",              l:"Title *",                                    type:"text",     col:"full", required:true },
+  { k:"city",               l:"City",                                       type:"text",     col:"half" },
+  { k:"country",            l:"Country",                                    type:"text",     col:"half" },
+  { k:"duration",           l:"Duration  (e.g. 5N / 6D)",                  type:"text",     col:"half" },
+  { k:"rating",             l:"Rating  (1-5)",                             type:"number",   col:"half" },
+  { k:"bestTime",           l:"Best Time to Visit",                         type:"text",     col:"half" },
+  { k:"popular",            l:"Mark as Popular?",                           type:"select",   col:"half", opts:["false","true"] },
+  { k:"category",           l:"Category (comma-separated, e.g. domestic,family)", type:"text", col:"full" },
+  { k:"tourism_type",       l:"Tourism Type (comma-separated, e.g. Beach,Cultural)", type:"text", col:"full" },
+  { k:"famous_attractions", l:"Famous Attractions (comma-separated)",       type:"text",     col:"full" },
+  { k:"image",              l:"Image URL",                                  type:"text",     col:"full" },
+  { k:"tagline",            l:"Tagline",                                    type:"text",     col:"full" },
+  { k:"description",        l:"Description",                               type:"textarea", col:"full" },
+  { k:"highlights",         l:"Highlights (comma-separated)",               type:"textarea", col:"full" },
+  { k:"activities",         l:"Activities (comma-separated)",               type:"textarea", col:"full" },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// API HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-const getToken = () =>
-  (typeof window !== "undefined" ? sessionStorage.getItem("ns_admin_token") : "") ?? "";
-
-const authHdr = () => ({
-  "Content-Type": "application/json",
-  Authorization:  `Bearer ${getToken()}`,
-});
-
+// ─── API helpers ──────────────────────────────────────────────────────────────
+const getToken = () => (typeof window !== "undefined" ? sessionStorage.getItem("ns_admin_token") : "") ?? "";
+const authHdr  = () => ({ "Content-Type":"application/json", Authorization:`Bearer ${getToken()}` });
 async function apiFetch(url, init = {}) {
-  const res  = await fetch(url, { ...init, headers: { ...authHdr(), ...(init.headers ?? {}) } });
+  const res  = await fetch(url, { ...init, headers:{ ...authHdr(), ...(init.headers ?? {}) } });
   const json = await res.json();
-  return { ok: res.ok, status: res.status, ...json };
+  return { ok:res.ok, status:res.status, ...json };
 }
-
 const apiGet    = (url)       => apiFetch(url);
-const apiPost   = (url, body) => apiFetch(url, { method: "POST",   body: JSON.stringify(body) });
-const apiPut    = (url, body) => apiFetch(url, { method: "PUT",    body: JSON.stringify(body) });
-const apiDelete = (url)       => apiFetch(url, { method: "DELETE" });
+const apiPost   = (url, body) => apiFetch(url, { method:"POST",   body:JSON.stringify(body) });
+const apiPut    = (url, body) => apiFetch(url, { method:"PUT",    body:JSON.stringify(body) });
+const apiDelete = (url)       => apiFetch(url, { method:"DELETE" });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ROOT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function AdminPage() {
-  const [phase,    setPhase]   = useState("checking"); // checking | login | app
-  const [initErr,  setInitErr] = useState("");
+  const [phase, setPhase] = useState("checking");
 
   useEffect(() => {
     const tok = sessionStorage.getItem("ns_admin_token");
     if (!tok) { setPhase("login"); return; }
-    // Verify token is still valid
-    fetch("/api/admin/packages", { headers: { Authorization: `Bearer ${tok}` } })
-      .then((r) => setPhase(r.ok ? "app" : "login"))
-      .catch(()  => setPhase("login"));
+    fetch("/api/admin/packages", { headers:{ Authorization:`Bearer ${tok}` } })
+      .then(r => setPhase(r.ok ? "app" : "login"))
+      .catch(() => setPhase("login"));
   }, []);
 
-  if (phase === "checking") return <Splash />;
-  if (phase === "login")    return <LoginPage  onSuccess={() => setPhase("app")} />;
-  return                           <Dashboard  onLogout={() => { sessionStorage.removeItem("ns_admin_token"); setPhase("login"); }} />;
+  return (
+    <>
+      <style>{G}</style>
+      <div id="ns-admin-root">
+        {phase === "checking" && <Splash />}
+        {phase === "login"    && <LoginPage  onSuccess={() => setPhase("app")} />}
+        {phase === "app"      && <Dashboard  onLogout={() => { sessionStorage.removeItem("ns_admin_token"); setPhase("login"); }} />}
+      </div>
+    </>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -78,8 +93,13 @@ export default function AdminPage() {
 // ─────────────────────────────────────────────────────────────────────────────
 function Splash() {
   return (
-    <div style={S.splash}>
-      <div style={S.spinner} />
+    <div className="flex flex-col items-center justify-center min-h-screen gap-5"
+      style={{ background:C.bg }}>
+      <span className="text-3xl font-black"
+        style={{ background:`linear-gradient(90deg,${C.amber},${C.amberL})`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
+        ✈ NavSafar
+      </span>
+      <Spinner />
     </div>
   );
 }
@@ -92,47 +112,100 @@ function LoginPage({ onSuccess }) {
   const [password, setPassword] = useState("");
   const [busy,     setBusy]     = useState(false);
   const [err,      setErr]      = useState("");
+  const [showPass, setShowPass] = useState(false);
 
   async function submit(e) {
-    e.preventDefault();
-    setBusy(true); setErr("");
+    e.preventDefault(); setBusy(true); setErr("");
     try {
-      const res = await fetch("/api/admin/auth", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const res  = await fetch("/api/admin/auth", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ email, password }) });
       const json = await res.json();
       if (json.success) { sessionStorage.setItem("ns_admin_token", json.token); onSuccess(); }
       else setErr(json.message || "Invalid credentials.");
-    } catch { setErr("Network error — please try again."); }
-    finally  { setBusy(false); }
+    } catch { setErr("Network error. Please try again."); }
+    finally { setBusy(false); }
   }
 
   return (
-    <div style={S.loginWrap}>
-      <div style={S.loginCard}>
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <div style={{ fontSize: 28, fontWeight: 700, color: C.accent }}>✈ NavSafar</div>
-          <div style={{ fontSize: 10, color: C.muted, letterSpacing: "2px", marginTop: 4 }}>ADMIN CONTROL PANEL</div>
+    /* pt-16 = site header offset | pb-16 = mobile bottom-nav offset */
+    <div className="min-h-screen flex items-center justify-center px-4 pt-16 pb-16 xl:pb-4 relative overflow-hidden"
+      style={{ background:C.bg }}>
+      {/* Ambient blobs */}
+      <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background:`radial-gradient(circle,${C.amber}18 0%,transparent 70%)` }} />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background:`radial-gradient(circle,${C.teal}14 0%,transparent 70%)` }} />
+      {/* Grid */}
+      <div className="absolute inset-0 pointer-events-none opacity-25"
+        style={{ backgroundImage:`linear-gradient(${C.bdr} 1px,transparent 1px),linear-gradient(90deg,${C.bdr} 1px,transparent 1px)`, backgroundSize:"60px 60px" }} />
+
+      <div className="w-full max-w-sm ns-up">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl mb-4 border"
+            style={{ background:C.surf, borderColor:C.bdr2 }}>
+            <span className="text-xl">✈</span>
+            <span className="text-lg font-black"
+              style={{ background:`linear-gradient(90deg,${C.amber},${C.amberL})`, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
+              NavSafar
+            </span>
+          </div>
+          <h1 className="text-2xl font-black mb-1" style={{ color:C.tx }}>Welcome back</h1>
+          <p className="text-sm" style={{ color:C.tx2 }}>Sign in to your admin panel</p>
         </div>
 
-        {err && <div style={S.errBox}>{err}</div>}
+        {/* Card */}
+        <div className="rounded-2xl p-7 border" style={{ background:C.surf, borderColor:C.bdr2, boxShadow:"0 24px 64px rgba(0,0,0,.5)" }}>
+          {err && (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm mb-4"
+              style={{ background:"rgba(244,63,94,.1)", border:"1px solid rgba(244,63,94,.3)", color:"#fda4af" }}>
+              <span>⚠</span>{err}
+            </div>
+          )}
+          <form onSubmit={submit} className="space-y-4">
+            <FancyInput label="Email Address" icon="✉" type="email" value={email} onChange={setEmail}
+              placeholder="E-Mail" required />
+            <FancyInput label="Password" icon="🔒" type={showPass ? "text" : "password"} value={password} onChange={setPassword}
+              placeholder="••••••••" required
+              suffix={
+                <button type="button" onClick={() => setShowPass(v => !v)}
+                  className="text-xs px-1 py-0.5 rounded transition-colors"
+                  style={{ background:"none", border:"none", color:C.tx3, cursor:"pointer" }}>
+                  {showPass ? "Hide" : "Show"}
+                </button>
+              }
+            />
+            <button type="submit" disabled={busy}
+              className="w-full py-3 rounded-xl text-base font-bold flex items-center justify-center gap-2 transition-all duration-200"
+              style={{
+                background: busy ? C.tx3 : `linear-gradient(135deg,${C.amber},${C.amberD})`,
+                color: busy ? C.tx2 : "#0d0d0d", border:"none", cursor: busy ? "not-allowed" : "pointer",
+                boxShadow: busy ? "none" : `0 4px 20px ${C.amber}40`,
+              }}>
+              {busy ? <><Spinner sm /> Signing in…</> : "Sign In to Dashboard →"}
+            </button>
+          </form>
+        </div>
+        <p className="text-center text-xs mt-4" style={{ color:C.tx3 }}>NavSafar Admin · Secured</p>
+      </div>
+    </div>
+  );
+}
 
-        <form onSubmit={submit}>
-          <label style={S.lbl}>Email Address</label>
-          <input style={S.inp} type="email" value={email} onChange={e => setEmail(e.target.value)}
-            placeholder="NavsafarAdmin@navsafar.com" required autoFocus />
-
-          <label style={{ ...S.lbl, marginTop: 14 }}>Password</label>
-          <input style={S.inp} type="password" value={password} onChange={e => setPassword(e.target.value)}
-            placeholder="••••••••" required
-            onKeyDown={e => e.key === "Enter" && submit(e)} />
-
-          <button style={{ ...S.btnPrimary, width: "100%", marginTop: 20, padding: "12px 0", fontSize: 15 }}
-            disabled={busy}>
-            {busy ? "Signing in…" : "Sign In →"}
-          </button>
-        </form>
+function FancyInput({ label, icon, suffix, onChange, ...rest }) {
+  const [foc, setFoc] = useState(false);
+  return (
+    <div>
+      <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color:C.tx3 }}>{label}</label>
+      <div className="flex items-center rounded-xl transition-all duration-200"
+        style={{
+          background:C.bg2, border:`1px solid ${foc ? C.amber+"55" : C.bdr2}`,
+          boxShadow: foc ? `0 0 0 3px ${C.amber}12` : "none", minHeight:44,
+        }}>
+        <span className="px-3 text-sm opacity-40 flex-shrink-0">{icon}</span>
+        <input {...rest} onChange={e => onChange(e.target.value)} onFocus={() => setFoc(true)} onBlur={() => setFoc(false)}
+          className="flex-1 bg-transparent text-sm py-3 pr-2 outline-none min-w-0"
+          style={{ color:C.tx, border:"none" }} />
+        {suffix && <div className="pr-3 flex-shrink-0">{suffix}</div>}
       </div>
     </div>
   );
@@ -141,40 +214,44 @@ function LoginPage({ onSuccess }) {
 // ─────────────────────────────────────────────────────────────────────────────
 // DASHBOARD SHELL
 // ─────────────────────────────────────────────────────────────────────────────
-const NAV_ITEMS = [
-  { id: "dashboard", icon: "📊", label: "Dashboard" },
-  { id: "packages",  icon: "🎒", label: "Packages"  },
-  { id: "contacts",  icon: "📞", label: "Contacts"  },
+const NAV = [
+  { id:"dashboard", icon:"◈", label:"Overview"  },
+  { id:"packages",  icon:"⊞", label:"Packages"  },
+  { id:"contacts",  icon:"◎", label:"Contacts"  },
 ];
 
 function Dashboard({ onLogout }) {
-  const [page,      setPage]     = useState("dashboard");
-  const [packages,  setPackages] = useState([]);
-  const [contacts,  setContacts] = useState([]);
-  const [loading,   setLoading]  = useState(false);
-  const [toast,     setToast]    = useState(null);
-  const [sideOpen,  setSideOpen] = useState(true);
+  const [page,     setPage]     = useState("dashboard");
+  const [packages, setPackages] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [loading,  setLoading]  = useState(false);
+  const [toast,    setToast]    = useState(null);
+  const [sideOpen, setSideOpen] = useState(false);
 
-  // ── Toast helper ──────────────────────────────────────────────────
+  // Open sidebar by default only on large screens
+  useEffect(() => {
+    const check = () => setSideOpen(window.innerWidth >= 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
   const showToast = useCallback((msg, type = "success") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3500);
   }, []);
 
-  // ── Data loaders ──────────────────────────────────────────────────
   const loadPackages = useCallback(async () => {
     setLoading(true);
     const r = await apiGet("/api/admin/packages");
-    if (r.success) setPackages(r.data);
-    else showToast(r.message, "error");
+    if (r.success) setPackages(r.data); else showToast(r.message, "error");
     setLoading(false);
   }, [showToast]);
 
   const loadContacts = useCallback(async () => {
     setLoading(true);
     const r = await apiGet("/api/admin/contacts");
-    if (r.success) setContacts(r.data);
-    else showToast(r.message, "error");
+    if (r.success) setContacts(r.data); else showToast(r.message, "error");
     setLoading(false);
   }, [showToast]);
 
@@ -184,68 +261,130 @@ function Dashboard({ onLogout }) {
   }, [page, loadPackages, loadContacts]);
 
   const pending = contacts.filter(c => c.status === "pending").length;
+  const current = NAV.find(n => n.id === page);
+
+  function navigate(p) {
+    setPage(p);
+    if (window.innerWidth < 1024) setSideOpen(false);
+  }
+
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
 
   return (
-    <div style={S.app}>
-      {/* ── SIDEBAR ── */}
-      <aside style={{ ...S.sidebar, transform: sideOpen ? "translateX(0)" : "translateX(-240px)" }}>
-        <div style={{ padding: "20px 18px 16px", borderBottom: `1px solid ${C.border}` }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: C.accent }}>✈ NavSafar</div>
-          <div style={{ fontSize: 10, color: C.muted, letterSpacing: "1.5px", marginTop: 2 }}>ADMIN PANEL</div>
-        </div>
+    /*
+      pt-16  → below site header (h-16 = 64px)
+      pb-16  → above mobile bottom nav (h-16 = 64px) on xl:hidden screens
+      xl:pb-0 → desktop has no bottom nav
+    */
+    <div className="flex pt-16 pb-16 xl:pb-0 min-h-screen" style={{ background:C.bg, color:C.tx }}>
 
-        <nav style={{ flex: 1, padding: "8px 0", overflowY: "auto" }}>
-          {NAV_ITEMS.map(n => (
-            <button key={n.id} onClick={() => setPage(n.id)} style={{
-              ...S.navItem,
-              ...(page === n.id ? S.navActive : {}),
-            }}>
-              <span style={{ fontSize: 18, width: 24 }}>{n.icon}</span>
-              <span>{n.label}</span>
-              {n.id === "contacts" && pending > 0 && (
-                <span style={S.navBadge}>{pending}</span>
-              )}
+      {/* Mobile overlay */}
+      {sideOpen && (
+        <div className="fixed inset-0 bg-black/60 z-[150] lg:hidden"
+          style={{ top:64 }}
+          onClick={() => setSideOpen(false)} />
+      )}
+
+      <div className="md:hidden flex fixed bottom-[10%] z-[1] right-[5%] " >
+        <button onClick={onLogout}
+              className="w-full py-2 text-xs font-medium rounded-lg border transition-all duration-200 flex items-center justify-center gap-1.5"
+              style={{ background:"#0f6477", border:`1px solid ${C.bdr2}`, color:C.tx2, 
+                color:"#fff",
+                padding:"5px",
+                cursor:"pointer" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor="rgba(244,63,94,.4)"; e.currentTarget.style.color=C.red; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor=C.bdr2; e.currentTarget.style.color=C.tx2; }}>
+              ↩ Sign Out
             </button>
-          ))}
-        </nav>
+      </div>
+      {/* ── SIDEBAR ──
+          top-16   → sits below site header (64px)
+          h from top-16 to bottom-16 on mobile (above bottom nav)
+          h from top-16 to bottom on desktop
+      */}
+      <aside className={`
+          fixed left-0 flex flex-col
+          w-56 h-screen
+          transition-transform duration-300 ease-in-out
+          ${sideOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+        style={{
+          top:64, /* below site header */
+          /* On mobile, stop above bottom nav (64px); on xl+ go to bottom */
+          height:"calc(100vh - 64px)",
+          background:C.bg2, borderRight:`1px solid ${C.bdr}`,
+        }}>
+        {/* xl: override height to fill remaining screen */}
+        <style>{`@media(min-width:1280px){.ns-sidebar-inner{height:calc(100vh - 64px)!important}}`}</style>
+        <div className="ns-sidebar-inner flex flex-col flex-1 overflow-hidden">
 
-        <div style={{ padding: "14px 18px", borderTop: `1px solid ${C.border}` }}>
-          <div style={{ fontSize: 11, color: C.muted, marginBottom: 8, wordBreak: "break-all" }}>
-            NavsafarAdmin@navsafar.com
+          {/* Brand */}
+          <div className="flex items-center gap-3 px-4 py-4 border-b" style={{ borderColor:C.bdr }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0"
+              style={{ background:`linear-gradient(135deg,${C.amber},${C.amberD})`, color:"#000" }}>✈</div>
+            <div>
+              <div className="text-sm font-black" style={{ color:C.tx }}>NavSafar</div>
+              <div className="text-[9px] tracking-widest" style={{ color:C.tx3 }}>ADMIN PANEL</div>
+            </div>
           </div>
-          <button style={S.logoutBtn} onClick={onLogout}>Sign Out</button>
+
+          {/* Nav */}
+          <nav className="flex-1 overflow-y-auto p-2">
+            <p className="text-[9px] font-bold tracking-widest px-2 pt-3 pb-1" style={{ color:C.tx3 }}>MAIN MENU</p>
+            {NAV.map(n => {
+              const active = page === n.id;
+              return (
+                <button key={n.id} onClick={() => navigate(n.id)}
+                  className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg mb-1 text-sm transition-all duration-200 relative text-left"
+                  style={{
+                    background: active ? `linear-gradient(90deg,${C.amber}22,${C.amber}08)` : "transparent",
+                    color: active ? C.amber : C.tx2, fontWeight: active ? 700 : 400, border:"none", cursor:"pointer",
+                  }}>
+                  {active && <span className="absolute left-0 top-[18%] bottom-[18%] w-[3px] rounded-r-sm" style={{ background:C.amber }} />}
+                  <span className="text-base leading-none" style={{ opacity: active ? 1 : .45 }}>{n.icon}</span>
+                  <span className="flex-1">{n.label}</span>
+                  {n.id === "contacts" && pending > 0 && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background:C.red, color:"#fff" }}>{pending}</span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
+
+          {/* User */}
+          <div className="px-3 py-3 border-t" style={{ borderColor:C.bdr }}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm flex-shrink-0"
+                style={{ background:`linear-gradient(135deg,${C.teal}50,${C.tealD}30)` }}>👤</div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold truncate" style={{ color:C.tx }}>NavsafarAdmin</div>
+                <div className="text-[10px]" style={{ color:C.tx3 }}>Administrator</div>
+              </div>
+            </div>
+            <button onClick={onLogout}
+              className="w-full py-2 text-xs font-medium rounded-lg border transition-all duration-200 flex items-center justify-center gap-1.5"
+              style={{ background:"transparent", border:`1px solid ${C.bdr2}`, color:C.tx2, cursor:"pointer" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor="rgba(244,63,94,.4)"; e.currentTarget.style.color=C.red; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor=C.bdr2; e.currentTarget.style.color=C.tx2; }}>
+              ↩ Sign Out
+            </button>
+          </div>
         </div>
       </aside>
 
-      {/* ── MAIN ── */}
-      <main style={{ ...S.main, marginLeft: sideOpen ? 240 : 0 }}>
-        {/* Topbar */}
-        <header style={S.topbar}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button style={S.menuBtn} onClick={() => setSideOpen(v => !v)}>☰</button>
-            <span style={{ fontSize: 17, fontWeight: 600 }}>
-              {NAV_ITEMS.find(n => n.id === page)?.icon}{" "}
-              {NAV_ITEMS.find(n => n.id === page)?.label}
-            </span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            {toast && (
-              <div style={toast.type === "success" ? S.toastOk : S.toastErr}>{toast.msg}</div>
-            )}
-            <span style={{ fontSize: 12, color: C.muted }}>
-              {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-            </span>
-          </div>
-        </header>
+      {/* ── MAIN AREA ── */}
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sideOpen ? "lg:ml-60" : ""}`}>
 
-        {/* Page content */}
-        <div style={S.content}>
-          {loading && <div style={S.loadBar} />}
-          {page === "dashboard" && <DashboardPage packages={packages} contacts={contacts} navigate={setPage} />}
+        {/* Admin topbar (below site header) */}
+        
+
+        {/* Page content — overflow-y-auto so it scrolls independently */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 lg:p-6">
+          {page === "dashboard" && <DashboardPage packages={packages} contacts={contacts} navigate={navigate} />}
           {page === "packages"  && <PackagesPage  packages={packages} reload={loadPackages} toast={showToast} />}
           {page === "contacts"  && <ContactsPage  contacts={contacts} reload={loadContacts} toast={showToast} />}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
@@ -259,62 +398,114 @@ function DashboardPage({ packages, contacts, navigate }) {
   const responded = contacts.filter(c => c.status === "responded").length;
 
   const stats = [
-    { icon: "🎒", val: packages.length, lbl: "Total Packages",   clr: C.accent },
-    { icon: "⭐", val: popular,          lbl: "Popular",          clr: "#8b5cf6" },
-    { icon: "📞", val: contacts.length,  lbl: "Total Inquiries",  clr: "#3b82f6" },
-    { icon: "⏳", val: pending,          lbl: "Pending",          clr: "#ef4444" },
-    { icon: "✅", val: responded,        lbl: "Responded",        clr: "#10b981" },
+    { icon:"⊞",  val:packages.length, lbl:"Packages",  clr:C.amber,   bg:`${C.amber}12` },
+    { icon:"⭐", val:popular,          lbl:"Popular",   clr:"#f472b6", bg:"rgba(244,114,182,.1)" },
+    { icon:"◎",  val:contacts.length,  lbl:"Inquiries", clr:C.teal,    bg:`${C.teal}12` },
+    { icon:"⏳", val:pending,          lbl:"Pending",   clr:C.red,     bg:`${C.red}12` },
+    { icon:"✓",  val:responded,        lbl:"Responded", clr:C.green,   bg:`${C.green}12` },
   ];
 
+  const catBreakdown = useMemo(() => {
+    const m = {};
+    packages.forEach(p => (p.category ?? []).forEach(c => { m[c] = (m[c] || 0) + 1; }));
+    return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  }, [packages]);
+
+  const maxCat = catBreakdown[0]?.[1] || 1;
+
   return (
-    <div>
-      {/* Stats */}
-      <div style={S.statsGrid}>
-        {stats.map(s => (
-          <div key={s.lbl} style={S.statCard}>
-            <span style={{ fontSize: 26 }}>{s.icon}</span>
-            <div style={{ fontSize: 30, fontWeight: 700, color: s.clr, lineHeight: 1 }}>{s.val}</div>
-            <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{s.lbl}</div>
+    <div className="ns-up space-y-5">
+      {/* Stats — 2 cols on mobile, 3 on sm, 5 on lg */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {stats.map((s, i) => (
+          <div key={s.lbl} className="rounded-xl p-4 relative overflow-hidden transition-all duration-200 cursor-default group"
+            style={{
+              background:C.surf, border:`1px solid ${C.bdr}`,
+              animationDelay:`${i*.05}s`,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform="translateY(-2px)"; e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,.4)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform="none"; e.currentTarget.style.boxShadow="none"; }}>
+            <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background:`linear-gradient(90deg,${s.clr},transparent)` }} />
+            <div className="absolute top-3 right-3 w-8 h-8 rounded-lg flex items-center justify-center text-base"
+              style={{ background:s.bg }}>{s.icon}</div>
+            <div className="text-2xl font-black leading-none mb-1" style={{ color:s.clr }}>{s.val}</div>
+            <div className="text-xs font-semibold " style={{ color:C.tx }}>{s.lbl}</div>
           </div>
         ))}
       </div>
 
-      {/* Quick actions */}
-      <h3 style={S.sectionH}>Quick Actions</h3>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(160px,1fr))", gap: 12, marginBottom: 28 }}>
-        {[
-          { icon: "➕", lbl: "Add Package",   fn: () => navigate("packages") },
-          { icon: "📋", lbl: "View Contacts", fn: () => navigate("contacts") },
-        ].map(a => (
-          <button key={a.lbl} onClick={a.fn} style={S.qaCard}>
-            <span style={{ fontSize: 28 }}>{a.icon}</span>
-            <span style={{ fontSize: 13, color: C.text2 }}>{a.lbl}</span>
-          </button>
-        ))}
+      {/* 2-col → 1-col on mobile */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Panel>
+          <PanelTitle>Quick Actions</PanelTitle>
+          <div className="grid grid-cols-2 gap-3 mt-4">
+            {[
+              { icon:"＋", lbl:"Add Package",   sub:"New package",   clr:C.amber, fn:() => navigate("packages") },
+              { icon:"◎",  lbl:"View Contacts", sub:"See inquiries", clr:C.teal,  fn:() => navigate("contacts") },
+            ].map(a => (
+              <button key={a.lbl} onClick={a.fn}
+                className="rounded-xl p-4 text-left border transition-all duration-200"
+                style={{ background:C.bg2, border:`1px solid ${C.bdr}`, cursor:"pointer" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor=a.clr+"55"; e.currentTarget.style.background=a.clr+"0a"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor=C.bdr; e.currentTarget.style.background=C.bg2; }}>
+                <div className="text-2xl mb-2">{a.icon}</div>
+                <div className="text-sm font-bold mb-0.5" style={{ color:C.tx }}>{a.lbl}</div>
+                <div className="text-xs" style={{ color:C.tx3 }}>{a.sub}</div>
+              </button>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel>
+          <PanelTitle>Package Categories</PanelTitle>
+          <div className="mt-4 space-y-3">
+            {catBreakdown.length === 0 && <p className="text-sm" style={{ color:C.tx3 }}>No packages yet.</p>}
+            {catBreakdown.map(([cat, count]) => (
+              <div key={cat}>
+                <div className="flex justify-between mb-1">
+                  <span className="text-xs font-medium capitalize" style={{ color:C.tx2 }}>{cat}</span>
+                  <span className="text-xs" style={{ color:C.tx3 }}>{count}</span>
+                </div>
+                <div className="h-1 rounded-full overflow-hidden" style={{ background:C.bg2 }}>
+                  <div className="h-full rounded-full transition-all duration-500"
+                    style={{ background:`linear-gradient(90deg,${C.amber},${C.amberD})`, width:`${(count/maxCat)*100}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Panel>
       </div>
 
       {/* Recent contacts */}
-      <h3 style={S.sectionH}>Recent Inquiries</h3>
-      <div style={S.tableWrap}>
-        <table style={S.table}>
-          <thead>
-            <tr>{["Name", "Subject", "Phone", "Status", "Date"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>
-          </thead>
-          <tbody>
-            {contacts.slice(0, 8).length === 0
-              ? <tr><td colSpan={5} style={S.emptyCell}>No inquiries yet.</td></tr>
-              : contacts.slice(0, 8).map(c => (
-                  <TableRow key={c.id}>
-                    <td style={S.td}><strong style={{ color: C.text }}>{c.name}</strong></td>
-                    <td style={S.td}>{c.subject || "—"}</td>
-                    <td style={S.td}>{c.phone   || "—"}</td>
-                    <td style={S.td}><StatusBadge status={c.status} /></td>
-                    <td style={S.td}>{c.date    || "—"}</td>
-                  </TableRow>
-                ))}
-          </tbody>
-        </table>
-      </div>
+      <Panel>
+        <div className="flex items-center justify-between mb-4">
+          <PanelTitle>Recent Inquiries</PanelTitle>
+          <button onClick={() => navigate("contacts")} className="text-xs font-semibold transition-colors"
+            style={{ background:"none", border:"none", color:C.amber, cursor:"pointer" }}>View All →</button>
+        </div>
+        <div className="overflow-x-auto -mx-1">
+          <table className="w-full border-collapse text-sm" style={{ minWidth:380 }}>
+            <thead>
+              <tr>{["Name","Subject","Phone","Status","Date"].map(h => (
+                <th key={h} className="text-left py-2 px-3 text-xs font-semibold uppercase tracking-wider" style={{ color:C.tx3 }}>{h}</th>
+              ))}</tr>
+            </thead>
+            <tbody>
+              {contacts.slice(0,6).length === 0
+                ? <tr><td colSpan={5} className="text-center py-8 text-sm" style={{ color:C.tx3 }}>No inquiries yet.</td></tr>
+                : contacts.slice(0,6).map(c => (
+                    <HoverRow key={c.id}>
+                      <td className="py-2.5 px-3 border-t" style={{ borderColor:C.bdr }}><strong style={{ color:C.tx }}>{c.name}</strong></td>
+                      <td className="py-2.5 px-3 border-t max-w-[130px] truncate text-sm" style={{ borderColor:C.bdr, color:C.tx2 }}>{c.subject || "—"}</td>
+                      <td className="py-2.5 px-3 border-t whitespace-nowrap text-sm" style={{ borderColor:C.bdr, color:C.tx2 }}>{c.phone || "—"}</td>
+                      <td className="py-2.5 px-3 border-t" style={{ borderColor:C.bdr }}><StatusPill status={c.status} /></td>
+                      <td className="py-2.5 px-3 border-t whitespace-nowrap text-xs" style={{ borderColor:C.bdr, color:C.tx3 }}>{c.date || "—"}</td>
+                    </HoverRow>
+                  ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
     </div>
   );
 }
@@ -323,15 +514,13 @@ function DashboardPage({ packages, contacts, navigate }) {
 // PACKAGES PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 function PackagesPage({ packages, reload, toast }) {
-  const [modal,   setModal]   = useState(null); // null | "add" | "edit"
-  const [item,    setItem]    = useState({});
-  const [search,  setSearch]  = useState("");
-  const [saving,  setSaving]  = useState(false);
+  const [modal,  setModal]  = useState(null);
+  const [item,   setItem]   = useState({});
+  const [search, setSearch] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const filtered = useMemo(() =>
-    search
-      ? packages.filter(p => JSON.stringify(p).toLowerCase().includes(search.toLowerCase()))
-      : packages,
+    search ? packages.filter(p => JSON.stringify(p).toLowerCase().includes(search.toLowerCase())) : packages,
     [packages, search]
   );
 
@@ -342,172 +531,144 @@ function PackagesPage({ packages, reload, toast }) {
   async function save() {
     if (!item.title?.trim()) { toast("Title is required", "error"); return; }
     setSaving(true);
-    const r = modal === "edit"
-      ? await apiPut("/api/admin/packages", item)
-      : await apiPost("/api/admin/packages", item);
+    const r = modal === "edit" ? await apiPut("/api/admin/packages", item) : await apiPost("/api/admin/packages", item);
     if (r.success) { toast(modal === "edit" ? "Package updated ✅" : "Package created ✅"); closeModal(); reload(); }
     else toast(r.message, "error");
     setSaving(false);
   }
 
   async function del(id, title) {
-    if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    if (!confirm(`Delete "${title}"?`)) return;
     const r = await apiDelete(`/api/admin/packages?id=${id}`);
-    if (r.success) { toast("Deleted ✅"); reload(); }
-    else toast(r.message, "error");
+    if (r.success) { toast("Deleted ✅"); reload(); } else toast(r.message, "error");
   }
 
   function exportJSON() {
-    const blob = new Blob([JSON.stringify(packages, null, 2)], { type: "application/json" });
-    const a    = Object.assign(document.createElement("a"), {
-      href:     URL.createObjectURL(blob),
-      download: `navsafar_packages_${Date.now()}.json`,
-    });
-    a.click();
+    const blob = new Blob([JSON.stringify(packages, null, 2)], { type:"application/json" });
+    Object.assign(document.createElement("a"), { href:URL.createObjectURL(blob), download:`navsafar_packages_${Date.now()}.json` }).click();
     toast("Exported ✅");
   }
 
   async function importJSON(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const text = await file.text();
+    const file = e.target.files[0]; if (!file) return;
     try {
-      const arr = JSON.parse(text);
-      if (!Array.isArray(arr)) { toast("File must be a JSON array", "error"); return; }
+      const arr = JSON.parse(await file.text());
+      if (!Array.isArray(arr)) { toast("Must be a JSON array", "error"); return; }
       let ok = 0;
-      for (const pkg of arr) {
-        const r = await apiPost("/api/admin/packages", pkg);
-        if (r.success) ok++;
-      }
-      toast(`Imported ${ok} packages ✅`);
-      reload();
+      for (const pkg of arr) { const r = await apiPost("/api/admin/packages", pkg); if (r.success) ok++; }
+      toast(`Imported ${ok} packages ✅`); reload();
     } catch { toast("Could not parse file", "error"); }
     e.target.value = "";
   }
 
   return (
-    <div>
-      {/* Header */}
-      <div style={S.secHdr}>
+    <div className="ns-up space-y-4">
+      {/* Action bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div style={S.secTitle}>Package Management</div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>{packages.length} total packages</div>
+          <h2 className="text-lg font-bold" style={{ color:C.tx }}>Package Management</h2>
+          <p className="text-xs mt-0.5" style={{ color:C.tx3 }}>{packages.length} total · {filtered.length} shown</p>
         </div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-          <input style={S.searchBar} placeholder="Search packages…" value={search} onChange={e => setSearch(e.target.value)} />
-          <button style={S.btnOutline} onClick={exportJSON}>⬇ Export JSON</button>
-          <label style={{ ...S.btnOutline, cursor: "pointer" }}>
-            ⬆ Import JSON
-            <input type="file" accept=".json" style={{ display: "none" }} onChange={importJSON} />
+        <div className="flex flex-wrap gap-2 items-center">
+          <SearchBox value={search} onChange={setSearch} placeholder="Search…" />
+          <GhostBtn onClick={exportJSON}>⬇ Export</GhostBtn>
+          <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border cursor-pointer transition-colors"
+            style={{ background:"transparent", border:`1px solid ${C.bdr2}`, color:C.tx2 }}>
+            ⬆ Import <input type="file" accept=".json" className="hidden" onChange={importJSON} />
           </label>
-          <button style={S.btnPrimary} onClick={openAdd}>+ Add Package</button>
+          <PrimaryBtn onClick={openAdd}>+ Add Package</PrimaryBtn>
         </div>
       </div>
 
       {/* Table */}
-      <div style={S.tableWrap}>
-        <table style={S.table}>
-          <thead>
-            <tr>{["#","Image","Title / Location","Category","Duration","Rating","Popular","Actions"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 && (
-              <tr><td colSpan={8} style={S.emptyCell}>
-                {packages.length === 0
-                  ? "No packages yet. Click '+ Add Package' or import your existing data."
-                  : "No packages match your search."}
-              </td></tr>
-            )}
-            {filtered.map((p, i) => (
-              <TableRow key={p.id}>
-                <td style={S.td}><span style={{ color: C.muted }}>{i + 1}</span></td>
-                <td style={S.td}>
-                  {p.image
-                    ? <img src={p.image} alt="" style={S.thumb} onError={e => e.target.style.display = "none"} />
-                    : <span style={{ color: C.muted, fontSize: 11 }}>—</span>}
-                </td>
-                <td style={S.td}>
-                  <strong style={{ color: C.text, fontSize: 13 }}>{p.title}</strong>
-                  <div style={{ fontSize: 11, color: C.muted, marginTop: 1 }}>
-                    {[p.city, p.country].filter(Boolean).join(", ")}
-                  </div>
-                </td>
-                <td style={S.td}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
-                    {(Array.isArray(p.category) ? p.category : []).slice(0, 3).map(c => (
-                      <span key={c} style={S.tag}>{c}</span>
-                    ))}
-                  </div>
-                </td>
-                <td style={S.td}>{p.duration || "—"}</td>
-                <td style={S.td}>
-                  {p.rating ? <span><span style={{ color: C.accent }}>★</span> {p.rating}</span> : "—"}
-                </td>
-                <td style={S.td}>
-                  {(p.popular === true || p.popular === "true")
-                    ? <span style={S.badgeGreen}>Popular</span>
-                    : <span style={S.badgeGray}>Standard</span>}
-                </td>
-                <td style={S.td}>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button style={S.btnEdit} onClick={() => openEdit(p)}>Edit</button>
-                    <button style={S.btnDel}  onClick={() => del(p.id, p.title)}>Delete</button>
-                  </div>
-                </td>
-              </TableRow>
-            ))}
-          </tbody>
-        </table>
+      <div className="rounded-xl overflow-hidden border" style={{ background:C.surf, borderColor:C.bdr }}>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse" style={{ minWidth:660 }}>
+            <thead>
+              <tr style={{ background:C.bg2 }}>
+                {["#","Image","Title / Location","Category","Duration","Rating","Status","Actions"].map(h => (
+                  <th key={h} className="py-3 px-3 text-left text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap" style={{ color:C.tx3 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr><td colSpan={8} className="text-center py-14 text-sm" style={{ color:C.tx3 }}>
+                  {packages.length === 0 ? "No packages yet. Click '+ Add Package' or import your data." : "No matches found."}
+                </td></tr>
+              )}
+              {filtered.map((p, i) => (
+                <HoverRow key={p.id}>
+                  <td className="py-3 px-3 border-t text-xs" style={{ borderColor:C.bdr, color:C.tx3 }}>{i+1}</td>
+                  <td className="py-3 px-3 border-t" style={{ borderColor:C.bdr }}>
+                    {p.image
+                      ? <img src={p.image} alt="" className="w-11 h-8 object-cover rounded-md" style={{ border:`1px solid ${C.bdr}` }} onError={e => e.target.style.display="none"} />
+                      : <div className="w-11 h-8 rounded-md flex items-center justify-center text-sm" style={{ background:C.bg2 }}>🖼</div>}
+                  </td>
+                  <td className="py-3 px-3 border-t max-w-[180px]" style={{ borderColor:C.bdr }}>
+                    <div className="text-sm font-semibold truncate" style={{ color:C.tx }}>{p.title}</div>
+                    <div className="text-xs mt-0.5 truncate" style={{ color:C.tx3 }}>{[p.city,p.country].filter(Boolean).join(", ")}</div>
+                  </td>
+                  <td className="py-3 px-3 border-t" style={{ borderColor:C.bdr }}>
+                    <div className="flex flex-wrap gap-1">
+                      {(Array.isArray(p.category) ? p.category : []).slice(0,2).map(c => (
+                        <span key={c} className="text-[10px] font-semibold capitalize px-2 py-0.5 rounded"
+                          style={{ color:C.amber, background:`${C.amber}12`, border:`1px solid ${C.amber}25` }}>{c}</span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="py-3 px-3 border-t text-xs whitespace-nowrap" style={{ borderColor:C.bdr, color:C.tx2 }}>{p.duration || "—"}</td>
+                  <td className="py-3 px-3 border-t" style={{ borderColor:C.bdr }}>
+                    {p.rating ? <span className="text-xs font-bold" style={{ color:C.amber }}>★ {p.rating}</span> : <span style={{ color:C.tx3 }}>—</span>}
+                  </td>
+                  <td className="py-3 px-3 border-t" style={{ borderColor:C.bdr }}>
+                    {(p.popular===true||p.popular==="true")
+                      ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap" style={{ color:"#34d399", background:"rgba(52,211,153,.12)", border:"1px solid rgba(52,211,153,.2)" }}>Popular</span>
+                      : <span className="text-[10px] px-2 py-0.5 rounded-md whitespace-nowrap" style={{ color:C.tx3, background:C.bg2, border:`1px solid ${C.bdr}` }}>Standard</span>}
+                  </td>
+                  <td className="py-3 px-3 border-t" style={{ borderColor:C.bdr }}>
+                    <div className="flex gap-1.5">
+                      <ActionBtn color="blue" onClick={() => openEdit(p)}>Edit</ActionBtn>
+                      <ActionBtn color="red"  onClick={() => del(p.id, p.title)}>Del</ActionBtn>
+                    </div>
+                  </td>
+                </HoverRow>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Add / Edit Modal */}
+      {/* Modal */}
       {modal && (
-        <Modal title={modal === "add" ? "Add New Package" : "Edit Package"} onClose={closeModal}>
-          <PackageForm item={item} onChange={setItem} />
-          <div style={S.modalFoot}>
-            <button style={S.btnOutline} onClick={closeModal}>Cancel</button>
-            <button style={S.btnPrimary} onClick={save} disabled={saving}>
-              {saving ? "Saving…" : modal === "add" ? "Create Package" : "Save Changes"}
-            </button>
-          </div>
-        </Modal>
-      )}
-    </div>
-  );
-}
-
-// ── Package form ─────────────────────────────────────────────────────────────
-function PackageForm({ item, onChange }) {
-  function set(k, v) { onChange(prev => ({ ...prev, [k]: v })); }
-
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-      {PKG_FIELDS.map(f => {
-        const val = Array.isArray(item[f.k]) ? item[f.k].join(", ") : (item[f.k] ?? "");
-        return (
-          <div key={f.k} style={{ gridColumn: f.col === "full" ? "1/-1" : "auto" }}>
-            <label style={S.lbl}>{f.l}</label>
-            {f.type === "textarea" ? (
-              <textarea style={{ ...S.inp, minHeight: 72, resize: "vertical" }}
-                value={val} onChange={e => set(f.k, e.target.value)} />
-            ) : f.type === "select" ? (
-              <select style={S.inp} value={String(item[f.k] ?? "false")} onChange={e => set(f.k, e.target.value)}>
-                {f.opts.map(o => <option key={o} value={o}>{o}</option>)}
-              </select>
-            ) : (
-              <input style={S.inp} type={f.type} step={f.type === "number" ? "0.1" : undefined}
-                value={val} onChange={e => set(f.k, e.target.value)} placeholder={f.l} />
+        <Modal title={modal === "add" ? "Add New Package" : "Edit Package"} onClose={closeModal} wide>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-5">
+            {PKG_FIELDS.map(f => {
+              const val = Array.isArray(item[f.k]) ? item[f.k].join(", ") : (item[f.k] ?? "");
+              return (
+                <div key={f.k} className={f.col === "full" ? "sm:col-span-2" : ""}>
+                  <label className="block text-[10px] font-semibold uppercase tracking-wider mb-1.5" style={{ color:C.tx3 }}>{f.l}</label>
+                  {f.type === "textarea"
+                    ? <textarea rows={3} value={val} onChange={e => setItem(prev => ({ ...prev, [f.k]:e.target.value }))} className="w-full text-sm rounded-lg px-3 py-2 outline-none resize-y border" style={{ background:C.bg, borderColor:C.bdr2, color:C.tx }} />
+                    : f.type === "select"
+                    ? <select value={String(item[f.k] ?? "false")} onChange={e => setItem(prev => ({ ...prev, [f.k]:e.target.value }))} className="w-full text-sm rounded-lg px-3 py-2 outline-none border" style={{ background:C.bg, borderColor:C.bdr2, color:C.tx }}>
+                        {f.opts.map(o => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    : <input type={f.type} step={f.type==="number"?"0.1":undefined} value={val} onChange={e => setItem(prev => ({ ...prev, [f.k]:e.target.value }))} placeholder={f.l} className="w-full text-sm rounded-lg px-3 py-2 outline-none border" style={{ background:C.bg, borderColor:C.bdr2, color:C.tx }} />}
+                </div>
+              );
+            })}
+            {item.image && (
+              <div className="sm:col-span-2">
+                <img src={item.image} alt="preview" className="w-full h-24 object-cover rounded-lg border" style={{ borderColor:C.bdr }} onError={e => e.target.style.display="none"} />
+              </div>
             )}
           </div>
-        );
-      })}
-      {/* Image preview */}
-      {item.image && (
-        <div style={{ gridColumn: "1/-1" }}>
-          <img src={item.image} alt="preview"
-            style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 8, border: `1px solid ${C.border}` }}
-            onError={e => e.target.style.display = "none"} />
-        </div>
+          <div className="flex flex-wrap gap-2 justify-end px-5 py-4 border-t" style={{ borderColor:C.bdr }}>
+            <GhostBtn onClick={closeModal}>Cancel</GhostBtn>
+            <PrimaryBtn onClick={save} disabled={saving}>{saving ? "Saving…" : modal==="add" ? "Create Package" : "Save Changes"}</PrimaryBtn>
+          </div>
+        </Modal>
       )}
     </div>
   );
@@ -528,242 +689,246 @@ function ContactsPage({ contacts, reload, toast }) {
   }), [contacts]);
 
   const filtered = useMemo(() => contacts.filter(c => {
-    const matchSearch = !search || JSON.stringify(c).toLowerCase().includes(search.toLowerCase());
-    const matchFilter = filter === "all" || c.status === filter;
-    return matchSearch && matchFilter;
+    const ms = !search || JSON.stringify(c).toLowerCase().includes(search.toLowerCase());
+    const mf = filter === "all" || c.status === filter;
+    return ms && mf;
   }), [contacts, search, filter]);
 
   async function updateStatus(id, status) {
     const r = await apiPut("/api/admin/contacts", { id, status });
-    if (r.success) { toast("Status updated ✅"); reload(); }
-    else toast(r.message, "error");
+    if (r.success) { toast("Status updated ✅"); reload(); } else toast(r.message, "error");
   }
 
   async function del(id, name) {
     if (!confirm(`Delete inquiry from "${name}"?`)) return;
     const r = await apiDelete(`/api/admin/contacts?id=${id}`);
-    if (r.success) { toast("Deleted ✅"); reload(); }
-    else toast(r.message, "error");
+    if (r.success) { toast("Deleted ✅"); reload(); } else toast(r.message, "error");
   }
 
+  const tabDef = [
+    { k:"all",       lbl:"All",       clr:C.teal  },
+    { k:"pending",   lbl:"Pending",   clr:C.red   },
+    { k:"responded", lbl:"Responded", clr:C.green },
+    { k:"closed",    lbl:"Closed",    clr:C.tx3   },
+  ];
+
+  const statusConf = {
+    pending:   { clr:"#fbbf24", bg:"rgba(245,158,11,.1)", bd:"rgba(245,158,11,.3)"  },
+    responded: { clr:"#34d399", bg:"rgba(52,211,153,.1)", bd:"rgba(52,211,153,.3)"  },
+    closed:    { clr:"#94a3b8", bg:"rgba(148,163,184,.08)",bd:"rgba(148,163,184,.2)"},
+  };
+
   return (
-    <div>
-      {/* Header */}
-      <div style={S.secHdr}>
+    <div className="ns-up space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <div style={S.secTitle}>Contact Inquiries</div>
-          <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>
-            {contacts.length} total · {counts.pending} pending
-          </div>
+          <h2 className="text-lg font-bold" style={{ color:C.tx }}>Contact Inquiries</h2>
+          <p className="text-xs mt-0.5" style={{ color:C.tx3 }}>{contacts.length} total · {counts.pending} pending</p>
         </div>
-        <input style={S.searchBar} placeholder="Search contacts…" value={search}
-          onChange={e => setSearch(e.target.value)} />
+        <SearchBox value={search} onChange={setSearch} placeholder="Search contacts…" />
       </div>
 
       {/* Filter tabs */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-        {Object.entries(counts).map(([k, v]) => (
-          <button key={k} onClick={() => setFilter(k)}
-            style={{ ...S.filterTab, ...(filter === k ? S.filterTabActive : {}) }}>
-            {k.charAt(0).toUpperCase() + k.slice(1)} ({v})
-          </button>
-        ))}
+      <div className="flex flex-wrap gap-2">
+        {tabDef.map(t => {
+          const active = filter === t.k;
+          return (
+            <button key={t.k} onClick={() => setFilter(t.k)}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border"
+              style={{
+                border:`1px solid ${active ? t.clr+"60" : C.bdr}`,
+                background: active ? `${t.clr}15` : "transparent",
+                color: active ? t.clr : C.tx2, fontWeight: active ? 700 : 400, cursor:"pointer",
+              }}>
+              {t.lbl}
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                style={{ background: active ? `${t.clr}25` : C.bg2, color: active ? t.clr : C.tx3 }}>
+                {counts[t.k]}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      {/* Cards */}
       {filtered.length === 0 && (
-        <div style={{ textAlign: "center", padding: "60px 0", color: C.muted, fontSize: 14 }}>
-          No contacts match your filter.
-        </div>
+        <div className="text-center py-14 text-sm" style={{ color:C.tx3 }}>No contacts match your filter.</div>
       )}
 
-      {filtered.map(c => (
-        <div key={c.id} style={S.contactCard}>
-          <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: C.text }}>{c.name}</div>
-              <div style={{ fontSize: 12, color: C.muted, marginTop: 2 }}>
-                {c.email && `✉ ${c.email}  `}{c.phone && `📱 ${c.phone}  `}📅 {c.date || c.createdAt?.slice(0, 10) || "—"}
+      <div className="space-y-3">
+        {filtered.map((c, idx) => {
+          const sd = statusConf[c.status] ?? statusConf.pending;
+          return (
+            <div key={c.id} className="rounded-xl p-4 border transition-all duration-200"
+              style={{ background:C.surf, borderColor:C.bdr, animationDelay:`${idx*.04}s` }}
+              onMouseEnter={e => e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,.3)"}
+              onMouseLeave={e => e.currentTarget.style.boxShadow="none"}>
+
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center text-base font-bold flex-shrink-0"
+                    style={{ background:`linear-gradient(135deg,${C.teal}40,${C.tealD}20)`, border:`1px solid ${C.teal}30` }}>
+                    {c.name?.[0]?.toUpperCase() || "?"}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold" style={{ color:C.tx }}>{c.name}</div>
+                    <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] mt-0.5" style={{ color:C.tx3 }}>
+                      {c.email && <span className="truncate max-w-[160px]">✉ {c.email}</span>}
+                      {c.phone && <span className="whitespace-nowrap">📱 {c.phone}</span>}
+                      <span className="whitespace-nowrap">📅 {c.date || c.createdAt?.slice(0,10) || "—"}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
+                  <select value={c.status} onChange={e => updateStatus(c.id, e.target.value)}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border"
+                    style={{ background:C.bg2, borderColor:sd.bd, color:sd.clr, cursor:"pointer" }}>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="responded">✓ Responded</option>
+                    <option value="closed">🔒 Closed</option>
+                  </select>
+                  <button onClick={() => del(c.id, c.name)} className="text-xs font-semibold px-3 py-1.5 rounded-lg border"
+                    style={{ color:"#fda4af", background:"rgba(244,63,94,.1)", border:"1px solid rgba(244,63,94,.2)", cursor:"pointer" }}>
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="border-t pt-3 space-y-1" style={{ borderColor:C.bdr }}>
+                {c.subject && <p className="text-sm font-bold" style={{ color:C.amber }}>{c.subject}</p>}
+                {c.packageInterest && <p className="text-xs" style={{ color:C.teal }}>🎒 {c.packageInterest}</p>}
+                <p className="text-sm leading-relaxed" style={{ color:C.tx2 }}>{c.message}</p>
+              </div>
+
+              {/* Footer links */}
+              <div className="flex flex-wrap items-center gap-4 mt-3 pt-3 border-t" style={{ borderColor:C.bdr }}>
+                <StatusPill status={c.status} />
+                {c.email && <a href={`mailto:${c.email}`} className="text-xs font-medium" style={{ color:"#60a5fa" }}>✉ Email</a>}
+                {c.phone && <a href={`tel:${c.phone}`}    className="text-xs font-medium" style={{ color:"#34d399" }}>📞 Call</a>}
+                {c.phone && <a href={`https://wa.me/91${c.phone.replace(/\D/g,"")}`} target="_blank" rel="noreferrer" className="text-xs font-medium" style={{ color:"#4ade80" }}>💬 WhatsApp</a>}
               </div>
             </div>
-            <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-              <select style={S.statusSel} value={c.status} onChange={e => updateStatus(c.id, e.target.value)}>
-                <option value="pending">⏳ Pending</option>
-                <option value="responded">✅ Responded</option>
-                <option value="closed">🔒 Closed</option>
-              </select>
-              <button style={S.btnDel} onClick={() => del(c.id, c.name)}>Delete</button>
-            </div>
-          </div>
-
-          {c.subject && (
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.accent, marginTop: 8 }}>{c.subject}</div>
-          )}
-          {c.packageInterest && (
-            <div style={{ fontSize: 12, color: "#60a5fa", marginTop: 2 }}>
-              Package Interest: {c.packageInterest}
-            </div>
-          )}
-          <div style={{ fontSize: 13, color: C.text2, marginTop: 6, lineHeight: 1.6 }}>{c.message}</div>
-
-          <div style={{ display: "flex", gap: 14, marginTop: 10, fontSize: 12, alignItems: "center", flexWrap: "wrap" }}>
-            <StatusBadge status={c.status} />
-            {c.email && <a href={`mailto:${c.email}`} style={{ color: "#60a5fa" }}>✉ Email</a>}
-            {c.phone && <a href={`tel:${c.phone}`}    style={{ color: "#34d399" }}>📞 Call</a>}
-            {c.phone && (
-              <a href={`https://wa.me/91${c.phone.replace(/\D/g, "")}`}
-                target="_blank" rel="noreferrer"
-                style={{ color: "#22c55e" }}>💬 WhatsApp</a>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SHARED UI
-// ─────────────────────────────────────────────────────────────────────────────
-function Modal({ title, onClose, children }) {
-  return (
-    <div style={S.overlay} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div style={S.modal}>
-        <div style={S.modalHead}>
-          <span style={{ fontSize: 15, fontWeight: 600 }}>{title}</span>
-          <button style={S.closeBtn} onClick={onClose}>×</button>
-        </div>
-        <div style={S.modalBody}>{children}</div>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-function TableRow({ children }) {
-  const [hov, setHov] = useState(false);
+// ─────────────────────────────────────────────────────────────────────────────
+// SHARED COMPONENTS
+// ─────────────────────────────────────────────────────────────────────────────
+function Modal({ title, onClose, children, wide }) {
   return (
-    <tr style={{ background: hov ? "#1a2840" : "transparent", transition: "background .15s" }}
-      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}>
+    <div className="fixed inset-0 z-[250] flex items-start justify-center px-4 py-4 overflow-y-auto"
+      style={{ background:"rgba(0,0,0,.82)", backdropFilter:"blur(4px)" }}
+      onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="w-full my-auto rounded-2xl border ns-up"
+        style={{ background:C.bg2, borderColor:C.bdr2, maxWidth: wide ? 680 : 460, boxShadow:"0 32px 80px rgba(0,0,0,.6)" }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor:C.bdr }}>
+          <span className="text-base font-bold" style={{ color:C.tx }}>{title}</span>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg border text-xl leading-none"
+            style={{ background:"transparent", border:`1px solid ${C.bdr}`, color:C.tx2, cursor:"pointer" }}>×</button>
+        </div>
+        <div className="max-h-[70vh] overflow-y-auto">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function Panel({ children }) {
+  return (
+    <div className="rounded-xl p-5 border" style={{ background:C.surf, borderColor:C.bdr }}>
       {children}
-    </tr>
+    </div>
   );
 }
 
-function StatusBadge({ status }) {
-  const map = {
-    pending:   { bg: "#451a03", color: "#fbbf24" },
-    responded: { bg: "#064e3b", color: "#34d399" },
-    closed:    { bg: "#1e293b", color: "#94a3b8" },
-  };
-  const s = map[status] ?? map.pending;
+function PanelTitle({ children }) {
+  return <h3 className="text-[10px] font-bold uppercase tracking-widest" style={{ color:C.tx3 }}>{children}</h3>;
+}
+
+function HoverRow({ children }) {
+  const [h, setH] = useState(false);
   return (
-    <span style={{ background: s.bg, color: s.color, padding: "2px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600 }}>
-      {status ?? "pending"}
-    </span>
+    <tr style={{ background: h ? C.surf2 : "transparent", transition:"background .15s" }}
+      onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}>{children}</tr>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DESIGN TOKENS + STYLES
-// ─────────────────────────────────────────────────────────────────────────────
-const C = {
-  bg:      "#0f172a",
-  surface: "#1e293b",
-  surface2:"#263246",
-  border:  "#334155",
-  accent:  "#f59e0b",
-  text:    "#f8fafc",
-  text2:   "#94a3b8",
-  muted:   "#64748b",
-  red:     "#ef4444",
-  green:   "#10b981",
-};
+function StatusPill({ status }) {
+  const m = {
+    pending:   { c:"#fbbf24", bg:"rgba(245,158,11,.12)"  },
+    responded: { c:"#34d399", bg:"rgba(52,211,153,.12)"  },
+    closed:    { c:"#94a3b8", bg:"rgba(148,163,184,.08)" },
+  };
+  const s = m[status] ?? m.pending;
+  return <span className="text-[11px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap" style={{ color:s.c, background:s.bg }}>{status}</span>;
+}
 
-const S = {
-  // Splash
-  splash:  { minHeight: "100vh", background: C.bg, display: "flex", alignItems: "center", justifyContent: "center" },
-  spinner: { width: 40, height: 40, borderRadius: "50%", border: `3px solid ${C.border}`, borderTopColor: C.accent, animation: "spin 0.8s linear infinite" },
+function SearchBox({ value, onChange, placeholder }) {
+  const [foc, setFoc] = useState(false);
+  return (
+    <div className="flex items-center gap-2 rounded-lg px-3 border transition-all duration-200"
+      style={{ background:C.surf, borderColor: foc ? C.amber+"40" : C.bdr, boxShadow: foc ? `0 0 0 3px ${C.amber}10` : "none", minHeight:36 }}>
+      <span className="text-sm" style={{ color:C.tx3 }}>🔍</span>
+      <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+        onFocus={() => setFoc(true)} onBlur={() => setFoc(false)}
+        className="bg-transparent text-sm py-2 outline-none min-w-0 w-40 sm:w-48"
+        style={{ color:C.tx, border:"none" }} />
+      {value && <button onClick={() => onChange("")} className="text-sm" style={{ background:"none", border:"none", color:C.tx3, cursor:"pointer" }}>×</button>}
+    </div>
+  );
+}
 
-  // Login
-  loginWrap: { minHeight: "100vh", background: `linear-gradient(135deg,${C.bg},${C.surface})`, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 },
-  loginCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 16, padding: "40px 36px", width: "100%", maxWidth: 420 },
-  errBox:    { background: "#450a0a", color: "#f87171", border: "1px solid #7f1d1d", borderRadius: 8, padding: "10px 14px", marginBottom: 14, fontSize: 13 },
+function GhostBtn({ children, onClick }) {
+  const [h, setH] = useState(false);
+  return (
+    <button onClick={onClick} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all duration-200 whitespace-nowrap"
+      style={{ background:"transparent", border:`1px solid ${C.bdr2}`, color: h ? C.tx : C.tx2, cursor:"pointer" }}
+      onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}>
+      {children}
+    </button>
+  );
+}
 
-  // Form basics
-  lbl:  { display: "block", fontSize: 11, color: C.muted, marginBottom: 5, textTransform: "uppercase", letterSpacing: ".5px" },
-  inp:  { width: "100%", background: C.bg, border: `1px solid ${C.border}`, borderRadius: 8, padding: "9px 12px", color: C.text, fontSize: 13, outline: "none", boxSizing: "border-box", fontFamily: "inherit", transition: "border-color .2s" },
+function PrimaryBtn({ children, onClick, disabled }) {
+  const [h, setH] = useState(false);
+  return (
+    <button onClick={onClick} disabled={disabled}
+      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all duration-200"
+      style={{
+        background: disabled ? C.tx3 : h ? C.amberL : C.amber,
+        color: disabled ? "#555" : "#0d0d0d", border:"none",
+        cursor: disabled ? "not-allowed" : "pointer",
+        boxShadow: !disabled && h ? `0 4px 14px ${C.amber}40` : "none",
+      }}
+      onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}>
+      {children}
+    </button>
+  );
+}
 
-  // Buttons
-  btnPrimary: { background: C.accent, color: "#000", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, fontWeight: 600, cursor: "pointer" },
-  btnOutline: { background: "none",   color: C.text2, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 16px", fontSize: 12, cursor: "pointer" },
-  btnEdit:    { background: "#1d4ed8", color: "#fff",  border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 12, cursor: "pointer" },
-  btnDel:     { background: C.red,     color: "#fff",  border: "none", borderRadius: 6, padding: "5px 12px", fontSize: 12, cursor: "pointer" },
+function ActionBtn({ children, onClick, color }) {
+  const [h, setH] = useState(false);
+  const blue = color === "blue";
+  return (
+    <button onClick={onClick}
+      className="text-xs font-semibold px-2.5 py-1 rounded-md border transition-all duration-150"
+      style={{
+        color:      h ? "#fff" : blue ? "#60a5fa" : "#fda4af",
+        background: h ? (blue ? "rgba(96,165,250,.25)" : "rgba(244,63,94,.25)") : (blue ? "rgba(96,165,250,.1)" : "rgba(244,63,94,.1)"),
+        border:`1px solid ${blue ? "rgba(96,165,250,.3)" : "rgba(244,63,94,.3)"}`, cursor:"pointer",
+      }}
+      onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}>
+      {children}
+    </button>
+  );
+}
 
-  // Layout
-  app:    { display: "flex", minHeight: "100vh", background: C.bg, color: C.text, fontFamily: "'Segoe UI',system-ui,sans-serif" },
-  sidebar: { width: 240, background: C.bg, borderRight: `1px solid ${C.border}`, display: "flex", flexDirection: "column", position: "fixed", top: 0, left: 0, height: "100vh", zIndex: 100, transition: "transform .3s" },
-  main:   { flex: 1, minHeight: "100vh", transition: "margin .3s" },
-  topbar: { background: C.surface, borderBottom: `1px solid ${C.border}`, padding: "14px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50 },
-  content: { padding: 24 },
-
-  // Nav
-  navItem:   { display: "flex", alignItems: "center", gap: 10, padding: "10px 18px", cursor: "pointer", fontSize: 13.5, color: C.text2, background: "none", border: "none", width: "100%", textAlign: "left", borderLeft: "3px solid transparent", transition: "all .15s", fontFamily: "inherit" },
-  navActive: { background: C.surface, color: C.accent, borderLeftColor: C.accent },
-  navBadge:  { background: C.red, color: "#fff", borderRadius: 10, fontSize: 10, padding: "1px 6px", fontWeight: 600, marginLeft: "auto" },
-  logoutBtn: { background: "none", border: `1px solid ${C.border}`, color: C.text2, borderRadius: 6, padding: "7px 14px", fontSize: 12, cursor: "pointer", width: "100%", fontFamily: "inherit" },
-  menuBtn:   { background: "none", border: `1px solid ${C.border}`, color: C.text2, width: 36, height: 36, borderRadius: 8, cursor: "pointer", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" },
-
-  // Toast
-  toastOk:  { background: "#064e3b", color: "#34d399", border: "1px solid #065f46", borderRadius: 8, padding: "6px 14px", fontSize: 13 },
-  toastErr: { background: "#450a0a", color: "#f87171", border: "1px solid #7f1d1d", borderRadius: 8, padding: "6px 14px", fontSize: 13 },
-
-  // Loading bar
-  loadBar: { height: 3, background: C.accent, borderRadius: 2, marginBottom: 16 },
-
-  // Stats
-  statsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: 14, marginBottom: 24 },
-  statCard:  { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 4 },
-  sectionH:  { fontSize: 14, fontWeight: 600, color: C.text2, marginBottom: 12, marginTop: 4 },
-  qaCard:    { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "18px 16px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, fontFamily: "inherit", color: C.text, transition: "border-color .2s" },
-
-  // Table
-  tableWrap: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, overflowX: "auto" },
-  table:     { width: "100%", borderCollapse: "collapse", minWidth: 640 },
-  th:        { background: C.surface2, padding: "11px 16px", fontSize: 11, textTransform: "uppercase", letterSpacing: ".5px", color: C.muted, textAlign: "left", fontWeight: 600 },
-  td:        { padding: "11px 16px", fontSize: 13, borderTop: `1px solid ${C.border}`, color: C.text2, verticalAlign: "middle" },
-  emptyCell: { textAlign: "center", padding: 48, color: C.muted, fontSize: 14 },
-  tag:       { background: "#1e3a5f", color: "#60a5fa", padding: "2px 8px", borderRadius: 4, fontSize: 11 },
-  thumb:     { width: 44, height: 32, objectFit: "cover", borderRadius: 6, border: `1px solid ${C.border}` },
-  badgeGreen:{ background: "#064e3b", color: "#34d399", padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600 },
-  badgeGray: { background: C.surface, color: C.muted,  padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600 },
-
-  // Section header
-  secHdr:    { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 },
-  secTitle:  { fontSize: 16, fontWeight: 600 },
-  searchBar: { background: C.bg, border: `1px solid ${C.border}`, borderRadius: 8, padding: "8px 14px", color: C.text, fontSize: 13, width: 220, outline: "none", fontFamily: "inherit" },
-
-  // Modal
-  overlay:   { position: "fixed", inset: 0, background: "rgba(0,0,0,.75)", zIndex: 200, display: "flex", alignItems: "flex-start", justifyContent: "center", padding: 20, overflowY: "auto" },
-  modal:     { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, width: "100%", maxWidth: 680, margin: "auto" },
-  modalHead: { padding: "18px 22px", borderBottom: `1px solid ${C.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" },
-  modalBody: { padding: 22, maxHeight: "70vh", overflowY: "auto" },
-  modalFoot: { padding: "16px 22px", borderTop: `1px solid ${C.border}`, display: "flex", gap: 10, justifyContent: "flex-end" },
-  closeBtn:  { background: "none", border: "none", color: C.text2, fontSize: 24, cursor: "pointer", lineHeight: 1, fontFamily: "inherit" },
-
-  // Contact card
-  contactCard: { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 10, padding: "16px 18px", marginBottom: 12 },
-  filterTab:   { background: "none", border: `1px solid ${C.border}`, color: C.text2, borderRadius: 20, padding: "5px 14px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" },
-  filterTabActive: { background: C.accent, color: "#000", border: `1px solid ${C.accent}` },
-  statusSel:   { background: C.bg, border: `1px solid ${C.border}`, borderRadius: 6, padding: "4px 10px", color: C.text, fontSize: 12, cursor: "pointer", fontFamily: "inherit" },
-};
-
-// Inject keyframe for spinner
-if (typeof document !== "undefined") {
-  const id = "ns-admin-style";
-  if (!document.getElementById(id)) {
-    const el = document.createElement("style");
-    el.id = id;
-    el.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
-    document.head.appendChild(el);
-  }
+function Spinner({ sm }) {
+  const sz = sm ? 14 : 18;
+  return <div className="ns-spin flex-shrink-0 rounded-full border-2"
+    style={{ width:sz, height:sz, borderColor:C.bdr2, borderTopColor:C.amber }} />;
 }
