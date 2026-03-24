@@ -78,8 +78,8 @@ const Footer = () => {
 
   const trustBadges = [
     { icon: Shield, text: "100% Secure Booking", sub: "SSL Encrypted" },
-    { icon: Award, text: "Award Winning", sub: "Best Travel Agency 2024" },
-    { icon: Users, text: "50K+ Happy Customers", sub: "And counting..." }
+    // { icon: Award, text: "Award Winning", sub: "Best Travel Agency 2024" },
+    // { icon: Users, text: "50K+ Happy Customers", sub: "And counting..." }
   ]
 
   return (

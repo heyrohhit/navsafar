@@ -35,12 +35,12 @@ const navModel = [
         description: "Premium accommodation options",
         keywords: "hotels, resorts, accommodation, lodging"
     },
-    {
-        name: "Flights",
-        path: "/flights",
-        description: "Book flights worldwide",
-        keywords: "flights, airlines, air tickets, booking"
-    },
+    // {
+    //     name: "Flights",
+    //     path: "/flights",
+    //     description: "Book flights worldwide",
+    //     keywords: "flights, airlines, air tickets, booking"
+    // },
     {
         name: "Visa Services",
         path: "/visa-services",

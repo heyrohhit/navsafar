@@ -69,7 +69,7 @@ const CTASection = () => {
   const stats = [
     { value: "24/7", label: "Support Available", icon: "🛡️" },
     { value: "100%", label: "Satisfaction Guarantee", icon: "⭐" },
-    { value: "50K+", label: "Happy Travelers", icon: "✈️" },
+    // { value: "50K+", label: "Happy Travelers", icon: "✈️" },
   ];
 
   return (

@@ -1,23 +1,20 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 const AboutUs = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeCard, setActiveCard] = useState(null);
-  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 200);
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ── REMOVE: 50K+ Happy Travelers & 15+ Years Experience ──────────────────
   const stats = [
-    { number: "50K+", label: "Happy Travelers", icon: "✈️", color: "from-blue-500 to-cyan-400" },
-    { number: "200+", label: "Travel Packages", icon: "🗺️", color: "from-teal-500 to-green-400" },
-    { number: "50+", label: "Destinations", icon: "🌍", color: "from-purple-500 to-pink-400" },
-    { number: "15+", label: "Years Experience", icon: "⭐", color: "from-orange-500 to-yellow-400" }
+    { number: "200+", label: "Travel Packages",  icon: "🗺️", color: "from-teal-500 to-green-400"  },
+    { number: "50+",  label: "Destinations",      icon: "🌍", color: "from-purple-500 to-pink-400"  },
+    { number: "4.8★", label: "Avg Customer Rating", icon: "⭐", color: "from-yellow-500 to-orange-400" },
+    { number: "100%", label: "Satisfaction Promise", icon: "✅", color: "from-blue-500 to-cyan-400"  },
   ];
 
   const values = [
@@ -41,7 +38,7 @@ const AboutUs = () => {
       desc: "Every traveler returns with a smile and memories to cherish for a lifetime.",
       gradient: "from-teal-500 to-green-700",
       bg: "bg-teal-50",
-    }
+    },
   ];
 
   return (
@@ -49,49 +46,30 @@ const AboutUs = () => {
 
       {/* ── HERO ── */}
       <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
-        {/* animated background blobs */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0056d6] via-[#0098c7] to-[#04b586]" />
         <div className="absolute top-[-80px] left-[-80px] w-[420px] h-[420px] rounded-full bg-white/10 blur-3xl animate-pulse" />
         <div className="absolute bottom-[-100px] right-[-60px] w-[350px] h-[350px] rounded-full bg-[#04b586]/30 blur-3xl" style={{ animation: "float 6s ease-in-out infinite" }} />
-        <div className="absolute top-1/2 left-1/3 w-[200px] h-[200px] rounded-full bg-blue-300/20 blur-2xl" style={{ animation: "float 8s ease-in-out infinite reverse" }} />
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
 
-        {/* decorative grid lines */}
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
-          backgroundSize: "60px 60px"
-        }} />
-
-        {/* floating travel icons */}
-        {["✈️","🌴","🏔️","🗺️","🌊","🏛️"].map((emoji, i) => (
+        {["✈️", "🌴", "🏔️", "🗺️", "🌊", "🏛️"].map((emoji, i) => (
           <div key={i} className="absolute text-3xl opacity-20 select-none"
-            style={{
-              top: `${15 + (i * 13) % 70}%`,
-              left: `${5 + (i * 17) % 85}%`,
-              animation: `float ${4 + i}s ease-in-out infinite`,
-              animationDelay: `${i * 0.5}s`
-            }}>
+            style={{ top: `${15 + (i * 13) % 70}%`, left: `${5 + (i * 17) % 85}%`, animation: `float ${4 + i}s ease-in-out infinite`, animationDelay: `${i * 0.5}s` }}>
             {emoji}
           </div>
         ))}
 
         <div className={`relative z-10 text-center px-4 transition-all duration-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
-          {/* badge */}
+          {/* ── FIX: Remove "2008" → show "Founded 2026" ── */}
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/25 text-white text-sm font-semibold px-5 py-2 rounded-full mb-8 shadow-lg">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />
-            Trusted Since 2008
+            Founded 2026
           </div>
 
           <h1 className="text-3xl md:text-3xl reey-font font-extrabold text-white mb-4 leading-none tracking-tight drop-shadow-xl">
             About
           </h1>
           <h2 className="text-3xl md:text-6xl font-black tracking-widest mb-8 mt-5"
-            style={{
-              background: "linear-gradient(90deg, #ffffff, #a8edcc, #ffffff)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              textShadow: "none",
-              letterSpacing: "0.5em"
-            }}>
+            style={{ background: "linear-gradient(90deg, #ffffff, #a8edcc, #ffffff)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", letterSpacing: "0.5em" }}>
             NAVSAFAR
           </h2>
           <p className="text-lg md:text-2xl text-blue-100 max-w-2xl mx-auto leading-relaxed font-light">
@@ -102,7 +80,6 @@ const AboutUs = () => {
             around the world.
           </p>
 
-          {/* scroll cue */}
           <div className="mt-16 flex justify-center">
             <div className="w-8 h-14 rounded-full border-2 border-white/40 flex items-start justify-center pt-2">
               <div className="w-1.5 h-4 rounded-full bg-white/70" style={{ animation: "scroll-dot 1.8s ease-in-out infinite" }} />
@@ -111,20 +88,17 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ── STATS ── */}
+      {/* ── STATS (removed 50K+ and 15+ years) ── */}
       <section className="relative py-20 bg-white">
-        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#04b586]/10 to-transparent pointer-events-none" />
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-around items-center flex-wrap gap-3 md:gap-8">
             {stats.map((stat, i) => (
-              <div
-                key={i}
+              <div key={i}
                 className={`group w-[220px] relative bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl border border-gray-100 cursor-default transition-all duration-500 hover:-translate-y-2 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
-                style={{ transitionDelay: `${200 + i * 120}ms` }}
-              >
+                style={{ transitionDelay: `${200 + i * 120}ms` }}>
                 <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
                 <div className="text-4xl mb-3">{stat.icon}</div>
-                <div className={`text-3xl md:text-3xl font-black mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}>
+                <div className={`text-3xl font-black mb-1 bg-gradient-to-br ${stat.color} bg-clip-text text-transparent`}>
                   {stat.number}
                 </div>
                 <div className="text-gray-500 font-medium text-[12px] uppercase tracking-wider">
@@ -139,10 +113,8 @@ const AboutUs = () => {
       {/* ── STORY ── */}
       <section className="py-24 bg-[#f0f6ff] relative overflow-hidden p-5">
         <div className="absolute right-[-120px] top-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-br from-blue-100 to-teal-100 blur-3xl opacity-60 pointer-events-none" />
-
         <div className="max-w-6xl mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            {/* left text */}
             <div className={`transition-all duration-1000 ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`} style={{ transitionDelay: "400ms" }}>
               <span className="text-[#04b586] font-bold uppercase tracking-widest text-sm">Our Journey</span>
               <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mt-3 mb-6 leading-tight">
@@ -150,7 +122,7 @@ const AboutUs = () => {
               </h2>
               <div className="space-y-5 text-gray-600 leading-relaxed text-lg">
                 <p>
-                  Founded in <strong className="text-gray-800">2026</strong>, Navsafar started with a simple mission — to make travel accessible and joyful for everyone. What began as a small travel agency has grown into one of India's most trusted travel companies.
+                  Founded in <strong className="text-gray-800">2026</strong>, Navsafar started with a simple mission — to make travel accessible and joyful for everyone. What began as a passionate travel agency has quickly grown into one of India's most trusted travel partners.
                 </p>
                 <p>
                   We believe travel is not just about reaching a destination, but about <em className="text-blue-600 not-italic font-semibold">the journey itself</em>. Our team works tirelessly to ensure that every trip becomes a cherished memory.
@@ -159,43 +131,43 @@ const AboutUs = () => {
                   From domestic getaways to international adventures — we're here to turn your travel dreams into reality.
                 </p>
               </div>
-
               <div className="mt-10 flex items-center gap-4">
                 <div className="w-12 h-1 rounded-full bg-gradient-to-r from-blue-500 to-[#04b586]" />
-                <span className="text-gray-400 font-medium italic">"Travel. Explore. Live."</span>
+                <span className="text-gray-400 font-medium">"Travel. Explore. Live."</span>
               </div>
+              {/* CTA */}
+              <a href="/booking"
+                className="mt-8 inline-flex items-center gap-2 px-8 py-4 bg-[#0f6477] text-white font-bold rounded-2xl hover:bg-[#0d5567] transition-all duration-300 hover:scale-105 shadow-lg shadow-[#0f6477]/30">
+                ✈️ Plan Your Trip
+              </a>
             </div>
 
-            {/* right visual */}
             <div className={`relative transition-all duration-1000 ${isLoaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-10"}`} style={{ transitionDelay: "600ms" }}>
               <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl aspect-[4/3] bg-gradient-to-br from-[#0056d6] to-[#04b586]">
-                {/* decorative pattern */}
-                <div className="absolute inset-0 opacity-20" style={{
-                  backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)",
-                  backgroundSize: "28px 28px"
-                }} />
+                <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-10 text-center">
                   <div className="text-7xl mb-6">🌏</div>
-                  <div className="text-5xl font-black mb-2">15+ Years</div>
-                  <div className="text-xl text-blue-100 font-light">of making travel dreams come true</div>
+                  {/* ── REMOVE: "15+ Years" → "Est. 2026" ── */}
+                  <div className="text-5xl font-black mb-2">Est. 2026</div>
+                  <div className="text-xl text-blue-100 font-light">Your trusted travel partner</div>
                   <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-xs">
-                    {["🏖️ Beaches","🏔️ Mountains","🏛️ Heritage"].map((t, i) => (
+                    {["🏖️ Beaches", "🏔️ Mountains", "🏛️ Heritage"].map((t, i) => (
                       <div key={i} className="bg-white/15 backdrop-blur-sm rounded-xl py-2 px-1 text-xs font-medium text-center">{t}</div>
                     ))}
                   </div>
                 </div>
               </div>
-              {/* floating card */}
+
               <div className="absolute -bottom-6 -left-6 bg-white rounded-2xl shadow-2xl px-6 py-4 flex items-center gap-4 border border-gray-100">
                 <div className="text-3xl">🎯</div>
                 <div>
-                  <div className="font-bold text-gray-900 text-lg">50,000+</div>
-                  <div className="text-gray-400 text-xs uppercase tracking-wide">Happy Travelers</div>
+                  <div className="font-bold text-gray-900 text-lg">200+</div>
+                  <div className="text-gray-400 text-xs uppercase tracking-wide">Packages Available</div>
                 </div>
               </div>
               <div className="absolute -top-5 -right-5 bg-gradient-to-br from-[#0056d6] to-[#04b586] rounded-2xl shadow-2xl px-5 py-3 text-white text-center">
-                <div className="font-black text-2xl">200+</div>
-                <div className="text-xs text-blue-100 uppercase tracking-wide">Packages</div>
+                <div className="font-black text-2xl">50+</div>
+                <div className="text-xs text-blue-100 uppercase tracking-wide">Destinations</div>
               </div>
             </div>
           </div>
@@ -214,10 +186,8 @@ const AboutUs = () => {
           </div>
           <div className="flex justify-around items-center flex-wrap gap-10">
             {values.map((v, i) => (
-              <div
-                key={i}
-                className={`group w-[250px] relative rounded-3xl p-8 ${v.bg} border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-default overflow-hidden`}
-              >
+              <div key={i}
+                className={`group w-[250px] relative rounded-3xl p-8 ${v.bg} border border-white shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-default overflow-hidden`}>
                 <div className={`absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br ${v.gradient} opacity-10 blur-2xl -translate-y-8 translate-x-8 group-hover:opacity-20 transition-opacity`} />
                 <div className={`inline-flex w-16 h-16 rounded-2xl bg-gradient-to-br ${v.gradient} items-center justify-center text-2xl shadow-lg mb-6`}>
                   {v.icon}
@@ -231,15 +201,10 @@ const AboutUs = () => {
         </div>
       </section>
 
-      {/* ── CTA ── */}
+      {/* ── CTA (remove "50,000+ happy travelers" reference) ── */}
       <section className="relative py-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#003db5] via-[#0078c8] to-[#04b586]" />
-        <div className="absolute inset-0 opacity-10" style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
-          backgroundSize: "40px 40px"
-        }} />
-        <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-white/5 blur-3xl animate-pulse" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-[#04b586]/20 blur-3xl" />
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
           <div className="text-5xl mb-6">🗺️</div>
@@ -250,19 +215,15 @@ const AboutUs = () => {
             </span>
           </h2>
           <p className="text-xl text-blue-100 mb-12 max-w-xl mx-auto font-light leading-relaxed">
-            Join <strong className="text-white">50,000+ happy travelers</strong> who have explored the world with Navsafar.
+            Discover amazing destinations across India and the world with our expert travel team.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/tour-packages"
-              className="group relative px-10 py-4 bg-white text-blue-700 font-bold rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-2xl text-lg overflow-hidden"
-            >
-              <span className="relative z-10">✈️ Explore Packages</span>
+            <a href="/tour-packages"
+              className="group relative px-10 py-4 bg-white text-blue-700 font-bold rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-2xl text-lg">
+              ✈️ Explore Packages
             </a>
-            <a
-              href="/contact"
-              className="px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/40 text-white font-bold rounded-2xl hover:bg-white/20 transition-all duration-300 hover:scale-105 text-lg"
-            >
+            <a href="/pages/contact"
+              className="px-10 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/40 text-white font-bold rounded-2xl hover:bg-white/20 transition-all duration-300 hover:scale-105 text-lg">
               💬 Contact Us
             </a>
           </div>
@@ -270,16 +231,8 @@ const AboutUs = () => {
       </section>
 
       <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-18px); }
-        }
-        @keyframes scroll-dot {
-          0%, 100% { transform: translateY(0); opacity: 1; }
-          60% { transform: translateY(24px); opacity: 0; }
-          61% { transform: translateY(0); opacity: 0; }
-          80% { opacity: 1; }
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-18px); } }
+        @keyframes scroll-dot { 0%, 100% { transform: translateY(0); opacity: 1; } 60% { transform: translateY(24px); opacity: 0; } 61% { transform: translateY(0); opacity: 0; } 80% { opacity: 1; } }
       `}</style>
     </div>
   );

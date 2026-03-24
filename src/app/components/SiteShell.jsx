@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 import Header          from "./header/header";
 import Footer          from "./common/Footer";
 import VisitorTracker  from "./tracking/VisitorTracker";
+import WhatsAppFloat from "./sections/WhatsAppFloat";
 
 export default function SiteShell({ children }) {
   const path    = usePathname();
@@ -24,6 +25,7 @@ export default function SiteShell({ children }) {
       ) : (
         <>
           <Header />
+          <WhatsAppFloat/>
           {children}
           <Footer />
         </>

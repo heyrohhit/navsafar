@@ -6,6 +6,8 @@ import ExperienceCategories from "./experiences/ExperienceCategories";
 import CTASection from "./components/cta/CTASection";
 import Herosections from "./components/hero/HeroSections";
 import AboutUs from "./pages/about-us/About";
+import HowItWorks from "./components/ui/HowItWorks";
+
 
 export default function Page() {
   return (
@@ -15,6 +17,7 @@ export default function Page() {
         <ExperienceCategories />
         <FeatuersSection />
         <FeaturedPackages limit={5} />
+        <HowItWorks/>
         <AboutUs />
         <CTASection />
       </div>
