@@ -1,5 +1,5 @@
 import About from "./About";
-import { getStaticMetadata } from "../../lib/seo";
+import { getStaticMetadata } from "../../../lib/seo";
 
 export const metadata = getStaticMetadata("about");
 

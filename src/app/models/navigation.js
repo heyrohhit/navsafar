@@ -30,10 +30,10 @@ const navModel = [
     //     keywords: "domestic tours, local travel, national trips"
     // },
     {
-        name: "Hotels & Resorts",
-        path: "/hotels-resorts",
-        description: "Premium accommodation options",
-        keywords: "hotels, resorts, accommodation, lodging"
+        name: "Blog",
+        path: "/blog",
+        description: "Travel tips and stories",
+        keywords: "blog, travel tips, stories, guides"
     },
     // {
     //     name: "Flights",
@@ -66,11 +66,11 @@ const navModel = [
         keywords: "contact, phone, email, address"
     },
     {
-        name: "Blog",
-        path: "/blog",
-        description: "Travel tips and stories",
-        keywords: "blog, travel tips, stories, guides"
-    }
+        name: "Hotels & Resorts",
+        path: "/hotels-resorts",
+        description: "Premium accommodation options",
+        keywords: "hotels, resorts, accommodation, lodging"
+    },
 ]
 
 

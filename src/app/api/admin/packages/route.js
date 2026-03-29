@@ -11,7 +11,7 @@ import fs   from "fs";
 import path from "path";
 import { packages as staticPackages } from "../../../models/objAll/packages";
 
-export const dynamic = "force-dynamic";
+
 
 const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
 

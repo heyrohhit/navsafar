@@ -3,7 +3,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getPackages } from "../../lib/getPackages";
+import { getPackages } from "../../../lib/getPackages";
 
 // ── Helpers ───────────────────────────────────────────────────────
 function toSlug(city) {
@@ -38,8 +38,9 @@ export async function generateStaticParams() {
 
 // ── generateMetadata ─────────────────────────────────────────────
 export async function generateMetadata({ params }) {
+  const { slug } = await params; // ✅ await params
   const packages = getPackages();
-  const dest     = packages.find((p) => toSlug(p.city) === params.slug);
+  const dest     = packages.find((p) => toSlug(p.city) === slug);
   if (!dest) return { title: "Destination Not Found" };
   return {
     title:       `${dest.city}, ${dest.country} — NavSafar Travel`,
@@ -49,20 +50,18 @@ export async function generateMetadata({ params }) {
 }
 
 // ── PAGE ─────────────────────────────────────────────────────────
-export default function DestinationPage({ params }) {
+export default async function DestinationPage({ params }) { // ✅ async + await params
+  const { slug } = await params;
   const packages = getPackages();
 
-  // Find all packages for this slug
-  const cityPackages = packages.filter((p) => toSlug(p.city) === params.slug);
+  const cityPackages = packages.filter((p) => toSlug(p.city) === slug);
   if (cityPackages.length === 0) notFound();
 
-  // Use richest package for header info
   const dest = cityPackages.reduce((best, p) =>
     (p.itinerary?.length ?? 0) > (best.itinerary?.length ?? 0) ? p : best, cityPackages[0]);
 
   const region = getRegion(dest.country);
 
-  // Related destinations — different country, same region
   const relatedCountries = (REGION_MAP[region] ?? []).filter((c) => c !== dest.country);
   const related = Object.values(
     packages
@@ -148,7 +147,7 @@ export default function DestinationPage({ params }) {
               </div>
             )}
 
-            {/* Packages — all itineraries for this city */}
+            {/* Packages */}
             <div>
               <h2 className="text-2xl font-black text-gray-900 mb-6">📦 Available Packages</h2>
               <div className="space-y-6">

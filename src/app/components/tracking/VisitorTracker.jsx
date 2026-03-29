@@ -1,5 +1,5 @@
 // src/app/components/tracking/VisitorTracker.jsx
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 // Silent client component — fires once per page view, sends data to
 // /api/track-visitor which writes a row to Google Sheets.
 //
@@ -8,7 +8,7 @@
 //   <VisitorTracker />
 //
 // It renders nothing visible. Zero impact on user experience.
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
 "use client";
 import { useEffect, useRef } from "react";
 import { usePathname }       from "next/navigation";
@@ -26,16 +26,17 @@ function getSessionId() {
 }
 
 export default function VisitorTracker() {
-  const pathname    = usePathname();
-  const enterTime   = useRef(Date.now());
-  const hasFired    = useRef(false);
+  const pathname = usePathname();
+
+  // ✅ Lazy initialization to avoid Date.now() at top-level
+  const enterTime = useRef(0);
+  const hasFired  = useRef(false);
 
   useEffect(() => {
-    // Reset timer on every route change
+    // Assign enter time inside useEffect — safe for client-side only
     enterTime.current = Date.now();
     hasFired.current  = false;
 
-    // Small delay — let page render first, don't compete with critical resources
     const timer = setTimeout(async () => {
       if (hasFired.current) return;
       hasFired.current = true;
@@ -49,21 +50,20 @@ export default function VisitorTracker() {
           language:   navigator.language || "-",
           timezone:   Intl.DateTimeFormat().resolvedOptions().timeZone || "-",
           sessionId:  getSessionId(),
-          timeOnPage: "-", // sent on page-leave (see below)
+          timeOnPage: "-", // sent on page-leave (optional)
         };
 
-        // Fire-and-forget — don't await, don't show errors to user
+        // Fire-and-forget — don't await, errors ignored
         fetch("/api/track-visitor", {
           method:  "POST",
           headers: { "Content-Type": "application/json" },
           body:    JSON.stringify(payload),
-          // keepalive: send even if page is unloading
           keepalive: true,
-        }).catch(() => {}); // swallow any network errors silently
+        }).catch(() => {});
       } catch {
-        // Never throw — tracking must never break the site
+        // Silent catch — never crash page
       }
-    }, 1500); // 1.5s delay — page content loads first
+    }, 1500); // 1.5s delay — wait for page content
 
     return () => clearTimeout(timer);
   }, [pathname]);

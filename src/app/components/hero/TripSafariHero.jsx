@@ -196,7 +196,7 @@ export default function HeroSection() {
                 
                 variants={badgeAnim(i)} initial="hidden" animate="visible"
                 whileHover={{ x: -6, scale: 1.06, transition: { duration: 0.25 } }}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-sans text-white/90 whitespace-nowrap cursor-default backdrop-blur-xl"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-sans text-white whitespace-nowrap cursor-default backdrop-blur-xl"
                 style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
               >
                 <motion.span

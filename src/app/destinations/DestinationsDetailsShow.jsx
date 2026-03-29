@@ -1,13 +1,3 @@
-// src/app/destinations/DestinationsDetailsShow.jsx
-// ─────────────────────────────────────────────────────────────────────
-// ONLY CHANGE from original:
-//   • Removed:  import { packages } from "../models/objAll/packages"
-//   • Added:    import { usePackages } from "../hooks/usePackages"
-//   • Removed:  top-level const destinations & ALL_IMAGES (built statically)
-//   • Added:    useMemo to build destinations & ALL_IMAGES inside component
-//     from the live packages returned by the hook.
-// Layout, styles, components — 100% unchanged.
-// ─────────────────────────────────────────────────────────────────────
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -16,18 +6,20 @@ import Image from "next/image";
 import { usePackages } from "../hooks/usePackages";
 
 // ─────────────────────────────────────────────────────────────────────
-// Slug helper  "New York City" → "new-york-city"
+// Slug helper
 // ─────────────────────────────────────────────────────────────────────
 function toSlug(city) {
   return city
     .toLowerCase()
     .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Build unique destinations deduplicated by city
+// Build destinations
 // ─────────────────────────────────────────────────────────────────────
 function buildDestinations(packages) {
   return Object.values(
@@ -38,11 +30,11 @@ function buildDestinations(packages) {
           city:               pkg.city,
           country:            pkg.country,
           image:              pkg.image,
-          tourism_type:       pkg.tourism_type      ?? [],
+          tourism_type:       pkg.tourism_type       ?? [],
           famous_attractions: pkg.famous_attractions ?? [],
-          bestTime:           pkg.bestTime          ?? null,
+          bestTime:           pkg.bestTime           ?? null,
           highlights:         (pkg.highlights        ?? []).slice(0, 4),
-          rating:             pkg.rating            ?? null,
+          rating:             pkg.rating             ?? null,
           href:               `/destinations/${toSlug(pkg.city)}`,
         };
       }
@@ -63,11 +55,14 @@ const REGION_MAP = {
   "Australia & Pacific": ["Australia","New Zealand"],
   India:                 ["India"],
 };
+
 const REGIONS = ["All", ...Object.keys(REGION_MAP)];
+
 const REGION_EMOJI = {
   Europe:"🏰", Asia:"🏯", "Middle East":"🕌",
   Americas:"🗽", Africa:"🦁", "Australia & Pacific":"🦘", India:"🕍",
 };
+
 function getRegion(country) {
   for (const [r, cs] of Object.entries(REGION_MAP)) {
     if (cs.includes(country)) return r;
@@ -79,18 +74,19 @@ function getRegion(country) {
 // Type chip
 // ─────────────────────────────────────────────────────────────────────
 const TYPE_COLORS = {
-  Cultural:"bg-violet-50 text-violet-600 border-violet-200",
-  Heritage:"bg-amber-50 text-amber-600 border-amber-200",
-  Beach:"bg-cyan-50 text-cyan-600 border-cyan-200",
-  Adventure:"bg-orange-50 text-orange-600 border-orange-200",
-  Nature:"bg-green-50 text-green-600 border-green-200",
-  Luxury:"bg-yellow-50 text-yellow-700 border-yellow-200",
-  Religious:"bg-rose-50 text-rose-600 border-rose-200",
-  Urban:"bg-blue-50 text-blue-600 border-blue-200",
-  Romantic:"bg-pink-50 text-pink-600 border-pink-200",
-  Historical:"bg-stone-50 text-stone-600 border-stone-200",
-  Nightlife:"bg-purple-50 text-purple-600 border-purple-200",
+  Cultural:   "bg-violet-50 text-violet-600 border-violet-200",
+  Heritage:   "bg-amber-50 text-amber-600 border-amber-200",
+  Beach:      "bg-cyan-50 text-cyan-600 border-cyan-200",
+  Adventure:  "bg-orange-50 text-orange-600 border-orange-200",
+  Nature:     "bg-green-50 text-green-600 border-green-200",
+  Luxury:     "bg-yellow-50 text-yellow-700 border-yellow-200",
+  Religious:  "bg-rose-50 text-rose-600 border-rose-200",
+  Urban:      "bg-blue-50 text-blue-600 border-blue-200",
+  Romantic:   "bg-pink-50 text-pink-600 border-pink-200",
+  Historical: "bg-stone-50 text-stone-600 border-stone-200",
+  Nightlife:  "bg-purple-50 text-purple-600 border-purple-200",
 };
+
 function TypeChip({ label }) {
   const cls = TYPE_COLORS[label] || "bg-gray-50 text-gray-500 border-gray-200";
   return (
@@ -101,9 +97,10 @@ function TypeChip({ label }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Fisher-Yates shuffle
+// ✅ SAFE shuffle (SSR protected)
 // ─────────────────────────────────────────────────────────────────────
 function shuffleArray(arr) {
+  if (typeof window === "undefined") return arr;
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -113,28 +110,28 @@ function shuffleArray(arr) {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Hero Mosaic — 2 rows (2+3), full-screen, auto-rotating
+// Hero Mosaic
 // ─────────────────────────────────────────────────────────────────────
 function HeroMosaic({ allImages }) {
-  const [slots, setSlots] = useState(() =>
-    allImages.length >= 5 ? shuffleArray(allImages).slice(0, 5) : allImages
-  );
+  const [slots, setSlots]   = useState([]);
   const [fading, setFading] = useState(null);
 
-  // Re-initialise slots when allImages first becomes non-empty (after API load)
   useEffect(() => {
     if (allImages.length >= 5) {
       setSlots(shuffleArray(allImages).slice(0, 5));
     }
-  }, [allImages.length]); // only re-run when count changes
+  }, [allImages]);
 
   useEffect(() => {
     if (allImages.length < 5) return;
+
     const pool = shuffleArray(allImages);
     let poolIdx = 5;
+
     const id = setInterval(() => {
       const s = Math.floor(Math.random() * 5);
       setFading(s);
+
       setTimeout(() => {
         setSlots((prev) => {
           const next = [...prev];
@@ -145,8 +142,9 @@ function HeroMosaic({ allImages }) {
         setFading(null);
       }, 600);
     }, 3000);
+
     return () => clearInterval(id);
-  }, [allImages.length]);
+  }, [allImages]);
 
   if (slots.length < 5) return null;
 
@@ -155,16 +153,21 @@ function HeroMosaic({ allImages }) {
       <div className="flex flex-1">
         {slots.slice(0, 2).map((img, i) => (
           <div key={i} className="relative flex-1 overflow-hidden">
-            <Image src={img.src} alt={img.city} fill priority={i === 0} sizes="50vw"
-              className={`object-cover transition-opacity duration-[600ms] ${fading === i ? "opacity-0" : "opacity-100"}`} />
+            <Image
+              src={img.src} alt={img.city} fill
+              priority={i === 0} sizes="50vw"
+              className={`object-cover transition-opacity duration-[600ms] ${fading === i ? "opacity-0" : "opacity-100"}`}
+            />
           </div>
         ))}
       </div>
       <div className="flex flex-1">
         {slots.slice(2, 5).map((img, i) => (
           <div key={i} className="relative flex-1 overflow-hidden">
-            <Image src={img.src} alt={img.city} fill sizes="33vw"
-              className={`object-cover transition-opacity duration-[600ms] ${fading === i + 2 ? "opacity-0" : "opacity-100"}`} />
+            <Image
+              src={img.src} alt={img.city} fill sizes="33vw"
+              className={`object-cover transition-opacity duration-[600ms] ${fading === i + 2 ? "opacity-0" : "opacity-100"}`}
+            />
           </div>
         ))}
       </div>
@@ -173,132 +176,145 @@ function HeroMosaic({ allImages }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Large Card  →  /destinations/[slug]
+// LargeDestCard
 // ─────────────────────────────────────────────────────────────────────
 function LargeDestCard({ dest, tall = false }) {
   return (
-    <Link
-      href={dest.href}
-      className={`group relative ${tall ? "h-[380px] sm:h-[440px]" : "h-[260px] sm:h-[300px]"} rounded-2xl overflow-hidden block border border-gray-200 hover:border-[#0f6477]/50 transition-all duration-500 hover:shadow-xl hover:shadow-[#0f6477]/15 hover:-translate-y-1`}
-    >
-      <Image src={dest.image} alt={`${dest.city}, ${dest.country}`} fill
-        className="object-cover transition-transform duration-700 group-hover:scale-110"
-        sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-      <div className="absolute inset-0 bg-[#0f6477]/0 group-hover:bg-[#0f6477]/10 transition-colors duration-500" />
+    <Link href={dest.href}
+      className={`group relative overflow-hidden rounded-2xl block ${tall ? "h-[420px]" : "h-[300px]"}`}>
+      {dest.image && (
+        <Image
+          src={dest.image} alt={dest.city} fill sizes="(max-width:768px) 100vw, 50vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
 
-      {dest.bestTime && (
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur text-gray-600 text-[9px] font-bold px-2.5 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          🗓 Best: {dest.bestTime}
+      {/* Type chips */}
+      {dest.tourism_type?.length > 0 && (
+        <div className="absolute top-4 left-4 flex flex-wrap gap-1.5">
+          {dest.tourism_type.slice(0, 2).map((t) => (
+            <TypeChip key={t} label={t} />
+          ))}
+        </div>
+      )}
+
+      {/* Rating */}
+      {dest.rating && (
+        <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-sm text-white text-[10px] font-black px-2.5 py-1 rounded-full">
+          ★ {dest.rating}
         </div>
       )}
 
       <div className="absolute bottom-0 left-0 right-0 p-5">
-        <div className="flex flex-wrap gap-1.5 mb-2.5 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-          {dest.tourism_type.slice(0, 2).map((t) => (
-            <span key={t} className="text-[9px] font-black tracking-widest uppercase px-2 py-1 rounded-full bg-white/90 text-gray-600 border border-white/50">{t}</span>
-          ))}
-        </div>
-        <div className="flex items-end justify-between gap-2">
-          <div>
-            <p className="text-white/60 text-[10px] font-bold tracking-widest uppercase mb-0.5">{dest.country}</p>
-            <h3 className="font-serif text-2xl sm:text-3xl font-black text-white leading-none group-hover:text-[#4db8cc] transition-colors duration-300">
-              {dest.city}
-            </h3>
-            {dest.famous_attractions.length > 0 && (
-              <p className="text-white/35 text-[11px] mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 line-clamp-1">
-                {dest.famous_attractions.join(" · ")}
-              </p>
-            )}
-          </div>
-          <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center flex-shrink-0 opacity-0 group-hover:opacity-100 translate-x-3 group-hover:translate-x-0 transition-all duration-300 shadow-md">
-            <svg className="w-4 h-4 text-[#0f6477]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </div>
-        </div>
+        <p className="text-white/60 text-[10px] tracking-[3px] uppercase mb-1">{dest.country}</p>
+        <h3 className="text-white font-black text-xl sm:text-2xl leading-tight mb-2 group-hover:text-[#4db8cc] transition-colors">
+          {dest.city}
+        </h3>
+        {dest.bestTime && (
+          <p className="text-white/50 text-[10px]">🗓 Best time: {dest.bestTime}</p>
+        )}
+        {dest.famous_attractions?.length > 0 && (
+          <p className="text-white/40 text-[10px] mt-1 truncate">
+            {dest.famous_attractions.slice(0, 2).join(" · ")}
+          </p>
+        )}
       </div>
     </Link>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Compact Card  →  /destinations/[slug]
+// CompactDestCard
 // ─────────────────────────────────────────────────────────────────────
 function CompactDestCard({ dest }) {
   return (
     <Link href={dest.href}
-      className="group flex items-center gap-4 p-4 rounded-xl bg-white border border-gray-100 hover:border-[#0f6477]/40 hover:shadow-md transition-all duration-300">
-      <div className="relative w-20 h-16 rounded-lg overflow-hidden flex-shrink-0">
-        <Image src={dest.image} alt={dest.city} fill sizes="80px"
-          className="object-cover transition-transform duration-500 group-hover:scale-110" />
+      className="group flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-[#0f6477]/40 bg-white hover:shadow-md transition-all duration-200">
+      <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
+        {dest.image && (
+          <Image
+            src={dest.image} alt={dest.city} fill sizes="56px"
+            className="object-cover group-hover:scale-110 transition-transform duration-300"
+          />
+        )}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-gray-400 text-[9px] font-black tracking-widest uppercase mb-0.5">{dest.country}</p>
-        <h4 className="font-serif text-base font-bold text-gray-800 group-hover:text-[#0f6477] transition-colors leading-tight mb-1.5">
+      <div className="min-w-0 flex-1">
+        <div className="font-bold text-gray-800 text-sm truncate group-hover:text-[#0f6477] transition-colors">
           {dest.city}
-        </h4>
-        <div className="flex flex-wrap gap-1">
-          {dest.tourism_type.slice(0, 2).map((t) => <TypeChip key={t} label={t} />)}
         </div>
+        <div className="text-gray-400 text-[10px] truncate">{dest.country}</div>
+        {dest.tourism_type?.length > 0 && (
+          <div className="flex gap-1 mt-1 flex-wrap">
+            {dest.tourism_type.slice(0, 1).map((t) => (
+              <TypeChip key={t} label={t} />
+            ))}
+          </div>
+        )}
       </div>
-      <svg className="w-4 h-4 text-[#0f6477] opacity-0 group-hover:opacity-100 flex-shrink-0 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-      </svg>
+      {dest.rating && (
+        <div className="text-[10px] font-black text-amber-500 flex-shrink-0">★ {dest.rating}</div>
+      )}
     </Link>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Region Section
+// RegionSection
 // ─────────────────────────────────────────────────────────────────────
 function RegionSection({ region, dests, onExploreAll }) {
+  const preview = dests.slice(0, 4);
+
   return (
     <div>
-      <div className="flex items-center gap-3 mb-7">
-        <span className="text-3xl">{REGION_EMOJI[region] || "🌍"}</span>
+      {/* Section header */}
+      <div className="flex items-center gap-4 mb-6">
+        <span className="text-3xl">{REGION_EMOJI[region] ?? "🌍"}</span>
         <h2 className="font-serif text-2xl sm:text-3xl font-black text-gray-800">{region}</h2>
         <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-gray-400 text-xs">{dests.length} destinations</span>
+        <span className="text-gray-400 text-xs">{dests.length} cities</span>
+        {dests.length > 4 && (
+          <button
+            onClick={onExploreAll}
+            className="text-[10px] font-black tracking-widest uppercase text-[#0f6477] hover:underline">
+            See all →
+          </button>
+        )}
       </div>
-      <div className={`grid gap-4 mb-4 ${
-        dests.length === 1 ? "grid-cols-1" : dests.length === 2 ? "grid-cols-2" : "grid-cols-2 sm:grid-cols-3"
-      }`}>
-        {dests.slice(0, 3).map((d, i) => (
-          <LargeDestCard key={d.city} dest={d} tall={i === 0 && dests.length >= 2} />
-        ))}
-      </div>
-      {dests.length > 3 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {dests.slice(3).map((d) => <CompactDestCard key={d.city} dest={d} />)}
-        </div>
+
+      {/* Top 2 large + rest compact */}
+      {preview.length > 0 && (
+        <>
+          <div className={`grid gap-4 mb-4 ${preview.length === 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"}`}>
+            {preview.slice(0, 2).map((d) => (
+              <LargeDestCard key={d.city} dest={d} />
+            ))}
+          </div>
+          {preview.length > 2 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {preview.slice(2).map((d) => (
+                <CompactDestCard key={d.city} dest={d} />
+              ))}
+            </div>
+          )}
+        </>
       )}
-      <div className="flex justify-end mt-5">
-        <button onClick={onExploreAll}
-          className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase text-[#0f6477] hover:text-[#0a4d5e] transition-colors">
-          All {region} destinations
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// MAIN PAGE
+// Main component
 // ─────────────────────────────────────────────────────────────────────
 export default function DestinationsClient() {
   const [activeRegion, setActiveRegion] = useState("All");
   const [search, setSearch]             = useState("");
 
-  // ── Only change: fetch packages from API instead of static import ──
   const { packages } = usePackages();
 
-  // Build destinations list from live packages (memoised)
   const destinations = useMemo(() => buildDestinations(packages), [packages]);
-  const ALL_IMAGES   = useMemo(
+
+  const ALL_IMAGES = useMemo(
     () => destinations.map((d) => ({ src: d.image, city: d.city, country: d.country })),
     [destinations]
   );
@@ -320,10 +336,12 @@ export default function DestinationsClient() {
 
   const filtered = useMemo(() => {
     let list = destinations;
+
     if (activeRegion !== "All") {
       const cs = REGION_MAP[activeRegion] || [];
       list = list.filter((d) => cs.includes(d.country));
     }
+
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter((d) =>
@@ -333,6 +351,7 @@ export default function DestinationsClient() {
         d.tourism_type.some((t) => t.toLowerCase().includes(q))
       );
     }
+
     return list;
   }, [destinations, activeRegion, search]);
 
@@ -365,9 +384,11 @@ export default function DestinationsClient() {
               <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+              <input
+                type="text" value={search} onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search city, country or attraction…"
-                className="flex-1 bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none" />
+                className="flex-1 bg-transparent text-gray-700 placeholder:text-gray-400 text-sm outline-none"
+              />
               {search && (
                 <button onClick={() => setSearch("")} className="text-gray-400 hover:text-gray-600 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,9 +402,9 @@ export default function DestinationsClient() {
           {/* Stats */}
           <div className="flex items-center gap-8 sm:gap-14 mt-12">
             {[
-              { n:`${destinations.length}+`, l:"Destinations" },
-              { n:`${totalCountries}+`,      l:"Countries"    },
-              { n:"50K+",                    l:"Travellers"   },
+              { n: `${destinations.length}+`, l: "Destinations" },
+              { n: `${totalCountries}+`,      l: "Countries"    },
+              { n: "50K+",                    l: "Travellers"   },
             ].map((s) => (
               <div key={s.l} className="text-center">
                 <div className="font-serif text-3xl sm:text-4xl font-black text-white drop-shadow">{s.n}</div>
@@ -482,14 +503,16 @@ export default function DestinationsClient() {
           </div>
         )}
 
-        {/* All grouped */}
+        {/* All grouped by region */}
         {showGrouped && (
           <div className="space-y-20">
             {Object.entries(byRegion)
               .sort(([a], [b]) => a.localeCompare(b))
               .map(([region, dests]) => (
-                <RegionSection key={region} region={region} dests={dests}
-                  onExploreAll={() => setActiveRegion(region)} />
+                <RegionSection
+                  key={region} region={region} dests={dests}
+                  onExploreAll={() => setActiveRegion(region)}
+                />
               ))}
           </div>
         )}
@@ -528,6 +551,7 @@ export default function DestinationsClient() {
           </div>
         </div>
       </section>
+
     </div>
   );
 }

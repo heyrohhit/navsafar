@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import fs   from "fs";
 import path from "path";
-import { packages as staticPackages } from "../models/objAll/packages";
+import { packages as staticPackages } from "../app/models/objAll/packages";
 
 const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
 

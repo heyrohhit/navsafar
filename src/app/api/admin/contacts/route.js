@@ -6,9 +6,8 @@
 // DELETE → PROTECTED (admin deletes a contact)
 // ─────────────────────────────────────────────────────────────────────────────
 import { NextResponse } from "next/server";
-import { readContacts, writeContacts } from "../../../lib/getContacts";
+import { readContacts, writeContacts } from "../../../../lib/getContacts";
 
-export const dynamic = "force-dynamic";
 
 // ── Auth helper ────────────────────────────────────────────────────
 function isAuthorized(req) {

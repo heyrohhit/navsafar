@@ -12,10 +12,10 @@ const mobileNav = [
         keywords: "destinations, places, countries, cities"
     },
     {
-        name: "Tour Packages",
-        path: "/tour-packages",
-        description: "Browse our exclusive tour packages",
-        keywords: "tour packages, holiday packages, vacation deals"
+        name: "Blog",
+        path: "/blog",
+        description: "Travel tips and stories",
+        keywords: "blog, travel tips, stories, guides"
     },
     // {
     //     name: "International Tours",
@@ -65,12 +65,7 @@ const mobileNav = [
         description: "Get in touch with us",
         keywords: "contact, phone, email, address"
     },
-    {
-        name: "Blog",
-        path: "/blog",
-        description: "Travel tips and stories",
-        keywords: "blog, travel tips, stories, guides"
-    }
+   
 ]
 
 export default mobileNav;

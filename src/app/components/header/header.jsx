@@ -122,7 +122,7 @@ const Header = () => {
       </header>
 
       {/* Apple-style Bottom Navigation for Mobile/Tablet */}
-      <nav className="xl:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-lg">
+      <nav className="xl:hidden fixed z-[9999] bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-gray-200/50 shadow-lg">
         <div className="flex justify-around items-center h-16 px-2">
           {mobileNav.slice(0, 5).map((item, idx) => {
             return (

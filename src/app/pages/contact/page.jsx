@@ -1,5 +1,5 @@
 import Contact from "./Contact";
-import { getStaticMetadata } from "../../lib/seo";
+import { getStaticMetadata } from "../../../lib/seo";
 
 export const metadata = getStaticMetadata("contact");
 

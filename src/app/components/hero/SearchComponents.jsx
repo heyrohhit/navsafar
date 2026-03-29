@@ -278,7 +278,7 @@ export default function SearchComponents() {
       <div className="mt-4 flex flex-wrap gap-2 justify-center">
         {CATEGORIES.map((cat) => (
           <a key={cat.label} href={cat.link}
-            className="px-4 py-2 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold rounded-full border border-white/25 hover:border-white/50 transition-all duration-200 hover:scale-105 backdrop-blur-sm">
+            className="px-4 py-2 bg-white/15 hover:bg-white/25 text-[#0f6471] text-sm font-semibold rounded-full border border-white/25 hover:border-white/50 transition-all duration-200 hover:scale-105 backdrop-blur-sm">
             {cat.label}
           </a>
         ))}

@@ -1,21 +1,21 @@
 export const blogs = [
   {
     id: "blog-001",
-    slug: "top-10-hidden-gems-europe-2025",
-    title: "Top 10 Hidden Gems of Europe You Must Visit in 2025",
+    slug: "top-10-hidden-gems-europe-2026",
+    title: "Top 10 Hidden Gems of Europe You Must Visit in 2026",
     excerpt:
       "Beyond Paris and Rome lies a Europe that few travellers ever discover — fairy-tale villages, untouched coastlines, and medieval cities frozen in time.",
     coverImage:
       "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=80",
     category: "Europe",
-    tags: ["Europe", "Hidden Gems", "Travel Tips", "2025"],
+    tags: ["Europe", "Hidden Gems", "Travel Tips", "2026"],
     author: {
-      name: "Priya Sharma",
+      name: "Navsafar Travels",
       avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+        "/assets/logo.jpeg",
       designation: "Senior Travel Writer",
     },
-    publishedAt: "2025-02-10",
+    publishedAt: "2026-03-15",
     readTime: "6 min read",
     featured: true,
     content: `
@@ -56,8 +56,8 @@ export const blogs = [
   },
   {
     id: "blog-002",
-    slug: "bali-travel-guide-2025",
-    title: "Bali Travel Guide 2025: Best Time to Visit, What to Do & Where to Stay",
+    slug: "bali-travel-guide-2026",
+    title: "Bali Travel Guide 2026: Best Time to Visit, What to Do & Where to Stay",
     excerpt:
       "From temple ceremonies at dawn to surfing Uluwatu's famous breaks — your complete guide to experiencing Bali beyond the tourist trail.",
     coverImage:
@@ -65,12 +65,12 @@ export const blogs = [
     category: "Asia",
     tags: ["Bali", "Indonesia", "Beach", "Culture", "Travel Guide"],
     author: {
-      name: "Rahul Verma",
+      name: "Navsafar Travels",
       avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
+        "/assets/logo.jpeg",
       designation: "Adventure Travel Specialist",
     },
-    publishedAt: "2025-01-22",
+    publishedAt: "2026-02-22",
     readTime: "8 min read",
     featured: true,
     content: `
@@ -107,12 +107,12 @@ export const blogs = [
     category: "India",
     tags: ["India", "Delhi", "Agra", "Jaipur", "Taj Mahal", "Heritage"],
     author: {
-      name: "Ananya Iyer",
+      name: "Navsafar Travels",
       avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80",
+        "/assets/logo.jpeg",
       designation: "Heritage Travel Expert",
     },
-    publishedAt: "2025-03-01",
+    publishedAt: "2026-02-01",
     readTime: "7 min read",
     featured: false,
     content: `
@@ -143,12 +143,12 @@ export const blogs = [
     category: "Asia",
     tags: ["Japan", "Solo Travel", "Tokyo", "Culture", "Tips"],
     author: {
-      name: "Rahul Verma",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
+      name: "Navsafar Travels",
+    avatar:
+        "/assets/logo.jpeg",
       designation: "Adventure Travel Specialist",
     },
-    publishedAt: "2025-02-18",
+    publishedAt: "2026-01-18",
     readTime: "9 min read",
     featured: false,
     content: `
@@ -180,12 +180,12 @@ export const blogs = [
     category: "Africa",
     tags: ["Africa", "Safari", "Kenya", "Wildlife", "Adventure"],
     author: {
-      name: "Priya Sharma",
+      name: "Navsafar Travels",
       avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+        "/assets/logo.jpeg",
       designation: "Senior Travel Writer",
     },
-    publishedAt: "2025-01-05",
+    publishedAt: "2026-01-05",
     readTime: "10 min read",
     featured: true,
     content: `
@@ -216,12 +216,12 @@ export const blogs = [
     category: "Middle East",
     tags: ["Dubai", "UAE", "Luxury", "Budget Travel", "Tips"],
     author: {
-      name: "Ananya Iyer",
+      name: "Navsafar Travels",
       avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80",
+        "/assets/logo.jpeg",
       designation: "Heritage Travel Expert",
     },
-    publishedAt: "2025-02-28",
+    publishedAt: "2026-01-02",
     readTime: "7 min read",
     featured: false,
     content: `
@@ -251,12 +251,12 @@ export const blogs = [
     category: "Americas",
     tags: ["Peru", "Machu Picchu", "Trekking", "Adventure", "Heritage"],
     author: {
-      name: "Rahul Verma",
+      name: "Navsafar Travels",
       avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
+        "/assets/logo.jpeg",
       designation: "Adventure Travel Specialist",
     },
-    publishedAt: "2025-03-05",
+    publishedAt: "2025-12-25",
     readTime: "11 min read",
     featured: false,
     content: `
@@ -286,12 +286,12 @@ export const blogs = [
     category: "Tips & Guides",
     tags: ["Photography", "Travel Tips", "Beginners", "Smartphone"],
     author: {
-      name: "Priya Sharma",
+      name: "Navsafar Travels",
       avatar:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+        "/assets/logo.jpeg",
       designation: "Senior Travel Writer",
     },
-    publishedAt: "2025-01-30",
+    publishedAt: "2025-12-20",
     readTime: "8 min read",
     featured: false,
     content: `
