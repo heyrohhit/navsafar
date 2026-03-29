@@ -1,7 +1,7 @@
 // middleware.js
 
 import { NextResponse } from "next/server";
-import { shouldRedirect, PRIMARY_DOMAIN, normalizeHost } from "./src/lib/domainConfig";
+import { shouldRedirect, PRIMARY_DOMAIN, normalizeHost } from "./lib/domainConfig";
 
 export function middleware(req) {
   const hostHeader = req.headers.get("host") || "";
