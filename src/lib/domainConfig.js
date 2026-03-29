@@ -2,51 +2,56 @@
 // ─────────────────────────────────────────────────────────────────────────────
 //  SINGLE SOURCE OF TRUTH for all NavSafar domains
 //  Sirf yahan domain add/remove karo — baaki sab auto update ho jaata hai
-//  (layout.jsx, middleware.js, next.config.js sab yahan se read karte hain)
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Primary canonical domain — baaki sab yahan redirect honge (SEO safe) */
+/** Primary canonical domain */
 export const PRIMARY_DOMAIN = "https://navsafar.com";
 
 /**
- * @typedef {{ host: string, label: string, isPrimary: boolean, hreflang: string }} DomainEntry
- * @type {DomainEntry[]}
+ * @typedef {{ host: string, label: string, isPrimary: boolean, hreflang: string, serveContent: boolean }} DomainEntry
  *
- * ── Naya domain add karna ho to sirf yahan ek line add karo ──
+ * serveContent: true  → domain apna content serve karega (redirect NAHI hoga)
+ * serveContent: false → domain PRIMARY_DOMAIN pe 301 redirect hoga (SEO canonical)
+ *
+ * @type {DomainEntry[]}
  */
 export const DOMAINS = [
-  // Primary
-  { host: "navsafar.com",           label: "NavSafar",          isPrimary: true,  hreflang: "en-IN" },
+  // ── Primary ───────────────────────────────────────────────────────────────
+  { host: "navsafar.com",         label: "NavSafar",          isPrimary: true,  serveContent: true,  hreflang: "en-IN" },
 
-  // .com variants
-  { host: "navsafartravels.com",    label: "NavSafar Travels",  isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafarholidays.com",   label: "NavSafar Holidays", isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafartours.com",      label: "NavSafar Tours",    isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafartrip.com",       label: "NavSafar Trip",     isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafarpackages.com",   label: "NavSafar Packages", isPrimary: false, hreflang: "en-IN" },
+  // ── .com variants — serveContent: true = apna label dikhayenge ───────────
+  { host: "navsafartravels.com",  label: "NavSafar Travels",  isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafarholidays.com", label: "NavSafar Holidays", isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafartours.com",    label: "NavSafar Tours",    isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafartrip.com",     label: "NavSafar Trip",     isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafarpackages.com", label: "NavSafar Packages", isPrimary: false, serveContent: true,  hreflang: "en-IN" },
 
-  // .in variants
-  { host: "navsafar.in",            label: "NavSafar India",    isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafartravels.in",     label: "NavSafar Travels",  isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafarholidays.in",    label: "NavSafar Holidays", isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafartours.in",       label: "NavSafar Tours",    isPrimary: false, hreflang: "en-IN" },
-  { host: "navsafartrip.in",        label: "NavSafar Trip",     isPrimary: false, hreflang: "en-IN" },
+  // ── .in variants — serveContent: true = apna label dikhayenge ────────────
+  { host: "navsafar.in",          label: "NavSafar India",    isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafartravels.in",   label: "NavSafar Travels",  isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafarholidays.in",  label: "NavSafar Holidays", isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafartours.in",     label: "NavSafar Tours",    isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  { host: "navsafartrip.in",      label: "NavSafar Trip",     isPrimary: false, serveContent: true,  hreflang: "en-IN" },
 
-  // ← Add karo unlimited domains yahan. Koi aur file touch karne ki zaroorat nahi.
+  // ── Agar koi domain sirf redirect karna ho to serveContent: false karo ───
+  // { host: "oldnavsafar.com", label: "NavSafar", isPrimary: false, serveContent: false, hreflang: "en-IN" },
 ];
 
-// ── Fast O(1) lookups — middleware mein use hote hain ──────────────────────
+// ── Fast O(1) lookups ──────────────────────────────────────────────────────
 
-/** Sab known hosts ka Set (www ke bina) */
+/** Sab known hosts ka Set */
 export const KNOWN_HOSTS = new Set(DOMAINS.map((d) => d.host));
 
-/** Non-primary hosts → primary domain redirect */
+/**
+ * Sirf woh domains jo PRIMARY_DOMAIN pe redirect honge
+ * (serveContent: false wale)
+ */
 export const REDIRECT_HOSTS = new Set(
-  DOMAINS.filter((d) => !d.isPrimary).map((d) => d.host)
+  DOMAINS.filter((d) => !d.isPrimary && !d.serveContent).map((d) => d.host)
 );
 
 /**
- * Host string se DomainEntry return karta hai
+ * Host se DomainEntry return karta hai
  * @param {string} host
  * @returns {DomainEntry | null}
  */
@@ -56,14 +61,13 @@ export function getDomainEntry(host) {
 }
 
 /**
- * Next.js metadata ke liye hreflang alternates object banata hai
- * @param {string} path  e.g. "/tours/goa"
+ * Next.js metadata ke liye hreflang alternates
+ * @param {string} path
  * @returns {Record<string, string>}
  */
 export function buildHreflangAlternates(path = "") {
   const alternates = {};
   for (const domain of DOMAINS) {
-    // x-default sirf primary ke liye
     if (domain.isPrimary) {
       alternates["x-default"] = `https://${domain.host}${path}`;
     }
@@ -73,23 +77,21 @@ export function buildHreflangAlternates(path = "") {
 }
 
 /**
- * All domains ki remotePatterns array banata hai next/image ke liye
- * next.config.js import karta hai isse directly
+ * next/image ke liye remotePatterns
  * @returns {import('next').NextConfig['images']['remotePatterns']}
  */
 export function buildRemotePatterns() {
   const domainPatterns = DOMAINS.map((d) => ({
     protocol: "https",
     hostname: d.host,
-    port: "",
+    port:     "",
     pathname: "/**",
   }));
 
-  // Www variants bhi auto include karo
   const wwwPatterns = DOMAINS.map((d) => ({
     protocol: "https",
     hostname: `www.${d.host}`,
-    port: "",
+    port:     "",
     pathname: "/**",
   }));
 

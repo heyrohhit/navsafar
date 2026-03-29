@@ -1,16 +1,15 @@
 // src/middleware.js
 // ─────────────────────────────────────────────────────────────────────────────
 //  NavSafar — Next.js Edge Middleware
-//  Runs at Vercel Edge Network (0ms latency — server se pehle)
 //
 //  Kya karta hai:
 //  1. www → non-www            301 redirect
-//  2. Non-primary domain       → navsafar.com 301 redirect  (SEO canonical)
-//  3. HTTP → HTTPS             guard (Vercel mostly handles, but backup)
-//  4. Security headers         HSTS, CSP, X-Frame, etc.
-//  5. Performance headers      stale-while-revalidate, DNS prefetch
-//  6. Bot detection            Googlebot ko direct serve — no redirect overhead
-//  7. ✅ x-domain header       layout.jsx ko domain pass karta hai (dynamic metadata)
+//  2. serveContent: false      → PRIMARY_DOMAIN 301 redirect (SEO canonical)
+//  3. serveContent: true       → apna content serve karta hai (redirect nahi)
+//  4. Unknown domain           → PRIMARY_DOMAIN redirect (safety net)
+//  5. Security headers         HSTS, CSP, X-Frame, etc.
+//  6. Performance headers      stale-while-revalidate, DNS prefetch
+//  7. x-domain header          layout.jsx ko domain pass karta hai
 // ─────────────────────────────────────────────────────────────────────────────
 import { NextResponse } from "next/server";
 import { PRIMARY_DOMAIN, REDIRECT_HOSTS, KNOWN_HOSTS } from "./lib/domainConfig.js";
@@ -37,23 +36,24 @@ export default function middleware(request) {
     return redirect301(`https://${cleanHost}${pathname}${search}`);
   }
 
-  // ── 2. Non-primary known domain → canonical redirect ──────────────────────
+  // ── 2. serveContent: false domains → PRIMARY_DOMAIN redirect ─────────────
+  //    Ye woh domains hain jo sirf SEO redirect ke liye hain
   if (REDIRECT_HOSTS.has(cleanHost)) {
     return redirect301(`${PRIMARY_DOMAIN}${pathname}${search}`);
   }
 
   // ── 3. Unknown domain → canonical home (safety net) ──────────────────────
+  //    KNOWN_HOSTS mein listed domains pass through ho jaate hain
+  //    (chahe serveContent: true ho ya primary ho)
   if (!KNOWN_HOSTS.has(cleanHost) && !isLocalDev(cleanHost)) {
     return redirect301(PRIMARY_DOMAIN);
   }
 
-  // ── 4. Primary domain — attach all headers and pass through ───────────────
+  // ── 4. Known domain (primary + serveContent: true) — pass through ─────────
   const response = NextResponse.next();
 
-  // ✅ ADDED: cleanHost ko x-domain header mein inject karo
-  // layout.jsx ka generateMetadata isse headers() se padhta hai
-  // Middleware-set headers prerender error trigger nahi karte —
-  // ye cookies() ya request.url se alag hain
+  // ✅ x-domain inject karo — layout.jsx ka generateMetadata isse padhta hai
+  // Middleware-set headers prerender error trigger nahi karte
   response.headers.set("x-domain", cleanHost);
 
   applySecurityHeaders(response);
@@ -71,9 +71,9 @@ function redirect301(destination) {
 
 function isLocalDev(host) {
   return (
-    host === "localhost" ||
-    host === "127.0.0.1" ||
-    host === "::1" ||
+    host === "localhost"     ||
+    host === "127.0.0.1"    ||
+    host === "::1"          ||
     host.startsWith("192.168.") ||
     host.endsWith(".local")
   );
