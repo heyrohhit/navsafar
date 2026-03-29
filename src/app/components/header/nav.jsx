@@ -80,11 +80,11 @@ const Nav = ({ mobile = false, onClose }) => {
         {/* Services Dropdown */}
         <div className="relative text-white">
           <button
-            onMouseEnter={() => setIsServicesOpen(true)}
-            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${isServicesOpen ? "text-blue-600 bg-blue-50" : ""
+            onClick={() => setIsServicesOpen(!isServicesOpen)}
+            className={`relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 whitespace-nowrap text-[0.9vw] ${isServicesOpen ? "text-blue-600 bg-blue-50" : ""
               }`}
           >
-            <span className="text-[0.7vw] leading-tight">Services</span>
+            <span className="text-[0.9vw] leading-tight">Services</span>
             <svg className="w-4 h-4 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
@@ -92,7 +92,7 @@ const Nav = ({ mobile = false, onClose }) => {
 
           {isServicesOpen && (
             <div
-              className="absolute text-white top-full left-0 mt-1 w-[8vw] bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
+              className="absolute top-full left-0 mt-1 w-[8vw] bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
               onMouseEnter={() => setIsServicesOpen(true)}
               onMouseLeave={() => setIsServicesOpen(false)}
             >
@@ -120,12 +120,11 @@ const Nav = ({ mobile = false, onClose }) => {
         {/* More Dropdown */}
         <div className="relative">
           <button
-            onMouseEnter={() => setIsToursOpen(true)}
-            onMouseLeave={() => setIsToursOpen(false)}
-            className={`relative px-3 py-2 text-white hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${isToursOpen ? "text-blue-600 bg-blue-50" : ""
+            onClick={() => setIsToursOpen(!isToursOpen)}
+            className={`relative px-3 py-2 hover:text-blue-600 transition-all duration-200 font-medium rounded-lg hover:bg-blue-50 text-sm whitespace-nowrap ${isToursOpen ? "text-blue-600 bg-blue-50" : ""
               }`}
           >
-            <span className="text-[0.7vw] leading-tight">More</span>
+            <span className="text-[0.9vw] leading-tight hover:text-[#0f6471] ">More</span>
             <svg className="w-4 h-4 ml-1 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
@@ -133,7 +132,7 @@ const Nav = ({ mobile = false, onClose }) => {
 
           {isToursOpen && (
             <div
-              className="absolute top-full left-0 mt-1 w-[8vw] bg-white rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
+              className="absolute top-full left-0 mt-1 w-[8vw] bg-white text-[#0f6471] rounded-lg shadow-lg border border-gray-200/50 overflow-hidden z-50"
               onMouseEnter={() => setIsToursOpen(true)}
               onMouseLeave={() => setIsToursOpen(false)}
             >

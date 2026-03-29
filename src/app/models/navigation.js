@@ -35,6 +35,7 @@ const navModel = [
         description: "Travel tips and stories",
         keywords: "blog, travel tips, stories, guides"
     },
+
     // {
     //     name: "Flights",
     //     path: "/flights",
@@ -58,6 +59,12 @@ const navModel = [
         path: "/pages/about-us",
         description: "Know about Navsafar Travel Agency",
         keywords: "about, company, team, history"
+    },
+     {
+        name: "Travels",
+        path: "/travel",
+        description: "Travel tips and stories",
+        keywords: "blog, travel tips, stories, guides"
     },
     {
         name: "Contact",
