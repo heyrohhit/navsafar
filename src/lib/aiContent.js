@@ -3,7 +3,7 @@
 //  100% FREE — No credit card needed
 //  AI Content  : Groq API (free) — Llama 3 model
 //  Images      : Pexels API (free) — 200 req/hour
-//  Caching     : File system /cache/travel/ — refreshed every 24h
+//  Caching     : /tmp/travel/ — Vercel compatible ✅
 // ─────────────────────────────────────────────────────────────────
 //  .env.local:
 //    GROQ_API_KEY=gsk_...
@@ -13,7 +13,8 @@
 import fs from "fs";
 import path from "path";
 
-const CACHE_DIR = path.join(process.cwd(), "cache", "travel");
+// ✅ FIX 1: /tmp use karo — Vercel pe sirf yahi writable hai
+const CACHE_DIR = path.join("/tmp", "travel");
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 // ══════════════════════════════════════════
@@ -21,7 +22,14 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 // ══════════════════════════════════════════
 
 function ensureCacheDir() {
-  if (!fs.existsSync(CACHE_DIR)) fs.mkdirSync(CACHE_DIR, { recursive: true });
+  // ✅ FIX 2: try/catch wrap karo — agar /tmp bhi fail ho to crash na ho
+  try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
+  } catch (err) {
+    console.warn("[aiContent] Cache dir create failed:", err.message);
+  }
 }
 
 function cacheKey(keyword) {
@@ -32,10 +40,11 @@ function cacheKey(keyword) {
 }
 
 function readCache(keyword) {
-  ensureCacheDir();
-  const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
-  if (!fs.existsSync(file)) return null;
+  // ✅ FIX 3: Pure try/catch — koi bhi fs error = null return karo, crash nahi
   try {
+    ensureCacheDir();
+    const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
+    if (!fs.existsSync(file)) return null;
     const data = JSON.parse(fs.readFileSync(file, "utf-8"));
     return Date.now() - (data._cachedAt || 0) < CACHE_TTL_MS ? data : null;
   } catch {
@@ -44,17 +53,26 @@ function readCache(keyword) {
 }
 
 function writeCache(keyword, data) {
-  ensureCacheDir();
-  const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
-  fs.writeFileSync(
-    file,
-    JSON.stringify({ ...data, _cachedAt: Date.now() }, null, 2)
-  );
+  // ✅ FIX 4: Cache write fail ho to silently skip — page toh serve hoga
+  try {
+    ensureCacheDir();
+    const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
+    fs.writeFileSync(
+      file,
+      JSON.stringify({ ...data, _cachedAt: Date.now() }, null, 2)
+    );
+  } catch (err) {
+    console.warn("[aiContent] Cache write failed (non-fatal):", err.message);
+  }
 }
 
 export function deleteCache(keyword) {
-  const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
-  if (fs.existsSync(file)) fs.unlinkSync(file);
+  try {
+    const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
+    if (fs.existsSync(file)) fs.unlinkSync(file);
+  } catch (err) {
+    console.warn("[aiContent] Cache delete failed:", err.message);
+  }
 }
 
 // ══════════════════════════════════════════
@@ -70,7 +88,11 @@ async function fetchImages(keyword, count = 4) {
         `https://api.pexels.com/v1/search?query=${encodeURIComponent(
           keyword + " travel"
         )}&per_page=${count}&orientation=landscape`,
-        { headers: { Authorization: key } }
+        {
+          headers: { Authorization: key },
+          // ✅ FIX 5: Timeout add karo — slow API pe hang na ho
+          signal: AbortSignal.timeout(8000),
+        }
       );
       if (res.ok) {
         const data = await res.json();
@@ -83,13 +105,14 @@ async function fetchImages(keyword, count = 4) {
         }));
         if (imgs.length > 0) return imgs;
       }
-    } catch {
-      // fall through to placeholder
+    } catch (err) {
+      console.warn("[aiContent] Pexels fetch failed:", err.message);
     }
+  } else {
+    console.warn("[aiContent] PEXELS_API_KEY not set — using placeholder images");
   }
 
-  // Placeholder fallback — works without any API key
-  console.warn("[aiContent] PEXELS_API_KEY not set — using placeholder images");
+  // Placeholder fallback
   return Array.from({ length: count }, (_, i) => ({
     url: `https://picsum.photos/seed/${encodeURIComponent(keyword)}_${i}/1280/720`,
     thumb: `https://picsum.photos/seed/${encodeURIComponent(keyword)}_${i}/400/300`,
@@ -147,8 +170,10 @@ IMPORTANT: Return ONLY a valid JSON object. No markdown, no backticks, no extra 
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
+      // ✅ FIX 6: Timeout add karo — Groq slow ho to Vercel 10s limit se pehle fallback lo
+      signal: AbortSignal.timeout(9000),
       body: JSON.stringify({
-        model: "llama3-8b-8192", // Free Groq model
+        model: "llama3-8b-8192",
         max_tokens: 1500,
         temperature: 0.7,
         messages: [
@@ -170,12 +195,10 @@ IMPORTANT: Return ONLY a valid JSON object. No markdown, no backticks, no extra 
 
     const data = await res.json();
     const raw = data.choices?.[0]?.message?.content || "";
-
-    // Strip any accidental markdown fences
     const cleaned = raw.replace(/```json|```/g, "").trim();
     return JSON.parse(cleaned);
   } catch (err) {
-    console.error("[aiContent] Groq parse error:", err.message);
+    console.error("[aiContent] Groq error:", err.message);
     return staticFallback(keyword);
   }
 }
@@ -230,20 +253,8 @@ function staticFallback(keyword) {
 //  MAIN EXPORT
 // ══════════════════════════════════════════
 
-/**
- * generateContent(keyword)
- *
- * Returns full travel content object:
- * { intro, why, guide, highlights, bestTimeToVisit,
- *   budgetRange, duration, faq, images }
- *
- * Flow:
- *  1. Check file system cache (24h TTL)
- *  2. On miss → Groq AI + Pexels in parallel
- *  3. Write result to cache
- */
 export async function generateContent(keyword) {
-  // 1. Serve from cache if fresh
+  // 1. Cache check
   const cached = readCache(keyword);
   if (cached) return cached;
 
@@ -255,7 +266,7 @@ export async function generateContent(keyword) {
 
   const result = { ...aiContent, images };
 
-  // 3. Cache the result
+  // 3. Cache karo (fail hone pe bhi page serve hoga)
   writeCache(keyword, result);
 
   return result;
