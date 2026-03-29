@@ -23,7 +23,7 @@ export default function WhatsAppFloat() {
     <>
       {/* Tooltip */}
       {tooltip && (
-        <div className="fixed bottom-24 right-6 z-[9999] bg-white text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-xl shadow-lg border border-gray-100 whitespace-nowrap">
+        <div className="fixed bottom-[80%] sm:bottom-24  right-6 z-[9999] bg-white text-gray-800 text-xs font-semibold px-3 py-1.5 rounded-xl shadow-lg border border-gray-100 whitespace-nowrap">
           Chat on WhatsApp 💬
           <div className="absolute bottom-[-6px] right-5 w-3 h-3 bg-white border-r border-b border-gray-100 rotate-45" />
         </div>
@@ -37,7 +37,7 @@ export default function WhatsAppFloat() {
         aria-label="Chat on WhatsApp"
         onMouseEnter={() => setTooltip(true)}
         onMouseLeave={() => setTooltip(false)}
-        className="fixed bottom-6 right-6 z-[9998] w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95"
+        className="fixed top-[80%] min-[990px]:top-[90%] right-6 z-[9998] w-14 h-14 rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95"
         style={{
           background: "linear-gradient(135deg, #25d366, #128c7e)",
           boxShadow:  "0 8px 32px rgba(37,211,102,0.45)",
