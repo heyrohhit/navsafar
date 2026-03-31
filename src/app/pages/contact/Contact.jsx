@@ -39,8 +39,8 @@ const Contact = () => {
     {
       icon: "✉️",
       label: "Email Us",
-      value: "info@navsafartravels.com",
-      href: "mailto:info@navsafartravels.com",
+      value: "info@navsafar.com",
+      href: "mailto:info@navsafar.com",
       description: "24/7 Email Support",
     },
     {

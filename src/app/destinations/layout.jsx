@@ -11,14 +11,14 @@
 // ── Segment-level metadata fallback ───────────────────────────────
 export const metadata = {
   title: {
-    default:  "Destinations | WanderLux",
-    template: "%s — Destinations | WanderLux",
+    default:  "Destinations | Navsafar",
+    template: "%s — Destinations | Navsafar",
   },
   description:
     "Explore 50+ iconic destinations across 30+ countries — Europe, Asia, Middle East, Americas, Africa & more.",
   openGraph: {
-    title:       "Destinations | WanderLux",
-    description: "Discover handpicked destinations with WanderLux.",
+    title:       "Destinations | Navsafar",
+    description: "Discover handpicked destinations with Navsafar.",
   },
 };
 

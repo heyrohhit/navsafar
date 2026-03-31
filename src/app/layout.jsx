@@ -1,6 +1,6 @@
 // src/app/layout.jsx
 // ─────────────────────────────────────────────────────────────
-// NavSafar — FINAL PRODUCTION ROOT LAYOUT
+// Navsafar — FINAL PRODUCTION ROOT LAYOUT
 // ─────────────────────────────────────────────────────────────
 
 import { Suspense }  from "react";
@@ -70,6 +70,36 @@ function getJsonLd(siteName) {
     "@type":    "TravelAgency",
     name:       siteName,
     url:        PRIMARY_DOMAIN,
+    // Local Business Schema for India
+    address: {
+      "@type": "PostalAddress",
+      "streetAddress": "WZ-447, First Floor, Left Side Nangal Raya",
+      "addressLocality": "Delhi",
+      "addressRegion": "Delhi",
+      "postalCode": "110046",
+      "addressCountry": "IN"
+    },
+    "telephone": "+91-8882128640",
+    "priceRange": "$$",
+    "servesArea": {
+      "@type": "Place",
+      "name": "India"
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday"
+        ],
+        "opens": "09:00",
+        "closes": "19:00"
+      }
+    ]
   };
 }
 
