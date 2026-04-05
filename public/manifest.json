@@ -1,0 +1,36 @@
+{
+  "name": "NavSafar - Travel Packages",
+  "short_name": "NavSafar",
+  "description": "Book domestic & international travel packages, flights, hotels & visa services with NavSafar",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060e10",
+  "theme_color": "#0F6177",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/bg.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["travel", "entertainment"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
