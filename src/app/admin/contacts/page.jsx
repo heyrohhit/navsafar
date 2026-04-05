@@ -18,6 +18,7 @@ import {
   Check,
   X,
   Eye,
+  Clock, // ✅ FIX 1: Clock was missing from imports
 } from "lucide-react";
 
 const getToken = () =>
@@ -69,7 +70,9 @@ const StatusBadge = ({ status, priority }) => {
             priorityStyles[priority] || priorityStyles.normal
           }`}
         >
-          {priority === "high" && <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span>}
+          {priority === "high" && (
+            <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span>
+          )}
           {priority.charAt(0).toUpperCase() + priority.slice(1)}
         </span>
       )}
@@ -78,6 +81,7 @@ const StatusBadge = ({ status, priority }) => {
 };
 
 // Contact Detail Modal
+// ✅ FIX 2: Component closing bracket was broken — extra `}` removed, proper structure restored
 const ContactDetailModal = ({ contact, onClose, onUpdate, onDelete }) => {
   const [updating, setUpdating] = useState(false);
   const [formData, setFormData] = useState(contact);
@@ -128,184 +132,179 @@ const ContactDetailModal = ({ contact, onClose, onUpdate, onDelete }) => {
   };
 
   return (
-    <AnimatePresence>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        onClick={onClose}
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.9, y: 20 }}
+        className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
       >
-        <motion.div
-          initial={{ scale: 0.9, y: 20 }}
-          animate={{ scale: 1, y: 0 }}
-          exit={{ scale: 0.9, y: 20 }}
-          className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="p-6 border-b border-slate-700 flex justify-between items-start">
+        <div className="p-6 border-b border-slate-700 flex justify-between items-start">
+          <div>
+            <h3 className="text-xl font-bold text-white mb-2">
+              Contact Details
+            </h3>
+            <p className="text-slate-400 text-sm">
+              From {contact.name} ({contact.email || "No email"})
+            </p>
+          </div>
+          <button onClick={onClose} className="text-slate-400 hover:text-white">
+            <X size={24} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                Contact Details
-              </h3>
-              <p className="text-slate-400 text-sm">
-                From {contact.name} ({contact.email || "No email"})
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Name
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Phone
+              </label>
+              <input
+                type="text"
+                value={formData.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Subject
+              </label>
+              <input
+                type="text"
+                value={formData.subject}
+                onChange={(e) => handleChange("subject", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Package Interest
+              </label>
+              <input
+                type="text"
+                value={formData.packageInterest}
+                onChange={(e) => handleChange("packageInterest", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+                placeholder="Which package are they interested in?"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => handleChange("status", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              >
+                <option value="pending">Pending</option>
+                <option value="contacted">Contacted</option>
+                <option value="resolved">Resolved</option>
+                <option value="closed">Closed</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Priority
+              </label>
+              <select
+                value={formData.priority}
+                onChange={(e) => handleChange("priority", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              >
+                <option value="low">Low</option>
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Message
+              </label>
+              <textarea
+                rows={6}
+                value={formData.message}
+                onChange={(e) => handleChange("message", e.target.value)}
+                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <p className="text-sm text-slate-400">
+                Submitted:{" "}
+                {new Date(contact.createdAt || contact.date).toLocaleString()}
               </p>
             </div>
-            <button
-              onClick={onClose}
-              className="text-slate-400 hover:text-white"
-            >
-              <X size={24} />
-            </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  value={formData.phone}
-                  onChange={(e) => handleChange("phone", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  value={formData.subject}
-                  onChange={(e) => handleChange("subject", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Package Interest
-                </label>
-                <input
-                  type="text"
-                  value={formData.packageInterest}
-                  onChange={(e) => handleChange("packageInterest", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                  placeholder="Which package are they interested in?"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => handleChange("status", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="contacted">Contacted</option>
-                  <option value="resolved">Resolved</option>
-                  <option value="closed">Closed</option>
-                </select>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Priority
-                </label>
-                <select
-                  value={formData.priority}
-                  onChange={(e) => handleChange("priority", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                >
-                  <option value="low">Low</option>
-                  <option value="normal">Normal</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Message
-                </label>
-                <textarea
-                  rows={6}
-                  value={formData.message}
-                  onChange={(e) => handleChange("message", e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white"
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <p className="text-sm text-slate-400">
-                  Submitted:{" "}
-                  {new Date(contact.createdAt || contact.date).toLocaleString()}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-between items-center pt-4 border-t border-slate-700">
+          <div className="flex justify-between items-center pt-4 border-t border-slate-700">
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+            >
+              <Trash2 size={18} />
+              Delete
+            </button>
+            <div className="flex gap-3">
               <button
                 type="button"
-                onClick={handleDelete}
-                className="flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
+                onClick={onClose}
+                className="px-6 py-2 text-slate-300 hover:text-white transition-colors"
               >
-                <Trash2 size={18} />
-                Delete
+                Cancel
               </button>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-2 text-slate-300 hover:text-white transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={updating}
-                  className="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold rounded-xl disabled:opacity-50"
-                >
-                  {updating ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={updating}
+                className="px-6 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold rounded-xl disabled:opacity-50"
+              >
+                {updating ? "Saving..." : "Save Changes"}
+              </button>
             </div>
-          </form>
-        </motion.div>
+          </div>
+        </form>
       </motion.div>
-    );
-  };
-}
+    </motion.div>
+  );
+};
 
 export default function AdminContacts() {
   const router = useRouter();
@@ -314,17 +313,43 @@ export default function AdminContacts() {
   // ALL HOOKS - UNCONDITIONAL (Rules of Hooks)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  // Auth state
   const [authLoading, setAuthLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
 
-  // Contacts state
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [message, setMessage] = useState({ type: "", text: "" });
   const [selectedContact, setSelectedContact] = useState(null);
+
+  // ✅ FIX 3: fetchContacts defined with useCallback BEFORE the useEffect that depends on it
+  const fetchContacts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await apiFetch("/api/admin/contacts");
+      if (res.success) {
+        setContacts(res.data);
+      } else {
+        setMessage({ type: "error", text: res.message });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Failed to fetch contacts" });
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleUpdate = useCallback((updated) => {
+    setContacts((prev) =>
+      prev.map((c) => (c.id === updated.id ? updated : c))
+    );
+  }, []);
+
+  const handleDeleteLocal = useCallback((id) => {
+    setContacts((prev) => prev.filter((c) => c.id !== id));
+  }, []);
 
   // Auth check
   useEffect(() => {
@@ -360,40 +385,12 @@ export default function AdminContacts() {
     checkAuth();
   }, [router]);
 
-  // Fetch contacts effect
+  // Fetch contacts after auth
   useEffect(() => {
     if (authenticated) {
       fetchContacts();
     }
   }, [fetchContacts, authenticated]);
-
-  // Memoized functions
-  const fetchContacts = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await apiFetch("/api/admin/contacts");
-      if (res.success) {
-        setContacts(res.data);
-      } else {
-        setMessage({ type: "error", text: res.message });
-      }
-    } catch (error) {
-      setMessage({ type: "error", text: "Failed to fetch contacts" });
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleUpdate = useCallback((updated) => {
-    setContacts((prev) =>
-      prev.map((c) => (c.id === updated.id ? updated : c))
-    );
-  }, []);
-
-  const handleDeleteLocal = useCallback((id) => {
-    setContacts((prev) => prev.filter((c) => c.id !== id));
-  }, []);
 
   // ═══════════════════════════════════════════════════════════════════════════
   // CONDITIONAL RENDERING (after all hooks)
@@ -466,7 +463,7 @@ export default function AdminContacts() {
             key={stat.label}
             className="bg-slate-800/50 border border-slate-700 rounded-xl p-4"
           >
-            <p className={`text-3xl font-bold text-slate-300 mb-1`}>
+            <p className="text-3xl font-bold text-slate-300 mb-1">
               {stat.value}
             </p>
             <p className="text-sm text-slate-400">{stat.label}</p>
@@ -522,7 +519,10 @@ export default function AdminContacts() {
       {/* Contacts List */}
       {loading ? (
         <div className="text-center py-12">
-          <RefreshCw size={32} className="animate-spin mx-auto text-amber-500 mb-4" />
+          <RefreshCw
+            size={32}
+            className="animate-spin mx-auto text-amber-500 mb-4"
+          />
           <p className="text-slate-400">Loading contacts...</p>
         </div>
       ) : filteredContacts.length === 0 ? (
@@ -597,7 +597,10 @@ export default function AdminContacts() {
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
-                  <StatusBadge status={contact.status} priority={contact.priority} />
+                  <StatusBadge
+                    status={contact.status}
+                    priority={contact.priority}
+                  />
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => setSelectedContact(contact)}
