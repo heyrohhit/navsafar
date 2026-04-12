@@ -23,44 +23,47 @@ export const metadata = {
 
 const sections = [
   {
-    title: "1. Nature of Services",
+    title: "2.1 Nature of Services and Intermediary Role",
     content:
-      "Navsafar Travels acts as an intermediary/agent for airlines, hotels, tour operators, and visa processing agencies. We do not own or control these third-party services.",
+      "Navsafar Travels acts solely as an intermediary, aggregator, and facilitator. We provide a platform that connects Users with third-party service providers (\"Service Providers\") such as airlines, hotels, and bus operators. Navsafar Travels does not own, operate, or control the inventory. Therefore, the ultimate liability for service execution rests entirely with the respective Service Provider.",
   },
   {
-    title: "2. Booking & Payment Terms",
+    title: "2.2 User Agreement and Eligibility",
+    content:
+      "By using the Sales Channels, you confirm that you are at least 18 years of age. Users must provide accurate, current, and complete information. Navsafar Travels reserves the right to terminate accounts if the information provided is found to be false or fraudulent.",
+  },
+  {
+    title: "2.3 Pricing, Payment, and Taxes",
     items: [
-      "Bookings are confirmed only upon receipt of full or partial payment",
-      "Prices are subject to change due to currency fluctuation, supplier changes, or availability",
-      "International bookings may require full advance payment",
+      "Dynamic Pricing: Fares and availability are dynamic. Navsafar Travels does not guarantee a price until the booking is confirmed and full payment is realized",
+      "Convenience Fees: We charge a non-refundable convenience fee for platform usage and customer support",
+      "Taxes: All applicable governmental taxes (GST, etc.) are added to the base fare and must be paid by the User",
     ],
   },
   {
-    title: "3. Visa & Documentation Responsibility",
-    content:
-      "The customer is solely responsible for obtaining a valid passport, visa, and transit permits. Navsafar Travels provides assistance only and does not guarantee visa approval.",
-  },
-  {
-    title: "4. Pricing & Inclusions",
+    title: "2.4 User Obligations",
     items: [
-      "Only services explicitly mentioned in your package are included",
-      "Additional costs (visa fees, insurance, taxes, personal expenses) are excluded unless specified",
+      "Travel Documents: It is the absolute responsibility of the User to ensure they possess valid passports (6-month validity), visas, and medical certificates",
+      "Name Accuracy: Bookings must be made exactly as the name appears on the government-issued photo ID",
+      "Code of Conduct: Users shall not use the platform for speculative or fraudulent bookings",
     ],
   },
   {
-    title: "5. Amendments & Changes",
-    content:
-      "Any modification requested by the customer is subject to availability, additional charges, and supplier policies.",
+    title: "2.5 Specific Service Terms",
+    items: [
+      "Flights: Users must comply with airline check-in timings. Navsafar Travels is not responsible for airline delays, cancellations, or baggage loss",
+      "Hotels: Standard check-in/out times apply. Early check-in is subject to availability and may incur extra charges payable directly to the hotel",
+    ],
   },
   {
-    title: "6. Cancellation & Refund",
+    title: "2.6 Cancellation & Refund",
     content:
       "Cancellations are governed strictly by our Refund Policy and applicable third-party supplier rules.",
     link: { href: "/policies/refund", label: "View Refund Policy →" },
   },
   {
-    title: "7. Liability Disclaimer",
-    prefix: "Navsafar Travels is not liable for:",
+    title: "2.7 Limitation of Liability",
+    prefix: "Navsafar Travels shall not be liable for any direct, indirect, or consequential damages arising from the use of our services. In no event shall our total liability exceed the amount paid by the User to us for that specific booking, excluding amounts paid to the end provider. Specifically, we are not liable for:",
     items: [
       "Flight delays or cancellations",
       "Visa rejections",
@@ -70,7 +73,7 @@ const sections = [
     ],
   },
   {
-    title: "8. Force Majeure",
+    title: "2.8 Force Majeure",
     prefix: "We are not responsible for events beyond our control, including:",
     items: [
       "Natural disasters",
@@ -80,19 +83,18 @@ const sections = [
     ],
   },
   {
-    title: "9. Limitation of Liability",
-    content:
-      "Our total liability is limited to the amount you paid us for the specific service in question.",
+    title: "2.9 Mobile App Permissions (Android / iOS)",
+    items: [
+      "Camera: For uploading profile pictures or scanning QR codes",
+      "Location: To suggest the nearest airport or location-specific deals",
+      "SMS: To auto-fill OTPs during secure transactions",
+      "Calendar: To sync your travel plans with your personal device schedule",
+    ],
   },
   {
-    title: "10. Indemnity",
+    title: "2.10 Governing Law & Jurisdiction",
     content:
-      "You agree to indemnify Navsafar Travels against any claims, losses, or damages arising from violation of these terms or misrepresentation of information.",
-  },
-  {
-    title: "11. Governing Law & Jurisdiction",
-    content:
-      "These Terms are governed by Indian law. Disputes shall be subject to the jurisdiction of courts in India.",
+      "These Terms are governed by Indian law. Any disputes shall be subject to the exclusive jurisdiction of the competent courts in New Delhi, India.",
   },
 ];
 
@@ -113,7 +115,7 @@ export default function TermsPage() {
             name: "Terms of Service — Navsafar Travels",
             description: "Terms & Conditions for Navsafar Travels covering bookings, liability, and legal agreements.",
             url: "https://www.navsafar.com/policies/terms",
-            publisher: { "@type": "Organization", name: "Navsafar Travels", url: "https://www.navsafar.com" },
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
           }),
         }}
       />
@@ -125,7 +127,7 @@ export default function TermsPage() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-300 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
           </div>
-          <div className="relative max-w-4xl mx-auto px-4 py-14 md:py-20">
+          <div className="relative max-w-4xl mx-auto px-4 py-20">
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex items-center gap-2 text-sm text-amber-200">
                 <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
@@ -151,11 +153,11 @@ export default function TermsPage() {
             </div>
             <p className="mt-4 text-amber-100 text-base md:text-lg max-w-2xl leading-relaxed">
               These Terms constitute a{" "}
-              <strong className="text-white">legally binding agreement</strong> between you ("Customer") and Navsafar Travels. Please read carefully before booking.
+              <strong className="text-white">legally binding agreement</strong> between you ("Customer") and Navsafar Travels Private Limited. Please read carefully before booking.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-6">
-              {["Governing Law: India", "Legally Binding", "Updated 2025"].map((tag) => (
+              {["Governing Law: India | Delhi Courts", "Legally Binding", "Effective: April 11, 2026"].map((tag) => (
                 <span key={tag} className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-white/80 text-xs font-medium">
                   {tag}
                 </span>

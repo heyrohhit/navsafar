@@ -22,10 +22,10 @@ export const metadata = {
 };
 
 const cancellationTable = [
-  { timing: "30+ days before travel", deduction: "0% – 15%", risk: "low", color: "emerald" },
-  { timing: "15 – 30 days before travel", deduction: "15% – 40%", risk: "Medium", color: "yellow" },
-  { timing: "7 – 15 days before travel", deduction: "40% – 60%", risk: "High", color: "orange" },
-  { timing: "Less than 7 days / No-show", deduction: "60% – 90%", risk: "Critical", color: "red" },
+  { timing: "45+ Days Before", deduction: "15% of total package cost", notes: "Processing and initial booking fee", risk: "low", color: "emerald" },
+  { timing: "30 – 44 Days Before", deduction: "25% of total package cost", notes: "Tiered retention charge", risk: "Medium", color: "yellow" },
+  { timing: "15 – 29 Days Before", deduction: "50% of total package cost", notes: "Tiered retention charge", risk: "High", color: "orange" },
+  { timing: "0 – 14 Days Before / No-Show", deduction: "100% of total package cost", notes: "Including No-Show scenarios", risk: "Critical", color: "red" },
 ];
 
 const riskStyle = {
@@ -37,57 +37,56 @@ const riskStyle = {
 
 const sections = [
   {
-    title: "1. General Policy",
+    title: "3.1 General Guidelines",
     content:
-      "All cancellations are subject to supplier (airlines/hotels) policies, the timing of your cancellation request, and applicable service charges by Navsafar Travels.",
+      "All cancellation requests must be raised through the Navsafar Travels platform. If a User cancels directly with the Service Provider, they must inform us immediately to facilitate the refund process.",
   },
   {
-    title: "2. Cancellation Charges",
+    title: "3.2 Cancellation Charges Framework",
     table: true,
   },
   {
-    title: "3. Visa Rejection Clause",
-    content:
-      "Visa fees and service charges are non-refundable regardless of outcome. Travel bookings may be partially or fully non-refundable in case of visa rejection.",
-  },
-  {
-    title: "4. Refund Processing",
-    content:
-      "Approved refunds are processed within 7–21 working days, subject to receipt of funds from suppliers. Refunds are credited to the original payment method.",
-  },
-  {
-    title: "5. Non-Refundable Components",
+    title: "3.3 Non-Refundable Items",
     items: [
-      "Discounted or sale fares",
-      "Promotional packages",
-      "Peak-season bookings",
-      "Visa processing fees and service charges",
+      "Convenience Fees: Strictly non-refundable",
+      "Visa Fees: Service charges and embassy fees are non-refundable once the application is initiated",
+      "Flash Sales: Special promotional bookings are typically 100% non-refundable",
     ],
   },
   {
-    title: "6. Partial Usage",
-    content:
-      "No refund will be issued for unused hotel nights or missed flights/transfers due to customer fault.",
+    title: "3.4 Flight and Hotel Specifics",
+    items: [
+      "No-Show: Failing to check-in within the stipulated time generally results in 100% forfeiture of the ticket/room amount",
+      "Airline Cancellations: If an airline cancels a flight, Navsafar Travels will process a refund only after funds are received from the airline",
+    ],
   },
   {
-    title: "7. Cancellation by Navsafar Travels",
+    title: "3.5 Refund Processing and Timelines",
+    items: [
+      "Mode: Refunds are strictly processed back to the original source of payment (Credit Card / UPI / Net Banking)",
+      "Timelines: Once initiated, it typically takes 7 to 14 business days for the amount to reflect in your account, depending on bank processing",
+      "Promotions: If a booking used a promo code, the discount value will not be refunded",
+    ],
+  },
+  {
+    title: "3.6 Cancellation by Navsafar Travels",
     content:
       "If Navsafar Travels cancels a booking, you will receive a full refund or an equivalent alternative arrangement — excluding force majeure situations.",
   },
   {
-    title: "8. Force Majeure Refunds",
+    title: "3.7 Force Majeure Refunds",
     content:
       "In force majeure situations, any refunds available will depend solely on supplier policies and are not guaranteed by Navsafar Travels.",
   },
   {
-    title: "9. Chargebacks",
+    title: "3.8 Chargebacks",
     content:
       "Unauthorized chargebacks may result in legal action and recovery proceedings. Please contact us directly to resolve any payment disputes.",
   },
   {
-    title: "10. Contact",
+    title: "3.9 Contact",
     content:
-      "For refund or cancellation requests, write to us at NavsafarAdmin@navsafar.com with your booking reference number.",
+      "For refund or cancellation requests, write to us at support@navsafartravels.com or call 8882128640 with your booking reference number.",
   },
 ];
 
@@ -108,7 +107,7 @@ export default function RefundPolicyPage() {
             name: "Refund & Cancellation Policy — Navsafar Travels",
             description: "Refund and Cancellation Policy for Navsafar Travels including charges, timelines, and non-refundable items.",
             url: "https://www.navsafar.com/policies/refund",
-            publisher: { "@type": "Organization", name: "Navsafar Travels", url: "https://www.navsafar.com" },
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
           }),
         }}
       />
@@ -120,7 +119,7 @@ export default function RefundPolicyPage() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-300 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
           </div>
-          <div className="relative max-w-4xl mx-auto px-4 py-14 md:py-20">
+          <div className="relative max-w-4xl mx-auto px-4 py-20">
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex items-center gap-2 text-sm text-emerald-200">
                 <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
@@ -150,7 +149,7 @@ export default function RefundPolicyPage() {
             </p>
 
             <div className="flex flex-wrap gap-3 mt-6">
-              {["Refunds in 7–21 Days", "Supplier Policies Apply", "No Hidden Charges"].map((tag) => (
+              {["Refunds in 7–14 Business Days", "Supplier Policies Apply", "No Hidden Charges"].map((tag) => (
                 <span key={tag} className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-white/80 text-xs font-medium">
                   {tag}
                 </span>
@@ -185,7 +184,7 @@ export default function RefundPolicyPage() {
                 {/* Quick refund info */}
                 <div className="mt-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
                   <p className="text-xs font-bold text-emerald-700 mb-2">⏱ Refund Timeline</p>
-                  <p className="text-xs text-gray-600">Processed within <strong>7–21 working days</strong> after approval.</p>
+                  <p className="text-xs text-gray-600">Processed within <strong>7–14 business days</strong> after approval.</p>
                 </div>
 
                 <div className="mt-4">
@@ -223,8 +222,9 @@ export default function RefundPolicyPage() {
                           <table className="w-full text-sm">
                             <thead>
                               <tr className="bg-gray-50 border-b border-gray-200">
-                                <th className="text-left px-4 py-3 font-semibold text-gray-700">Cancellation Timing</th>
-                                <th className="text-left px-4 py-3 font-semibold text-gray-700">Deduction</th>
+                                <th className="text-left px-4 py-3 font-semibold text-gray-700">Cancellation Period</th>
+                                <th className="text-left px-4 py-3 font-semibold text-gray-700">Retention Charges</th>
+                                <th className="text-left px-4 py-3 font-semibold text-gray-700">Notes</th>
                                 <th className="text-left px-4 py-3 font-semibold text-gray-700">Risk Level</th>
                               </tr>
                             </thead>
@@ -235,6 +235,7 @@ export default function RefundPolicyPage() {
                                   <tr key={j} className={`border-b border-gray-100 last:border-0 transition-colors ${s.row}`}>
                                     <td className="px-4 py-3.5 text-gray-700 font-medium">{row.timing}</td>
                                     <td className="px-4 py-3.5 text-gray-700 font-semibold">{row.deduction}</td>
+                                    <td className="px-4 py-3.5 text-gray-500 text-xs">{row.notes}</td>
                                     <td className="px-4 py-3.5">
                                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${s.bg} ${s.text} ${s.border}`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />

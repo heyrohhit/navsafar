@@ -57,7 +57,7 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
         setSelectedItem(pkg);
         break;
       case "callMe":
-        window.location.href = `tel:${btn.number || "+911234567890"}`;
+        window.location.href = `tel:${btn.number || "+918882128640"}`;
         break;
       default:
         console.warn("Unknown button type:", btn.type);
@@ -181,7 +181,7 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                         <div className="absolute bottom-3 left-3 z-10">
                           <button
                             onClick={() => setSelectedItem(pkg)}
-                            className="px-4 py-2 text-white text-xs font-bold rounded-2xl shadow-xl active:scale-95 transition-transform duration-150"
+                            className="px-4 py-2 text-white text-xs font-bold rounded-2xl shadow-xl active:scale-95 transition-transform duration-150 cursor-pointer"
                             style={{ background: gradientCss }}
                           >
                             View Details →
@@ -189,12 +189,12 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                         </div>
                       ) : (
                         <div
-                          className="absolute inset-0 flex items-center justify-center z-10 transition-opacity duration-300"
+                          className="absolute inset-0 flex items-center justify-center z-10 transition-opacity duration-300 cursor-pointer"
                           style={{ opacity: isHovered ? 1 : 0 }}
                         >
                           <button
                             onClick={() => setSelectedItem(pkg)}
-                            className="px-5 py-2.5 text-white text-sm font-bold rounded-2xl shadow-xl transition-transform duration-200 hover:scale-105"
+                            className="px-5 py-2.5 text-white text-sm font-bold rounded-2xl shadow-xl transition-transform duration-200 hover:scale-105 cursor-pointer"
                             style={{ background: gradientCss }}
                           >
                             View Details →
@@ -217,12 +217,8 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                       {/* Tagline */}
                       {pkg.tagline && (
                         <p
-                          className="text-xs font-semibold mb-1.5"
-                          style={{
-                            background: gradientCss,
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                          }}
+                          className="text-xs font-semibold mb-1.5 text-[#999]"
+                          
                         >
                           {pkg.tagline}
                         </p>

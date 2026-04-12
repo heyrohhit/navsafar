@@ -50,79 +50,76 @@ const policies = [
     badgeColor: "bg-blue-100 text-blue-700",
     sections: [
       {
-        title: "1. Scope",
+        title: "1.1 Introduction",
         content:
-          "This Privacy Policy applies to all users of our website, services, travel bookings, and visa assistance services offered by Navsafar Travels.",
+          "Navsafar Travels Private Limited recognizes the importance of privacy of its users and of maintaining confidentiality of the information provided by its users as a responsible data controller and data processer. This Privacy Policy applies to any person ('User') who purchase, intend to purchase, or inquire about any product(s) or service(s) made available by Navsafar Travels through any of its customer interface channels including its website, mobile site, mobile app & offline channels.",
       },
       {
-        title: "2. Information We Collect",
+        title: "1.2 User Consent and Application",
+        content:
+          "By using or accessing the Website or other Sales Channels, the User hereby agrees with the terms of this Privacy Policy. If you disagree with this Privacy Policy please do not use or access our Website or other Sales Channels. This Privacy Policy is an integral part of your User Agreement with Navsafar Travels.",
+      },
+      {
+        title: "1.3 Users Outside India",
+        content:
+          "Data shared with Navsafar Travels shall be primarily processed in India. By agreeing to this policy, you provide explicit consent to process your personal information. To withdraw consent, write to: privacy@navsafartravels.com.",
+      },
+      {
+        title: "1.4 Type of Information We Collect",
         subsections: [
           {
             label: "Personal Information",
             items: [
-              "Full name, date of birth, nationality",
-              "Passport details, visa documents",
-              "Email address, phone number",
+              "Name, gender, marital status, religion, age, profile picture",
+              "Contact details: email, phone, address",
             ],
           },
           {
             label: "Financial Information",
             items: [
-              "Payment details processed via secure third-party gateways — we do not store card details.",
+              "Banking details, credit/debit card numbers (encrypted)",
+              "Payment history for LRS compliance per RBI mandates",
             ],
           },
           {
-            label: "Travel & Booking Data",
-            items: ["Itineraries, preferences, and special requests"],
+            label: "Travel & Visa Data",
+            items: ["Passport copies, bank statements, photographs for embassy/visa processing"],
+          },
+          {
+            label: "Health Data",
+            items: ["Vaccination status and certificates as required for travel or hotel check-ins"],
           },
           {
             label: "Technical Data",
-            items: ["IP address, browser type, cookies, device data"],
+            items: ["IP address, OS, browser type, session data via cookies"],
           },
         ],
       },
       {
-        title: "3. Purpose of Processing",
-        items: [
-          "Booking flights, hotels, tours, and visa services",
-          "Identity verification for international travel",
-          "Communication and customer support",
-          "Legal and regulatory compliance",
-          "Marketing (only with explicit consent)",
+        title: "1.5 How We Use Your Information",
+        subsections: [
+          {
+            label: "Booking Fulfillment",
+            items: ["Confirming reservations with airlines, hotels, and transporters"],
+          },
+          {
+            label: "Communication",
+            items: ["Booking confirmations and updates via SMS, WhatsApp, or email"],
+          },
+          {
+            label: "Customization",
+            items: ["Fraud prevention and personalizing website/app content"],
+          },
+          {
+            label: "Surveys & Research",
+            items: ["Optional surveys to improve user experience and identify travel trends"],
+          },
         ],
       },
       {
-        title: "4. Data Sharing & International Transfers",
+        title: "1.6 Data Retention and Security",
         content:
-          "You expressly agree that your data may be shared with airlines, embassies, consulates, visa processing agencies, hotels, transport providers, tour operators, and payment gateways. Your data may be transferred outside India as required for international travel bookings.",
-      },
-      {
-        title: "5. Data Retention",
-        content:
-          "We retain your data only as long as necessary for service fulfillment and for legal, tax, and regulatory compliance.",
-      },
-      {
-        title: "6. Data Security",
-        content:
-          "We implement reasonable administrative, technical, and physical safeguards. However, no system is completely secure, and we disclaim absolute security guarantees.",
-      },
-      {
-        title: "7. Your Rights",
-        items: [
-          "Request access to or correction of your data",
-          "Request deletion (subject to legal obligations)",
-          "Withdraw consent for marketing communications",
-        ],
-      },
-      {
-        title: "8. Cookies",
-        content:
-          "We use cookies for analytics and personalization. Continued use of our website implies consent to our cookie practices.",
-      },
-      {
-        title: "9. Limitation of Liability",
-        content:
-          "Navsafar Travels shall not be liable for unauthorized access beyond reasonable control or third-party breaches by airlines, embassies, or other service providers.",
+          "Navsafar Travels will retain your Personal Information for as long as reasonably necessary for legal, regulatory, tax, or accounting requirements. We implement reasonable administrative, technical, and physical safeguards; however, no online system is 100% secure.",
       },
     ],
   },
@@ -138,42 +135,46 @@ const policies = [
     badgeColor: "bg-amber-100 text-amber-700",
     sections: [
       {
-        title: "1. Nature of Services",
+        title: "2.1 Nature of Services and Intermediary Role",
         content:
-          "Navsafar Travels acts as an intermediary/agent for airlines, hotels, tour operators, and visa processing agencies. We do not own or control these third-party services.",
+          "Navsafar Travels acts solely as an intermediary, aggregator, and facilitator. We provide a platform that connects Users with third-party service providers such as airlines, hotels, and bus operators. Navsafar Travels does not own, operate, or control the inventory. The ultimate liability for service execution rests entirely with the respective Service Provider.",
       },
       {
-        title: "2. Booking & Payment Terms",
+        title: "2.2 User Agreement and Eligibility",
+        content:
+          "By using the Sales Channels, you confirm that you are at least 18 years of age. Users must provide accurate, current, and complete information. Navsafar Travels reserves the right to terminate accounts if information provided is found to be false or fraudulent.",
+      },
+      {
+        title: "2.3 Pricing, Payment, and Taxes",
         items: [
-          "Bookings are confirmed only upon receipt of full or partial payment",
-          "Prices are subject to change due to currency fluctuation, supplier changes, or availability",
-          "International bookings may require full advance payment",
+          "Dynamic Pricing: Fares and availability are dynamic; price is not guaranteed until booking is confirmed with full payment",
+          "Convenience Fees: A non-refundable convenience fee is charged for platform usage and customer support",
+          "Taxes: All applicable governmental taxes (GST, etc.) are added to the base fare and must be paid by the User",
         ],
       },
       {
-        title: "3. Visa & Documentation Responsibility",
-        content:
-          "The customer is solely responsible for obtaining a valid passport, visa, and transit permits. Navsafar Travels provides assistance only and does not guarantee visa approval.",
-      },
-      {
-        title: "4. Pricing & Inclusions",
+        title: "2.4 User Obligations",
         items: [
-          "Only services explicitly mentioned in your package are included",
-          "Additional costs (visa fees, insurance, taxes, personal expenses) are excluded unless specified",
+          "Travel Documents: Users must ensure valid passports (6-month validity), visas, and medical certificates",
+          "Name Accuracy: Bookings must match the name exactly as it appears on government-issued photo ID",
+          "Code of Conduct: Users shall not use the platform for speculative or fraudulent bookings",
         ],
       },
       {
-        title: "5. Amendments & Changes",
-        content:
-          "Any modification requested by the customer is subject to availability, additional charges, and supplier policies.",
+        title: "2.5 Specific Service Terms",
+        items: [
+          "Flights: Users must comply with airline check-in timings; Navsafar Travels is not responsible for delays, cancellations, or baggage loss",
+          "Hotels: Standard check-in/out times apply; early check-in is subject to availability and may incur charges payable to the hotel",
+        ],
       },
       {
-        title: "6. Cancellation & Refund",
+        title: "2.6 Cancellation & Refund",
         content:
           "Cancellations are governed strictly by our Refund Policy and applicable third-party supplier rules.",
       },
       {
-        title: "7. Liability Disclaimer",
+        title: "2.7 Limitation of Liability",
+        prefix: "Navsafar Travels is not liable for:",
         items: [
           "Flight delays or cancellations",
           "Visa rejections",
@@ -181,32 +182,30 @@ const policies = [
           "Injuries, accidents, or death",
           "Acts of third-party service providers",
         ],
-        prefix: "Navsafar Travels is not liable for:",
       },
       {
-        title: "8. Force Majeure",
+        title: "2.8 Force Majeure",
+        prefix: "We are not responsible for events beyond our control, including:",
         items: [
           "Natural disasters",
-          "War, terrorism",
+          "War or terrorism",
           "Government restrictions",
           "Pandemics or health emergencies",
         ],
-        prefix: "We are not responsible for events beyond our control, including:",
       },
       {
-        title: "9. Limitation of Liability",
-        content:
-          "Our total liability is limited to the amount you paid us for the specific service in question.",
+        title: "2.9 Mobile App Permissions",
+        items: [
+          "Camera: For uploading profile pictures or scanning QR codes",
+          "Location: To suggest nearest airports or location-specific deals",
+          "SMS: To auto-fill OTPs during secure transactions",
+          "Calendar: To sync travel plans with your personal device schedule",
+        ],
       },
       {
-        title: "10. Indemnity",
+        title: "2.10 Governing Law & Jurisdiction",
         content:
-          "You agree to indemnify Navsafar Travels against any claims, losses, or damages arising from violation of these terms or misrepresentation of information.",
-      },
-      {
-        title: "11. Governing Law & Jurisdiction",
-        content:
-          "These Terms are governed by Indian law. Disputes shall be subject to the jurisdiction of courts in India.",
+          "These Terms are governed by Indian law. Disputes shall be subject to the exclusive jurisdiction of courts in New Delhi, India.",
       },
     ],
   },
@@ -222,57 +221,41 @@ const policies = [
     badgeColor: "bg-emerald-100 text-emerald-700",
     sections: [
       {
-        title: "1. General Policy",
+        title: "3.1 General Guidelines",
         content:
-          "All cancellations are subject to supplier (airlines/hotels) policies, the timing of your cancellation request, and applicable service charges by Navsafar Travels.",
+          "All cancellation requests must be raised through the Navsafar Travels platform. If a User cancels directly with the Service Provider, they must inform us immediately to facilitate the refund process.",
       },
       {
-        title: "2. Cancellation Charges",
+        title: "3.2 Cancellation Charges Framework",
         table: [
-          { timing: "30+ days before travel", deduction: "0% – 15%", risk: "low" },
-          { timing: "15 – 30 days before travel", deduction: "15% – 40%", risk: "medium" },
-          { timing: "7 – 15 days before travel", deduction: "40% – 60%", risk: "high" },
-          { timing: "Less than 7 days / No-show", deduction: "60% – 90%", risk: "critical" },
+          { timing: "45+ Days Before", deduction: "15% of total package cost", notes: "Processing & booking fee", risk: "low" },
+          { timing: "30 – 44 Days Before", deduction: "25% of total package cost", notes: "Tiered retention charge", risk: "medium" },
+          { timing: "15 – 29 Days Before", deduction: "50% of total package cost", notes: "Tiered retention charge", risk: "high" },
+          { timing: "0 – 14 Days Before / No-Show", deduction: "100% of total package cost", notes: "Including No-Show scenarios", risk: "critical" },
         ],
       },
       {
-        title: "3. Visa Rejection Clause",
-        content:
-          "Visa fees and service charges are non-refundable regardless of outcome. Travel bookings may be partially or fully non-refundable in case of visa rejection.",
-      },
-      {
-        title: "4. Refund Processing",
-        content:
-          "Approved refunds are processed within 7–21 working days, subject to receipt of funds from suppliers. Refunds are credited to the original payment method.",
-      },
-      {
-        title: "5. Non-Refundable Components",
+        title: "3.3 Non-Refundable Items",
         items: [
-          "Discounted or sale fares",
-          "Promotional packages",
-          "Peak-season bookings",
-          "Visa processing fees and service charges",
+          "Convenience Fees: Strictly non-refundable",
+          "Visa Fees: Service charges and embassy fees are non-refundable once the application is initiated",
+          "Flash Sales: Special promotional bookings are typically 100% non-refundable",
         ],
       },
       {
-        title: "6. Partial Usage",
-        content:
-          "No refund will be issued for unused hotel nights or missed flights/transfers due to customer fault.",
+        title: "3.4 Flight and Hotel Specifics",
+        items: [
+          "No-Show: Failing to check-in within stipulated time generally results in 100% forfeiture",
+          "Airline Cancellations: Refunds are processed only after funds are received from the airline",
+        ],
       },
       {
-        title: "7. Cancellation by Navsafar Travels",
-        content:
-          "If Navsafar Travels cancels a booking, you will receive a full refund or an equivalent alternative arrangement — excluding force majeure situations.",
-      },
-      {
-        title: "8. Force Majeure Refunds",
-        content:
-          "In force majeure situations, any refunds available will depend solely on supplier policies and are not guaranteed by Navsafar Travels.",
-      },
-      {
-        title: "9. Chargebacks",
-        content:
-          "Unauthorized chargebacks may result in legal action and recovery proceedings. Please contact us directly to resolve any payment disputes.",
+        title: "3.5 Refund Processing and Timelines",
+        items: [
+          "Mode: Refunds are processed back to the original source of payment (Credit Card / UPI / Net Banking)",
+          "Timelines: Typically 7 to 14 business days after initiation, depending on bank processing",
+          "Promotions: Promo code discount value will not be refunded",
+        ],
       },
     ],
   },
@@ -299,8 +282,9 @@ function TableSection({ table }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-gray-50 border-b border-gray-200">
-            <th className="text-left px-4 py-3 font-semibold text-gray-700">Cancellation Timing</th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-700">Deduction</th>
+            <th className="text-left px-4 py-3 font-semibold text-gray-700">Cancellation Period</th>
+            <th className="text-left px-4 py-3 font-semibold text-gray-700">Retention Charges</th>
+            <th className="text-left px-4 py-3 font-semibold text-gray-700">Notes</th>
             <th className="text-left px-4 py-3 font-semibold text-gray-700">Risk Level</th>
           </tr>
         </thead>
@@ -309,6 +293,7 @@ function TableSection({ table }) {
             <tr key={i} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
               <td className="px-4 py-3 text-gray-700 font-medium">{row.timing}</td>
               <td className="px-4 py-3 text-gray-700">{row.deduction}</td>
+              <td className="px-4 py-3 text-gray-500 text-xs">{row.notes}</td>
               <td className="px-4 py-3">
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${riskStyles[row.risk]}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${riskDot[row.risk]}`} />
@@ -422,11 +407,11 @@ export default function PoliciesPage() {
             "@type": "WebPage",
             name: "Policies — Navsafar Travels",
             description:
-              "Privacy Policy, Terms & Conditions, and Refund & Cancellation Policy for Navsafar Travels.",
+              "Privacy Policy, Terms & Conditions, and Refund & Cancellation Policy for Navsafar Travels Private Limited.",
             url: "https://www.navsafar.com/policies",
             publisher: {
               "@type": "Organization",
-              name: "Navsafar Travels",
+              name: "Navsafar Travels Private Limited",
               url: "https://www.navsafar.com",
             },
           }),
@@ -442,12 +427,12 @@ export default function PoliciesPage() {
             <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500 rounded-full blur-3xl" />
           </div>
 
-          <div className="relative max-w-5xl mx-auto px-4 py-16 md:py-24 text-center">
+          <div className="relative max-w-5xl mx-auto px-4 py-24 text-center">
             {/* Breadcrumb */}
             <nav aria-label="Breadcrumb" className="flex justify-center mb-6">
               <ol className="flex items-center gap-2 text-sm text-slate-400">
                 <li>
-                  <Link href="/" className="hover:text-white transition-colors">
+                  <Link href="/" className="text-white transition-colors">
                     Home
                   </Link>
                 </li>
@@ -460,7 +445,7 @@ export default function PoliciesPage() {
 
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full text-white/80 text-sm mb-6">
               <span>📍</span>
-              <span>Jurisdiction: India · IT Act 2000 Compliant</span>
+              <span>Jurisdiction: India · Delhi Courts · GST: 07AAZFN6263B1ZX</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4 leading-tight tracking-tight">
@@ -519,12 +504,13 @@ export default function PoliciesPage() {
                   <p className="text-xs text-gray-600 mb-3">
                     Our team is happy to clarify any policy details.
                   </p>
-                  <Link
-                    href="/contact"
+                  <a
+                    href="mailto:support@navsafartravels.com"
                     className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-800 transition-colors"
                   >
-                    Contact Us →
-                  </Link>
+                    support@navsafartravels.com →
+                  </a>
+                  <p className="text-xs text-gray-500 mt-1">📞 8882128640</p>
                 </div>
               </div>
             </aside>
@@ -540,9 +526,9 @@ export default function PoliciesPage() {
                 <div className="flex items-start gap-4">
                   <span className="text-3xl">⚖️</span>
                   <div>
-                    <h3 className="font-bold text-lg mb-2">Legal Compliance Notice</h3>
+                    <h3 className="font-bold text-lg mb-2 text-[#0f6174]">Legal Compliance Notice</h3>
                     <p className="text-slate-300 text-sm leading-relaxed mb-4">
-                      Navsafar Travels operates under the{" "}
+                      Navsafar Travels Private Limited operates under the{" "}
                       <strong className="text-white">
                         Information Technology Act, 2000 (India)
                       </strong>{" "}
@@ -552,9 +538,9 @@ export default function PoliciesPage() {
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
                       {[
-                        { label: "Company", value: "Navsafar Travels" },
-                        { label: "Jurisdiction", value: "India" },
-                        { label: "Governing Law", value: "IT Act, 2000" },
+                        { label: "Company", value: "Navsafar Travels Pvt. Ltd." },
+                        { label: "Jurisdiction", value: "India | Delhi Courts" },
+                        { label: "GST Number", value: "07AAZFN6263B1ZX" },
                       ].map((item) => (
                         <div
                           key={item.label}
@@ -566,13 +552,20 @@ export default function PoliciesPage() {
                       ))}
                     </div>
                     <p className="text-slate-400 text-xs mt-4">
-                      For any policy-related queries, write to us at{" "}
+                      For policy-related queries, write to{" "}
                       <a
-                        href="mailto:NavsafarAdmin@navsafar.com"
+                        href="mailto:support@navsafartravels.com"
                         className="text-blue-400 hover:text-blue-300 underline"
                       >
-                        NavsafarAdmin@navsafar.com
+                        support@navsafartravels.com
+                      </a>{" "}
+                      or call{" "}
+                      <a href="tel:8882128640" className="text-blue-400 hover:text-blue-300 underline">
+                        8882128640
                       </a>
+                    </p>
+                    <p className="text-slate-500 text-xs mt-2">
+                      Registered Address: FIRST FLOOR LEFT SIDE, WZ 447, NANGAL RAYA, New Delhi, Delhi 110046
                     </p>
                   </div>
                 </div>

@@ -23,78 +23,102 @@ export const metadata = {
 
 const sections = [
   {
-    title: "1. Scope",
+    title: "1.1 Introduction",
     content:
-      "This Privacy Policy applies to all users of our website, services, travel bookings, and visa assistance services offered by Navsafar Travels.",
+      "Navsafar Travels Private Limited (hereinafter \"Navsafar Travels\") recognizes the importance of privacy of its users and also of maintaining confidentiality of the information provided by its users as a responsible data controller and data processer. This Privacy Policy provides for the practices for handling and securing user's Personal Information by Navsafar Travels and its subsidiaries and affiliates. This Privacy Policy is applicable to any person ('User') who purchase, intend to purchase, or inquire about any product(s) or service(s) made available by Navsafar Travels through any of Navsafar Travels's customer interface channels including its website, mobile site, mobile app & offline channels.",
   },
   {
-    title: "2. Information We Collect",
+    title: "1.2 User Consent and Application",
+    content:
+      "By using or accessing the Website or other Sales Channels, the User hereby agrees with the terms of this Privacy Policy and the contents herein. If you disagree with this Privacy Policy please do not use or access our Website or other Sales Channels. This Privacy Policy is an integral part of your User Agreement with Navsafar Travels.",
+  },
+  {
+    title: "1.3 Users Outside the Geographical Limits of India",
+    content:
+      "Please note that the data shared with Navsafar Travels shall be primarily processed in India. By agreeing to this policy, you are providing Navsafar Travels with your explicit consent to process your personal information for the purpose(s) defined in this policy. If you wish to withdraw your consent, you may do so by writing to: privacy@navsafartravels.com. However, if such processing is essential for service (e.g., international group bookings), we may not be able to confirm your bookings after withdrawal.",
+  },
+  {
+    title: "1.4 Type of Information We Collect",
     subsections: [
       {
         label: "Personal Information",
-        items: ["Full name, date of birth, nationality", "Passport details, visa documents", "Email address, phone number"],
+        items: [
+          "Name, gender, marital status, religion, age, profile picture",
+          "Contact details: email, phone, address",
+        ],
       },
       {
         label: "Financial Information",
-        items: ["Payment details processed via secure third-party gateways — we do not store card details."],
+        items: [
+          "Banking details, credit/debit card numbers (in encrypted form)",
+          "Payment history for LRS (Liberalized Remittance Scheme) compliance as per RBI mandates",
+        ],
       },
       {
-        label: "Travel & Booking Data",
-        items: ["Itineraries, preferences, and special requests"],
+        label: "Travel & Visa Data",
+        items: [
+          "Copies of passport, bank statements, and photographs required by embassies for visa processing",
+        ],
+      },
+      {
+        label: "Health Data",
+        items: ["Vaccination status and certificates as required for travel or hotel check-ins"],
       },
       {
         label: "Technical Data",
-        items: ["IP address, browser type, cookies, device data"],
+        items: ["IP address, operating system, browser type, and session data recorded via cookies"],
       },
     ],
   },
   {
-    title: "3. Purpose of Processing",
-    items: [
-      "Booking flights, hotels, tours, and visa services",
-      "Identity verification for international travel",
-      "Communication and customer support",
-      "Legal and regulatory compliance",
-      "Marketing (only with explicit consent)",
+    title: "1.5 How We Use Your Information",
+    subsections: [
+      {
+        label: "Booking Fulfillment",
+        items: ["Confirming reservations with airlines, hotels, and transporters"],
+      },
+      {
+        label: "Communication",
+        items: ["Sending booking confirmations and updates via SMS, WhatsApp, or email"],
+      },
+      {
+        label: "Customization",
+        items: ["Validating accounts to prevent fraud and personalizing website/app content"],
+      },
+      {
+        label: "Surveys & Research",
+        items: ["Conducting optional surveys to improve user experience and identifying travel trends"],
+      },
     ],
   },
   {
-    title: "4. Data Sharing & International Transfers",
+    title: "1.6 Data Retention and Security",
     content:
-      "You expressly agree that your data may be shared with airlines, embassies, consulates, visa processing agencies, hotels, transport providers, tour operators, and payment gateways. Your data may be transferred outside India as required for international travel bookings.",
+      "Navsafar Travels will retain your Personal Information for as long as is reasonably necessary for legal, regulatory, tax, or accounting requirements. We implement reasonable administrative, technical, and physical safeguards; however, no online system is 100% secure.",
   },
   {
-    title: "5. Data Retention",
-    content:
-      "We retain your data only as long as necessary for service fulfillment and for legal, tax, and regulatory compliance.",
-  },
-  {
-    title: "6. Data Security",
-    content:
-      "We implement reasonable administrative, technical, and physical safeguards. However, no system is completely secure, and we disclaim absolute security guarantees.",
-  },
-  {
-    title: "7. Your Rights",
+    title: "1.7 Your Rights",
     items: [
       "Request access to or correction of your data",
       "Request deletion (subject to legal obligations)",
       "Withdraw consent for marketing communications",
+      "Write to privacy@navsafartravels.com to exercise your rights",
     ],
   },
   {
-    title: "8. Cookies",
+    title: "1.8 Cookies",
     content:
       "We use cookies for analytics and personalization. Continued use of our website implies consent to our cookie practices.",
   },
   {
-    title: "9. Limitation of Liability",
+    title: "1.9 Limitation of Liability",
     content:
       "Navsafar Travels shall not be liable for unauthorized access beyond reasonable control or third-party breaches by airlines, embassies, or other service providers.",
   },
   {
-    title: "10. Contact",
+    title: "1.10 Contact",
     content:
-      "For privacy-related queries, write to us at NavsafarAdmin@navsafar.com or call us at your registered contact number.",
+      "For privacy-related queries, write to us at support@navsafartravels.com or call us at 8882128640.",
   },
 ];
 
@@ -115,7 +139,7 @@ export default function PrivacyPolicyPage() {
             name: "Privacy Policy — Navsafar Travels",
             description: "Privacy Policy for Navsafar Travels covering data collection, usage, and protection.",
             url: "https://www.navsafar.com/policies/privacy",
-            publisher: { "@type": "Organization", name: "Navsafar Travels", url: "https://www.navsafar.com" },
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
           }),
         }}
       />
@@ -127,7 +151,7 @@ export default function PrivacyPolicyPage() {
             <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-300 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4" />
           </div>
-          <div className="relative max-w-4xl mx-auto px-4 py-14 md:py-20">
+          <div className="relative max-w-4xl mx-auto px-4 py-20">
             {/* Breadcrumb */}
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex items-center gap-2 text-sm text-blue-200">
@@ -153,13 +177,13 @@ export default function PrivacyPolicyPage() {
               </div>
             </div>
             <p className="mt-4 text-blue-100 text-base md:text-lg max-w-2xl leading-relaxed">
-              Navsafar Travels is committed to protecting your personal data in compliance with the{" "}
+              Navsafar Travels Private Limited is committed to protecting your personal data in compliance with the{" "}
               <strong className="text-white">Information Technology Act, 2000 (India)</strong> and applicable international data protection standards.
             </p>
 
             {/* Meta pills */}
             <div className="flex flex-wrap gap-3 mt-6">
-              {["Jurisdiction: India", "IT Act 2000", "GDPR Aligned"].map((tag) => (
+              {["Jurisdiction: India | Delhi Courts", "IT Act 2000", "Effective: April 11, 2026"].map((tag) => (
                 <span key={tag} className="px-3 py-1 bg-white/10 border border-white/20 rounded-full text-white/80 text-xs font-medium">
                   {tag}
                 </span>

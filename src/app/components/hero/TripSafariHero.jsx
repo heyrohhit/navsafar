@@ -107,8 +107,8 @@ export default function HeroSection() {
               alt="Hero background"
               fill
               priority
-              quality={80}
-              sizes="100vw"
+              quality={75}
+              sizes={"100vw"}
               style={{ objectFit: "cover", transform: "scale(1.04)" }}
             />
           </motion.div>
