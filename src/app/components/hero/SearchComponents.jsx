@@ -126,7 +126,7 @@ export default function SearchComponents() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 
           {/* 1. City (From) */}
-          <div className="relative">
+          <div className="relative z-[999]">
             <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
               From (City)
             </label>
@@ -207,7 +207,7 @@ export default function SearchComponents() {
           </div>
 
           {/* 4. Passengers */}
-          <div className="relative" ref={passengerRef}>
+          <div className="relative z-[99999]" ref={passengerRef}>
             <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
               Travellers
             </label>
@@ -275,7 +275,7 @@ export default function SearchComponents() {
       </div>
 
       {/* ── Category filter pills ─────────────────────────────────────────── */}
-      <div className="mt-4 flex flex-wrap gap-2 justify-center">
+      <div className="mt-4 flex flex-wrap gap-2 justify-center relative z-[-1]">
         {CATEGORIES.map((cat) => (
           <a key={cat.label} href={cat.link}
             className="px-4 py-2 bg-white/15 hover:bg-white/25 text-[#0f6471] text-sm font-semibold rounded-full border border-white/25 hover:border-white/50 transition-all duration-200 hover:scale-105 backdrop-blur-sm">
