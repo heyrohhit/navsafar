@@ -1,6 +1,6 @@
 // src/app/robots.js
 // Auto-generates /robots.txt via Next.js App Router Metadata API
-const BASE_URL = "https://navsafar.vercel.app";
+const BASE_URL = "https://navsafar.com";
 
 export default function robots() {
   return {

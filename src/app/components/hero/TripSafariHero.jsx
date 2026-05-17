@@ -77,14 +77,12 @@ export default function HeroSection() {
       style={{ fontFamily: "'Georgia', serif" }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,900&display=swap');
         .reey-font {
-          font-family: 'reey','Playfair Display',Georgia,serif !important;
-          font-style: italic !important;
-          font-weight: 900 !important;
-          line-height: 1.2 !important;
+          font-family: Georgia, serif;
+          font-style: italic;
+          font-weight: 900;
+          line-height: 1.2;
           display: block;
-          overflow: visible;
         }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) opacity(.5); cursor: pointer; }
         input::placeholder { color: rgba(255,255,255,.4); }

@@ -14,9 +14,26 @@ export async function generateMetadata({ params }) {
   const blog = getBlogBySlug(slug);
   if (!blog) return { title: "Not Found" };
   return {
-    title: `${blog.title} — WanderLux Blog`,
+    title: `${blog.title} — NavSafar Travel Blog`,
     description: blog.excerpt,
-    openGraph: { images: [blog.coverImage] },
+    alternates: {
+      canonical: `https://navsafar.com/blog/${slug}`,
+    },
+    openGraph: {
+      title: `${blog.title} — NavSafar Travel Blog`,
+      description: blog.excerpt,
+      url: `https://navsafar.com/blog/${slug}`,
+      type: "article",
+      publishedTime: blog.publishedAt,
+      authors: [blog.author.name],
+      images: [{ url: blog.coverImage, alt: blog.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${blog.title} — NavSafar Travel Blog`,
+      description: blog.excerpt,
+      images: [blog.coverImage],
+    },
   };
 }
 

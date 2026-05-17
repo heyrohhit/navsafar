@@ -7,6 +7,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Search, MapPin, Package, ArrowRight, Loader2 } from "lucide-react";
 
+export const metadata = {
+  title: "Search | NavSafar Travel",
+  description: "Search tour packages, destinations, and travel experiences at NavSafar.",
+  alternates: {
+    canonical: "https://navsafar.com/search",
+  },
+};
+
 function SearchResultsInner() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";

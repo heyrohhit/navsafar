@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Nav from "./nav";
 import { mobileNav, getTravelIcon } from "../../models";
 import Link from "next/link";
@@ -37,14 +38,10 @@ const Header = () => {
             <div className="shrink-0">
               <Link href="/">
                 <div className="flex items-center gap-2 relative`">
-                  <div className="w-50 h-8 rounded-lg flex items-center justify-center">
-                    <img src="/assets/logo.png" alt="/assets/logo.png" className="object-fill" />
+                  <div className="w-50 h-50 rounded-lg flex items-center justify-center ">
+                    <Image src="/assets/logo.png" alt="NavSafar" width={200} height={100} priority />
                   </div>
-                  {/* <h1 className="absolute `text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex flex-col line-2 cursor-pointer">
-                  Navsafar
-                  <br/>
-                    <span className="text-[12px] text-gray-600 ml-2">Travel Agency</span>
-                    </h1> */}
+
 
                 </div>
               </Link>
@@ -79,8 +76,8 @@ const Header = () => {
           {/* Mobile/Tablet Logo */}
           <div className="flex items-center gap-2">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-50 h-8 rounded-lg flex items-center justify-center">
-                <img src="/assets/logo.png" alt="/assets/logo.png" className="object-fill" />
+              <div className="w-50 h-50 rounded-lg flex items-center justify-center">
+                <Image src="/assets/logo.png" alt="NavSafar" width={200} height={100} priority />
               </div>
               {/* <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Navsafar

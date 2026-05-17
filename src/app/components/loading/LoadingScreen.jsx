@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 
-const TOTAL_DURATION = 2800;
-const HERO_IMAGES = ["/assets/bg.jpg", "/assets/kd.jpg", "/assets/mt.jpg"];
+// Reduced from 2800ms to 1200ms for faster perceived load
+const TOTAL_DURATION = 1200;
+const HERO_IMAGES = ["/assets/bg.jpg"];
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
@@ -100,7 +101,7 @@ export default function LoadingScreen({ onComplete }) {
         </div>
 
         <div style={{ position: "relative", marginBottom: "20px" }}>
-          <h1 style={{ fontSize: "clamp(52px,12vw,96px)", fontWeight: 700, color: "#fff", margin: 0, filter: "drop-shadow(0 2px 20px rgba(245,200,66,0.4))", animation: "titleReveal 0.8s ease forwards" }}>
+          <h1 style={{ fontSize: "clamp(52px,12vw,96px)", fontWeight: 700, color: "#fff", margin: 0, filter: "drop-shadow(0 2px 20px rgba(245,200,66,0.4))", animation: "titleReveal 0.8s ease forwards" }} className="reey-font">
             NavSafar
           </h1>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "20px", justifyContent: "center" }}>

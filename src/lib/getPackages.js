@@ -10,21 +10,38 @@ import { packages as staticPackages } from "../app/models/objAll/packages";
 
 const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
 
+// Cache for packages data - helps with performance
+let packagesCache = null;
+
 /**
  * Returns all packages — from JSON store if populated, else static fallback.
+ * Uses in-memory cache for better performance.
  * @returns {Array}
  */
 export function getPackages() {
+  if (packagesCache) return packagesCache;
+
   try {
     if (fs.existsSync(DATA_FILE)) {
       const raw    = fs.readFileSync(DATA_FILE, "utf-8");
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        packagesCache = parsed;
+        return parsed;
+      }
     }
   } catch (err) {
     console.error("[getPackages] read error:", err.message);
   }
+  packagesCache = staticPackages;
   return staticPackages;
+}
+
+/**
+ * Clear the cache (useful for revalidation)
+ */
+export function clearPackagesCache() {
+  packagesCache = null;
 }
 
 /**

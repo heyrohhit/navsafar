@@ -360,11 +360,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Performance */}
+        {/* Performance - optimized preconnects */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://ilvzxhlndbpppbkzujpz.supabase.co" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        {/* Preload hero image */}
         <link
           rel="preload"
           as="image"
@@ -372,7 +373,6 @@ export default function RootLayout({ children }) {
           imagesrcset="/assets/bg.jpg 320w,/assets/bg.jpg 768w,/assets/bg.jpg 1200w"
           imagesizes="100vw"
         />
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0F6177" />
@@ -392,12 +392,12 @@ export default function RootLayout({ children }) {
           <DynamicShell>{children}</DynamicShell>
         </Suspense>
 
-        {/* Google Analytics */}
+        {/* Google Analytics - lazy loaded */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="ga" strategy="afterInteractive">
+        <Script id="ga" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

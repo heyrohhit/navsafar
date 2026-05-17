@@ -1,25 +1,48 @@
 // src/app/experiences/[slug]/page.jsx
-"use client";
-import { useState, useEffect, useMemo } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
 import { usePackages } from "../../hooks/usePackages";
 import PackageGridLayout from "../../components/packages/PackageGridLayout";
 
+// ── Metadata ─────────────────────────────────────────────────────────
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const categories = [
+    { id: "international", name: "International", emoji: "✈️", accent: "#3b82f6", desc: "Explore iconic cities and cultures across the globe." },
+    { id: "domestic", name: "Domestic", emoji: "🇮🇳", accent: "#16a34a", desc: "Discover the incredible diversity of India." },
+    { id: "family", name: "Family", emoji: "👨‍👩‍👧‍👦", accent: "#f97316", desc: "Memorable holidays for the whole family." },
+    { id: "religion", name: "Religious", emoji: "🕌", accent: "#d97706", desc: "Sacred journeys across faiths." },
+    { id: "cultural", name: "Cultural", emoji: "🎭", accent: "#7c3aed", desc: "Immerse yourself in art, history and heritage." },
+    { id: "adventure", name: "Adventure", emoji: "🏔️", accent: "#ea580c", desc: "Trek, dive and thrill in the great outdoors." },
+    { id: "beach", name: "Beach & Island", emoji: "🏖️", accent: "#0891b2", desc: "Turquoise waters and white-sand paradise." },
+    { id: "luxury", name: "Luxury", emoji: "💎", accent: "#a21caf", desc: "Ultra-premium experiences with world-class comfort." },
+    { id: "wildlife", name: "Wildlife", emoji: "🦁", accent: "#15803d", desc: "Safaris, sanctuaries and nature escapes." },
+    { id: "romantic", name: "Romantic", emoji: "💑", accent: "#db2777", desc: "Perfect getaways for couples." },
+    { id: "historical", name: "Historical", emoji: "🏛️", accent: "#57534e", desc: "Wander through the ruins of ancient civilisations." },
+    { id: "urban", name: "City & Urban", emoji: "🏙️", accent: "#2563eb", desc: "Vibrant cities, modern art and cosmopolitan energy." },
+  ];
+  const cat = categories.find((c) => c.name.toLowerCase().replace(/\s+/g, "-") === slug || c.id === slug);
+  if (!cat) return { title: "Experience Not Found" };
+  return {
+    title: `${cat.name} Travel Packages | NavSafar`,
+    description: cat.desc,
+    openGraph: { title: `${cat.name} Travel Packages | NavSafar`, description: cat.desc },
+  };
+}
+
 // ── Experience categories config ─────────────────────────────────
 const categories = [
-  { id: "international", name: "International", emoji: "✈️",  accent: "#3b82f6", desc: "Explore iconic cities and cultures across the globe." },
-  { id: "domestic",      name: "Domestic",      emoji: "🇮🇳", accent: "#16a34a", desc: "Discover the incredible diversity of India." },
-  { id: "family",        name: "Family",        emoji: "👨‍👩‍👧‍👦", accent: "#f97316", desc: "Memorable holidays for the whole family." },
-  { id: "religion",      name: "Religious",     emoji: "🕌",  accent: "#d97706", desc: "Sacred journeys across faiths." },
-  { id: "cultural",      name: "Cultural",      emoji: "🎭",  accent: "#7c3aed", desc: "Immerse yourself in art, history and heritage." },
-  { id: "adventure",     name: "Adventure",     emoji: "🏔️",  accent: "#ea580c", desc: "Trek, dive and thrill in the great outdoors." },
-  { id: "beach",         name: "Beach & Island", emoji: "🏖️", accent: "#0891b2", desc: "Turquoise waters and white-sand paradise." },
-  { id: "luxury",        name: "Luxury",        emoji: "💎",  accent: "#a21caf", desc: "Ultra-premium experiences with world-class comfort." },
-  { id: "wildlife",      name: "Wildlife",      emoji: "🦁",  accent: "#15803d", desc: "Safaris, sanctuaries and nature escapes." },
-  { id: "romantic",      name: "Romantic",      emoji: "💑",  accent: "#db2777", desc: "Perfect getaways for couples." },
-  { id: "historical",    name: "Historical",    emoji: "🏛️",  accent: "#57534e", desc: "Wander through the ruins of ancient civilisations." },
-  { id: "urban",         name: "City & Urban",  emoji: "🏙️",  accent: "#2563eb", desc: "Vibrant cities, modern art and cosmopolitan energy." },
+  { id: "international", name: "International", emoji: "✈️", accent: "#3b82f6", desc: "Explore iconic cities and cultures across the globe." },
+  { id: "domestic", name: "Domestic", emoji: "🇮🇳", accent: "#16a34a", desc: "Discover the incredible diversity of India." },
+  { id: "family", name: "Family", emoji: "👨‍👩‍👧‍👦", accent: "#f97316", desc: "Memorable holidays for the whole family." },
+  { id: "religion", name: "Religious", emoji: "🕌", accent: "#d97706", desc: "Sacred journeys across faiths." },
+  { id: "cultural", name: "Cultural", emoji: "🎭", accent: "#7c3aed", desc: "Immerse yourself in art, history and heritage." },
+  { id: "adventure", name: "Adventure", emoji: "🏔️", accent: "#ea580c", desc: "Trek, dive and thrill in the great outdoors." },
+  { id: "beach", name: "Beach & Island", emoji: "🏖️", accent: "#0891b2", desc: "Turquoise waters and white-sand paradise." },
+  { id: "luxury", name: "Luxury", emoji: "💎", accent: "#a21caf", desc: "Ultra-premium experiences with world-class comfort." },
+  { id: "wildlife", name: "Wildlife", emoji: "🦁", accent: "#15803d", desc: "Safaris, sanctuaries and nature escapes." },
+  { id: "romantic", name: "Romantic", emoji: "💑", accent: "#db2777", desc: "Perfect getaways for couples." },
+  { id: "historical", name: "Historical", emoji: "🏛️", accent: "#57534e", desc: "Wander through the ruins of ancient civilisations." },
+  { id: "urban", name: "City & Urban", emoji: "🏙️", accent: "#2563eb", desc: "Vibrant cities, modern art and cosmopolitan energy." },
 ];
 
 function findCategory(slug) {

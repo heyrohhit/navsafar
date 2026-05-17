@@ -38,14 +38,68 @@ export async function generateStaticParams() {
 
 // ── generateMetadata ─────────────────────────────────────────────
 export async function generateMetadata({ params }) {
-  const { slug } = await params; // ✅ await params
+  const { slug } = await params;
   const packages = getPackages();
-  const dest     = packages.find((p) => toSlug(p.city) === slug);
+  const dest = packages.find((p) => toSlug(p.city) === slug);
   if (!dest) return { title: "Destination Not Found" };
+
+  const title = `${dest.city}, ${dest.country} — NavSafar Travel`;
+  const description = dest.description || `Explore ${dest.city} with NavSafar — handpicked packages, highlights and activities.`;
+
   return {
-    title:       `${dest.city}, ${dest.country} — NavSafar Travel`,
-    description: dest.description || `Explore ${dest.city} with NavSafar — handpicked packages, highlights and activities.`,
-    openGraph:   { title: `${dest.city} | NavSafar`, description: dest.description, images: [dest.image] },
+    title,
+    description,
+    alternates: {
+      canonical: `https://navsafar.com/destinations/${slug}`,
+    },
+    openGraph: {
+      title: `${dest.city} | NavSafar`,
+      description,
+      url: `https://navsafar.com/destinations/${slug}`,
+      images: dest.image ? [{ url: dest.image, alt: dest.city }] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: dest.image ? [dest.image] : [],
+    },
+  };
+}
+
+// ── JSON-LD Structured Data ──────────────────────────────────────
+export async function generateJsonLd({ params }) {
+  const { slug } = await params;
+  const packages = getPackages();
+  const dest = packages.find((p) => toSlug(p.city) === slug);
+  if (!dest) return null;
+
+  const cityPackages = packages.filter((p) => toSlug(p.city) === slug);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "TouristDestination",
+    name: dest.city,
+    description: dest.description,
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: dest.country,
+    },
+    TouristType: ["Beach", "Cultural", "Adventure"].slice(0, dest.activities?.length || 1),
+    "additionalProperty": [
+      { "@type": "PropertyValue", name: "Best Time to Visit", value: dest.bestTime },
+      { "@type": "PropertyValue", name: "Rating", value: dest.rating },
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      name: `${dest.city} Tour Packages`,
+      itemListElement: cityPackages.slice(0, 5).map((pkg) => ({
+        "@type": "Offer",
+        name: pkg.title,
+        price: pkg.price || "Call for pricing",
+        availability: "https://schema.org/InStock",
+      })),
+    },
   };
 }
 

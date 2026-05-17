@@ -6,6 +6,20 @@ import ModernFilterSection, { applyFilters } from "../components/packages/Modern
 import PackageGridLayout from "../components/packages/PackageGridLayout";
 import Link from "next/link";
 
+export const metadata = {
+  title: "Tour Packages | Domestic & International - NavSafar",
+  description: "Browse 50+ tour packages across domestic and international destinations. Best price guarantee, custom itineraries, flights, hotels included.",
+  alternates: {
+    canonical: "https://navsafar.com/tour-packages",
+  },
+  openGraph: {
+    title: "Tour Packages | Domestic & International - NavSafar",
+    description: "Browse 50+ tour packages across domestic and international destinations.",
+    url: "https://navsafar.com/tour-packages",
+    type: "website",
+  },
+};
+
 const TourPackages = () => {
   const [isLoaded,            setIsLoaded]            = useState(false);
   const [selectedCategory,    setSelectedCategory]    = useState("all");

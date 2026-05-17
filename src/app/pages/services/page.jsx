@@ -1,6 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 
+export const metadata = {
+  title: "Travel Services | Domestic & International Tours - NavSafar",
+  description: "Explore our travel services - Domestic tours, International tours, Religious tours, Adventure tours, Family packages, Custom tours.",
+  alternates: {
+    canonical: "https://navsafar.com/services",
+  },
+  openGraph: {
+    title: "Travel Services | Domestic & International Tours - NavSafar",
+    description: "Explore our comprehensive travel services.",
+    url: "https://navsafar.com/services",
+    type: "website",
+  },
+};
 
 const Services = () => {
   const [isLoaded, setIsLoaded] = useState(false);

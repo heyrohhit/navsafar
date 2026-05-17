@@ -13,8 +13,22 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const keyword = formatSlug(slug);
   return {
-    title: `${keyword} | Best Travel Package`,
-    description: `Book ${keyword} with best price and full travel plan.`,
+    title: `${keyword} Travel Package | Best Price | NavSafar`,
+    description: `Book ${keyword} travel package with NavSafar. Best price guarantee, custom itineraries, flights, hotels included.`,
+    alternates: {
+      canonical: `https://navsafar.com/travel/${slug}`,
+    },
+    openGraph: {
+      title: `${keyword} Travel Package | NavSafar`,
+      description: `Book ${keyword} travel package with best prices`,
+      url: `https://navsafar.com/travel/${slug}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${keyword} Travel Package | NavSafar`,
+      description: `Book ${keyword} travel package with best prices`,
+    },
   };
 }
 

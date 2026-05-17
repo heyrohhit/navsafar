@@ -17,7 +17,7 @@ export const metadata = {
     type: "website",
     siteName: "Navsafar Travels",
   },
-  alternates: { canonical: "https://www.navsafar.com/policies/privacy" },
+  alternates: { canonical: "https://navsafar.com/policies/privacy" },
   robots: { index: true, follow: true },
 };
 
@@ -138,8 +138,8 @@ export default function PrivacyPolicyPage() {
             "@type": "WebPage",
             name: "Privacy Policy — Navsafar Travels",
             description: "Privacy Policy for Navsafar Travels covering data collection, usage, and protection.",
-            url: "https://www.navsafar.com/policies/privacy",
-            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
+            url: "https://navsafar.com/policies/privacy",
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://navsafar.com" },
           }),
         }}
       />
