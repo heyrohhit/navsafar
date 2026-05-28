@@ -130,13 +130,13 @@ export default async function DestinationPage({ params }) { // ✅ async + await
         {dest.image && (
           <Image src={dest.image} alt={dest.city} fill sizes="100vw" className="object-cover" priority />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/80" />
+        <div className="absolute inset-0 bg-[rgba(0,0,0,0.8)]" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
           {/* Breadcrumb */}
-          <div className="flex items-center gap-2 text-[11px] text-white/60 mb-4">
-            <Link href="/" className="hover:text-white">Home</Link>
+          <div className="flex items-center gap-2 text-[11px] text-white/60 mb-4 font-bold">
+            <Link href="/" className="text-white">Home</Link>
             <span>/</span>
-            <Link href="/destinations" className="hover:text-white">Destinations</Link>
+            <Link href="/destinations" className="text-white">Destinations</Link>
             <span>/</span>
             <span className="text-white">{dest.city}</span>
           </div>
@@ -144,7 +144,7 @@ export default async function DestinationPage({ params }) { // ✅ async + await
           <span className="inline-flex items-center gap-2 text-[10px] font-black tracking-[4px] uppercase text-white/80 border border-white/30 bg-white/10 px-4 py-2 rounded-full mb-4">
             {region}
           </span>
-          <h1 className="text-5xl sm:text-7xl font-black mb-3 drop-shadow-2xl">{dest.city}</h1>
+          <h1 className="text-5xl sm:text-7xl font-black mb-3 drop-shadow-2xl text-white reey-font ">{dest.city}</h1>
           <p className="text-white/80 text-lg mb-2">{dest.country}</p>
           {dest.tagline && <p className="text-white/60 text-base max-w-xl italic">"{dest.tagline}"</p>}
 
