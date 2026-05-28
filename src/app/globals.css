@@ -318,3 +318,40 @@
 .reey-font {
   font-family: 'Reey', cursive;
 }
+
+/* 
+  src/app/globals.css (ya tailwind.config.js ke extend.keyframes mein add karein)
+  ──────────────────────────────────────────────────────────────────────────────
+  Yeh animations TourPackagesClient.jsx mein use ho rahe hain.
+  Agar pehle se koi animation library hai, usse match karein.
+*/
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 
+  Tailwind v3: tailwind.config.js mein add karein —
+
+  theme: {
+    extend: {
+      keyframes: {
+        fadeInDown: {
+          from: { opacity: '0', transform: 'translateY(-16px)' },
+          to:   { opacity: '1', transform: 'translateY(0)'     },
+        },
+      },
+      animation: {
+        // Already used as: animate-[fadeInDown_0.6s_0.1s_ease_both]
+        // JIT arbitrary values se kaam kar lega, explicit define optional hai
+      },
+    },
+  },
+*/
