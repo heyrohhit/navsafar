@@ -380,7 +380,7 @@ export default function RootLayout({ children }) {
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="NavSafar" />
 
-        <!-- Google tag (gtag.js) -->
+       {/* Google tag (gtag.js) */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-T8T70Q195Z"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
