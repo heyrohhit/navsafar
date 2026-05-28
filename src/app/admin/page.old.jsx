@@ -3,6 +3,7 @@
 // No site header/footer on this page (handled by SiteShell in root layout)
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
+import Image from "next/image";
 
 const G = `
   @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -307,7 +308,7 @@ function Dashboard({ onLogout }) {
           style={{ borderBottom:`1px solid ${C.bdr}` }}>
           <div className="w-9 h-9 rounded-xl flex items-center justify-center text-base font-bold flex-shrink-0"
             >
-              <img src="/assets/logo.jpeg" alt="/assets/logo.png" className="rounded-3xl"/>
+              <Image src="/assets/logo.jpeg" alt="Navsafar logo" width={40} height={40} className="rounded-3xl" />
             </div>
           <div>
             <div className="text-[9px] tracking-[2px]" style={{ color:C.tx3 }}>ADMIN PANEL</div>

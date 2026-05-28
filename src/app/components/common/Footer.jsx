@@ -1,6 +1,7 @@
 "use client"
 import { useState } from "react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 import {
   Facebook,
   Twitter,
@@ -148,7 +149,7 @@ const Footer = () => {
               className="lg:col-span-2"
             >
               <div className="mb-5">
-                <img src="/assets/logo.png" alt="Navsafar" className="h-12 object-contain" />
+                <Image src="/assets/logo.png" alt="Navsafar" width={120} height={40} className="h-12 object-contain" />
               </div>
 
               <p className="text-white/60 mb-7 leading-relaxed text-sm">

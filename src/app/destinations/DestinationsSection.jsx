@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   ChevronRight, X, Star, Clock, Globe,
   ChevronDown, Compass, Layers, List,
@@ -251,9 +252,12 @@ function PkgCard({ pkg, t, idx }) {
     >
       <Link href={`/destinations/[slug]/${pkg.id}`}>
         <div className="relative h-32 overflow-hidden">
-          <img
-            src={pkg.image} alt={pkg.city}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          <Image
+            src={pkg.image}
+            alt={pkg.city}
+            className="absolute inset-0 object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
+            unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
           {pkg.popular && (

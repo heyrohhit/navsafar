@@ -205,9 +205,11 @@ export default function HomePage() {
               viewport={{ once: true }}
               className="relative"
             >
-              <img
+              <Image
                 src="/assets/bg.jpg"
                 alt="Happy travelers"
+                width={800}
+                height={400}
                 className="rounded-2xl shadow-2xl"
               />
               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl border border-neutral-200">

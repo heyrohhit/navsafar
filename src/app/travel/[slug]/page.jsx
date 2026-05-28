@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { generateKeywords } from "../../../lib/seoKeywords";
 import { generateContent } from "../../../lib/aiContent";
 
@@ -47,10 +48,12 @@ export default async function Page({ params }) {
 
       {/* ─── HERO ─── */}
       <section className="relative w-full h-72 sm:h-[480px] overflow-hidden shadow-xl">
-        <img
+        <Image
           src={content.images?.[0]?.url || `https://picsum.photos/seed/${slug}/1280/720`}
           alt={content.images?.[0]?.alt || keyword}
-          className="w-full h-full object-cover object-center scale-105"
+          fill
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
+          className="scale-105"
         />
         {/* Dark gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
