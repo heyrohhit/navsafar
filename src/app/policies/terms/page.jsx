@@ -130,9 +130,9 @@ export default function TermsPage() {
           <div className="relative max-w-4xl mx-auto px-4 py-20">
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex items-center gap-2 text-sm text-amber-200">
-                <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+                <li><Link href="/" className="text-white transition-colors">Home</Link></li>
                 <li className="text-amber-400">/</li>
-                <li><Link href="/policies" className="hover:text-white transition-colors">Policies</Link></li>
+                <li><Link href="/policies" className="text-white transition-colors">Policies</Link></li>
                 <li className="text-amber-400">/</li>
                 <li className="text-white font-medium" aria-current="page">Terms of Service</li>
               </ol>

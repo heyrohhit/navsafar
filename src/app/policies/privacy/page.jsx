@@ -155,9 +155,9 @@ export default function PrivacyPolicyPage() {
             {/* Breadcrumb */}
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex items-center gap-2 text-sm text-blue-200">
-                <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+                <li><Link href="/" className="text-white transition-colors">Home</Link></li>
                 <li className="text-blue-400">/</li>
-                <li><Link href="/policies" className="hover:text-white transition-colors">Policies</Link></li>
+                <li><Link href="/policies" className="text-white transition-colors">Policies</Link></li>
                 <li className="text-blue-400">/</li>
                 <li className="text-white font-medium" aria-current="page">Privacy Policy</li>
               </ol>

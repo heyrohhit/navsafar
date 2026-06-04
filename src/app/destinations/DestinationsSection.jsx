@@ -10,8 +10,18 @@ import {
 } from "lucide-react";
 
 // ─── Package Data ──────────────────────────────────────────────────────────────
-// Adjust this import path to match your project structure
 import ALL_PACKAGES_RAW from "../../data/packagesData.json";
+
+// ✅ toSlug helper — city name → URL-safe slug
+function toSlug(city) {
+  return city
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
 
 // ─── Normalize JSON → component shape ────────────────────────────────────────
 const ALL_PACKAGES = ALL_PACKAGES_RAW.map((pkg) => ({
@@ -250,7 +260,8 @@ function PkgCard({ pkg, t, idx }) {
       transition={{ duration: 0.25, delay: idx * 0.04 }}
       className={`group rounded-xl overflow-hidden border shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ${t.pkgCardBg} ${t.pkgCardBorder}`}
     >
-      <Link href={`/destinations/[slug]/${pkg.id}`}>
+      {/* ✅ FIXED: /destinations/[slug] → /destinations/${toSlug(pkg.city)} */}
+      <Link href={`/destinations/${toSlug(pkg.city)}`}>
         <div className="relative h-32 overflow-hidden">
           <Image
             src={pkg.image}
@@ -288,13 +299,11 @@ function PkgCard({ pkg, t, idx }) {
 
 // ─── Centered Modal Popup ──────────────────────────────────────────────────────
 function PackageModal({ group, t, onClose }) {
-  // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = group ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [group]);
 
-  // Escape key closes modal
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", handler);
@@ -307,7 +316,6 @@ function PackageModal({ group, t, onClose }) {
     <AnimatePresence>
       {group && (
         <>
-          {/* ── Backdrop ── */}
           <motion.div
             key="backdrop"
             initial={{ opacity: 0 }}
@@ -318,7 +326,6 @@ function PackageModal({ group, t, onClose }) {
             className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
           />
 
-          {/* ── Modal ── */}
           <motion.div
             key="modal"
             initial={{ opacity: 0, scale: 0.92, y: 28 }}
@@ -679,13 +686,11 @@ function MinimalLayout({ groups, openCountry, onCountryClick, t }) {
 
 // ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
 export default function DestinationsSection() {
-  // 🎲 Every mount = random theme + layout (30 unique combos)
   const { t, layout } = useMemo(() => ({
     t:      THEMES[Math.floor(Math.random() * THEMES.length)],
     layout: LAYOUT_IDS[Math.floor(Math.random() * LAYOUT_IDS.length)],
   }), []);
 
-  // Default to first region — NO "All" filter
   const [activeRegion, setActiveRegion] = useState(REGIONS[0].id);
   const [openCountry, setOpenCountry]   = useState(null);
 
@@ -736,7 +741,7 @@ export default function DestinationsSection() {
           </p>
         </motion.div>
 
-        {/* Region Filters — "All" hata diya */}
+        {/* Region Filters */}
         <div className="flex flex-wrap justify-center gap-2 mb-8">
           {REGIONS.map((r) => {
             const count = allGroups.filter((g) => g.region === r.id).length;
@@ -792,7 +797,7 @@ export default function DestinationsSection() {
         </motion.div>
       </div>
 
-      {/* Centered Modal — screen ke beech mein */}
+      {/* Centered Modal */}
       <PackageModal
         group={openGroup}
         t={t}

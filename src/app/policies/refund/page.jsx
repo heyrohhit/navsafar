@@ -122,9 +122,9 @@ export default function RefundPolicyPage() {
           <div className="relative max-w-4xl mx-auto px-4 py-20">
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex items-center gap-2 text-sm text-emerald-200">
-                <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+                <li><Link href="/" className="text-white transition-colors">Home</Link></li>
                 <li className="text-emerald-400">/</li>
-                <li><Link href="/policies" className="hover:text-white transition-colors">Policies</Link></li>
+                <li><Link href="/policies" className="text-white transition-colors">Policies</Link></li>
                 <li className="text-emerald-400">/</li>
                 <li className="text-white font-medium" aria-current="page">Refund Policy</li>
               </ol>

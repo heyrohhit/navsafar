@@ -9,12 +9,22 @@ import packagesData from "../../../data/packagesData.json";
 // ── FILTER FUNCTION ─────────────────────────────
 function getPackagesForCategory(slug, packages) {
   if (!slug) return [];
-  return packages.filter((p) => p.category?.includes(slug));
+
+  const normalizedSlug = slug.toLowerCase().replace(/-/g, " "); // "hill-stations" → "hill stations"
+
+  return packages.filter((p) => {
+    const inCategory = p.category?.some(
+      (c) => c.toLowerCase() === normalizedSlug
+    );
+    const inTourismType = p.tourism_type?.some(
+      (t) => t.toLowerCase() === normalizedSlug
+    );
+    return inCategory || inTourismType;
+  });
 }
 
 export default function ExperienceClient({ slug }) {
   const { packages, loading } = usePackages();
-
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -22,7 +32,6 @@ export default function ExperienceClient({ slug }) {
     return () => clearTimeout(t);
   }, []);
 
-  // fallback safe data
   const allPackages = packages?.length ? packages : packagesData;
 
   const filteredPackages = useMemo(() => {
@@ -34,7 +43,7 @@ export default function ExperienceClient({ slug }) {
 
   return (
     <div style={{ background: "#060f11", minHeight: "100vh", color: "#fff" }}>
-      
+
       {/* HERO */}
       <section style={{ padding: "80px 24px", textAlign: "center" }}>
         <Link href="/experiences" style={{ color: accent }}>
@@ -42,7 +51,7 @@ export default function ExperienceClient({ slug }) {
         </Link>
 
         <h1 style={{ fontSize: 40, marginTop: 20 }}>
-          {slug?.replace("-", " ") || "Experience"}
+          {slug?.replace(/-/g, " ") || "Experience"} {/* ✅ saare hyphens replace */}
         </h1>
 
         <p style={{ color: "#94a3b8" }}>

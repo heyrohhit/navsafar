@@ -2,7 +2,7 @@ import ExperienceClient from "./ExperienceClient";
 
 // ── Metadata ──
 export async function generateMetadata({ params }) {
-  const slug = params?.slug;
+  const { slug } = await params; // ✅ destructure karo
 
   const packagesData = (await import("../../../data/packagesData.json")).default;
 
@@ -11,7 +11,7 @@ export async function generateMetadata({ params }) {
   );
 
   const title = slug
-    ? `${slug.replace("-", " ")} Travel Packages | NavSafar`
+    ? `${slug.replace(/-/g, " ")} Travel Packages | NavSafar`  // ✅ all hyphens replace honge
     : "Travel Packages | NavSafar";
 
   return {
@@ -23,12 +23,17 @@ export async function generateMetadata({ params }) {
 }
 
 // ── PAGE ──
-export default function ExperiencePage({ params }) {
-  const slug = params?.slug; // ✅ SAFE ACCESS
+export default async function ExperiencePage({ params }) {
+  const { slug } = await params; // ✅ destructure karo
+
+  console.log("console slug is", slug);
 
   if (!slug) {
     return (
-      <div className="flex justify-center items-center" style={{ color: "gray", padding: 40 ,width: "100vw", height:"100vh"}}>
+      <div
+        className="flex justify-center items-center"
+        style={{ color: "gray", padding: 40, width: "100vw", height: "100vh" }}
+      >
         Invalid URL
       </div>
     );

@@ -8,7 +8,7 @@ import { usePackages } from "../hooks/usePackages";
 
 // ── Category meta ─────────────────────────────────────────────────
 const CAT_META = {
-  international: { label: "International",  emoji: "✈️",  accent: "#38bdf8", slug: "international" },
+  international: { label: "International",  emoji: "✈️",  accent: "#fff", slug: "international" },
   domestic:      { label: "Domestic India",  emoji: "🇮🇳", accent: "#4ade80", slug: "domestic" },
   family:        { label: "Family",         emoji: "👨‍👩‍👧‍👦", accent: "#fb923c", slug: "family" },
   religion:      { label: "Religious",      emoji: "🕌",  accent: "#fbbf24", slug: "religion" },

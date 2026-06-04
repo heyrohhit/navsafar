@@ -17,7 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import FeaturedPackages from "./components/packages/FeaturedPackages";
+
 import FeatuersSection from "./components/features/FeaturesSection";
 import ExperienceCategories from "./experiences/ExperienceCategories";
 import CTASection from "./components/cta/CTASection";
@@ -159,15 +159,7 @@ export default function HomePage() {
       {/* ── Features ── */}
       <FeatuersSection />
 
-      {/* ── Featured Packages ── */}
-      {/* <section className="py-16 md:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <FeaturedPackages limit={6} />
-        </div>
-      </section> */}
-
-      {/* ── Popular Destinations (grouped by country) ── */}
-      {/* ✅ Replaced the old broken section with DestinationsSection */}
+  
       <DestinationsSection />
 
       {/* ── Why Choose Us ── */}
