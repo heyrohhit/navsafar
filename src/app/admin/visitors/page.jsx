@@ -126,6 +126,29 @@ export default function AdminVisitors() {
   const [filter, setFilter] = useState("all"); // all | new | returning
   const [expandedIP, setExpandedIP] = useState(null);
 
+//check auth
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = sessionStorage.getItem("ns_admin_token");
+
+        if (!token) {
+          router.push("/admin/login");
+          return;
+        }
+
+      } catch (error) {
+        console.error("[AdminDashboard] Auth check failed:", error);
+        router.push("/admin/login");
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+
   // ── Fetch + parse sheet ─────────────────────────────────────────────
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -158,6 +181,8 @@ export default function AdminVisitors() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+
 
   // ── Group rows by IP ────────────────────────────────────────────────
   const visitors = useMemo(() => {
