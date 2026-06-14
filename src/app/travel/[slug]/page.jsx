@@ -1,36 +1,108 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { generateKeywords } from "../../../lib/seoKeywords";
+import { generateKeywords, getPageDescription, getPageTitle, getStructuredData } from "../../../lib/seoKeywords";
 import { generateContent } from "../../../lib/aiContent";
+
+const SITE_URL = "https://navsafar.com";
 
 /* ── Helpers ── */
 function formatSlug(slug) {
   return slug.replace(/-/g, " ");
 }
 
+function getTravelFaqs(content, keyword) {
+  if (Array.isArray(content?.faq) && content.faq.length > 0) return content.faq;
+  return [
+    {
+      q: `What is the best time to visit ${keyword}?`,
+      a: "October to March is usually the most comfortable season for most Indian destinations. NavSafar can suggest the best dates based on weather, festivals and your preferred travel style.",
+    },
+    {
+      q: `How much does a ${keyword} trip cost?`,
+      a: "Costs depend on hotel category, travel dates, transport mode, group size and activities. NavSafar prepares a customised quote after understanding your requirements.",
+    },
+    {
+      q: `Is ${keyword} suitable for families and couples?`,
+      a: "Yes. ${keyword} can be planned for families, couples, solo travellers and groups with child-friendly stays, romantic experiences, private transfers and flexible sightseeing.",
+    },
+  ];
+}
+
+function FAQSection({ faqs }) {
+  if (!faqs?.length) return null;
+
+  return (
+    <section className="bg-white rounded-3xl p-8 sm:p-10 shadow-sm border border-gray-100">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-1 h-8 bg-[#0f6471] rounded-full" />
+        <h2 className="text-3xl font-black text-[#0d2e31]">Frequently Asked Questions</h2>
+      </div>
+      <div className="space-y-4">
+        {faqs.map((faq, index) => (
+          <details
+            key={`${faq.q}-${index}`}
+            className="group bg-gray-50 border border-gray-100 rounded-2xl p-5 open:bg-white open:border-[#0f6471]/25 transition-all"
+          >
+            <summary className="cursor-pointer list-none font-bold text-[#0d2e31] flex items-center justify-between gap-4">
+              <span>{faq.q}</span>
+              <span className="text-[#14a098] group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p className="text-gray-600 text-sm leading-relaxed mt-3">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ── Metadata (Server-Only) ── */
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const keyword = formatSlug(slug);
+  const title = getPageTitle(keyword);
+  const description = getPageDescription(keyword);
+
   return {
-    title: `${keyword} Travel Package | Best Price | NavSafar`,
-    description: `Book ${keyword} travel package with NavSafar. Best price guarantee, custom itineraries, flights, hotels included.`,
+    title,
+    description,
+    keywords: [
+      keyword,
+      `${keyword} tour package`,
+      `${keyword} travel package`,
+      `${keyword} holiday package`,
+      `${keyword} trip cost`,
+    ],
     alternates: {
-      canonical: `https://navsafar.com/travel/${slug}`,
+      canonical: `${SITE_URL}/travel/${slug}`,
     },
     openGraph: {
-      title: `${keyword} Travel Package | NavSafar`,
-      description: `Book ${keyword} travel package with best prices`,
-      url: `https://navsafar.com/travel/${slug}`,
+      title,
+      description,
+      url: `${SITE_URL}/travel/${slug}`,
       type: "website",
+      locale: "en_IN",
+      siteName: "NavSafar",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${keyword} Travel Package | NavSafar`,
-      description: `Book ${keyword} travel package with best prices`,
+      title,
+      description,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
+}
+
+export async function generateJsonLd({ params }) {
+  const { slug } = await params;
+  const keyword = formatSlug(slug);
+  const content = await generateContent(keyword);
+  const faqs = getTravelFaqs(content, keyword);
+
+  return getStructuredData(keyword, { ...content, faq: faqs });
 }
 
 /* ── Page (Server Component) ── */
@@ -42,6 +114,7 @@ export default async function Page({ params }) {
   if (!keywords.includes(keyword)) return notFound();
 
   const content = await generateContent(keyword);
+  const faqs = getTravelFaqs(content, keyword);
 
   return (
     <main className="bg-[#f7f4ef] text-gray-900 font-sans min-h-screen">
@@ -269,6 +342,9 @@ export default async function Page({ params }) {
             ))}
           </div>
         </section>
+
+        {/* ─── FAQ ─── */}
+        <FAQSection faqs={faqs} />
 
         {/* ─── BOTTOM CTA ─── */}
         <section className="relative overflow-hidden bg-[#0d2e31] text-white rounded-3xl px-8 sm:px-14 py-14 shadow-2xl text-center">

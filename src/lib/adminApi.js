@@ -81,4 +81,44 @@ export const adminApi = {
     if (!json.success) throw new Error(json.message);
     return true;
   },
+
+  // ── Blogs ─────────────────────────────────────────────────────
+  async getBlogs() {
+    const res = await fetch(`${BASE}/blogs`, { headers: headers() });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message);
+    return json.data;
+  },
+
+  async createBlog(data) {
+    const res = await fetch(`${BASE}/blogs`, {
+      method: "POST",
+      headers: headers(),
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message);
+    return json.data;
+  },
+
+  async updateBlog(data) {
+    const res = await fetch(`${BASE}/blogs`, {
+      method: "PUT",
+      headers: headers(),
+      body: JSON.stringify(data),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message);
+    return json.data;
+  },
+
+  async deleteBlog(id) {
+    const res = await fetch(`${BASE}/blogs?id=${id}`, {
+      method: "DELETE",
+      headers: headers(),
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message);
+    return true;
+  },
 };

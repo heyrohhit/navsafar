@@ -29,6 +29,61 @@ function getRegion(country) {
   return "Other";
 }
 
+function generateDestinationFaqs(dest, cityPackages) {
+  const city = dest.city || "this destination";
+  const country = dest.country || "India";
+  const attractions = (dest.famous_attractions || []).join(", ");
+  const bestTime = dest.bestTime || "the season that suits your travel style";
+
+  return [
+    {
+      q: `What is the best time to visit ${city}?`,
+      a: `${bestTime} is generally recommended for ${city}, ${country}. NavSafar can customise dates based on weather, festivals, budget and your preferred pace.`,
+    },
+    {
+      q: `What are the top places to visit in ${city}?`,
+      a: attractions
+        ? `Top places include ${attractions}. Your ${city} itinerary can be customised around sightseeing, food, shopping, adventure or relaxation.`
+        : `NavSafar curates the best ${city} sightseeing spots based on your interests, travel dates and group type.`,
+    },
+    {
+      q: `Is ${city} suitable for families, couples and solo travellers?`,
+      a: `Yes. ${city} can be planned for families, couples, solo travellers and groups with child-friendly hotels, romantic experiences, private transfers and flexible sightseeing.`,
+    },
+    {
+      q: `What is included in a ${city} tour package?`,
+      a: `A ${city} package can include hotels, transfers, sightseeing, activities, meals, guide support and 24/7 assistance. Inclusions are customised according to your budget and travel style.`,
+    },
+  ];
+}
+
+function FAQSection({ faqs }) {
+  if (!faqs?.length) return null;
+
+  return (
+    <section className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-1 h-8 bg-[#0f6477] rounded-full" />
+        <h2 className="text-2xl font-black text-gray-900">Frequently Asked Questions</h2>
+      </div>
+      <div className="space-y-3">
+        {faqs.map((faq, index) => (
+          <details
+            key={`${faq.q}-${index}`}
+            className="group bg-gray-50 border border-gray-100 rounded-2xl p-5 open:bg-white open:border-[#0f6477]/25 transition-all"
+          >
+            <summary className="cursor-pointer list-none font-bold text-gray-900 flex items-center justify-between gap-4">
+              <span>{faq.q}</span>
+              <span className="text-[#0f6477] group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p className="text-gray-600 text-sm leading-relaxed mt-3">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ── generateStaticParams ──────────────────────────────────────────
 export async function generateStaticParams() {
   const packages = getPackages();
@@ -49,6 +104,13 @@ export async function generateMetadata({ params }) {
   return {
     title,
     description,
+    keywords: [
+      `${dest.city} tour package`,
+      `${dest.city} travel package`,
+      `${dest.city} holiday package`,
+      `best time to visit ${dest.city}`,
+      `${dest.city} places to visit`,
+    ],
     alternates: {
       canonical: `https://navsafar.com/destinations/${slug}`,
     },
@@ -64,6 +126,10 @@ export async function generateMetadata({ params }) {
       description,
       images: dest.image ? [dest.image] : [],
     },
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
@@ -71,36 +137,51 @@ export async function generateMetadata({ params }) {
 export async function generateJsonLd({ params }) {
   const { slug } = await params;
   const packages = getPackages();
-  const dest = packages.find((p) => toSlug(p.city) === slug);
-  if (!dest) return null;
-
   const cityPackages = packages.filter((p) => toSlug(p.city) === slug);
+  if (cityPackages.length === 0) return null;
 
-  return {
-    "@context": "https://schema.org",
-    "@type": "TouristDestination",
-    name: dest.city,
-    description: dest.description,
-    address: {
-      "@type": "PostalAddress",
-      addressCountry: dest.country,
+  const dest = cityPackages.reduce((best, p) =>
+    (p.itinerary?.length ?? 0) > (best.itinerary?.length ?? 0) ? p : best, cityPackages[0]);
+  const faqs = generateDestinationFaqs(dest, cityPackages);
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "TouristDestination",
+      name: dest.city,
+      description: dest.description,
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: dest.country,
+      },
+      areaServed: dest.country,
+      touristType: dest.tourism_type || ["Custom Tour"],
+      additionalProperty: [
+        { "@type": "PropertyValue", name: "Best Time to Visit", value: dest.bestTime },
+        { "@type": "PropertyValue", name: "Rating", value: dest.rating },
+        { "@type": "PropertyValue", name: "Popular Activities", value: (dest.activities || []).join(", ") },
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: `${dest.city} Tour Packages`,
+        itemListElement: cityPackages.slice(0, 5).map((pkg) => ({
+          "@type": "Offer",
+          name: pkg.title,
+          price: pkg.price || "Call for pricing",
+          availability: "https://schema.org/InStock",
+        })),
+      },
     },
-    TouristType: ["Beach", "Cultural", "Adventure"].slice(0, dest.activities?.length || 1),
-    "additionalProperty": [
-      { "@type": "PropertyValue", name: "Best Time to Visit", value: dest.bestTime },
-      { "@type": "PropertyValue", name: "Rating", value: dest.rating },
-    ],
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      name: `${dest.city} Tour Packages`,
-      itemListElement: cityPackages.slice(0, 5).map((pkg) => ({
-        "@type": "Offer",
-        name: pkg.title,
-        price: pkg.price || "Call for pricing",
-        availability: "https://schema.org/InStock",
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: { "@type": "Answer", text: faq.a },
       })),
     },
-  };
+  ];
 }
 
 // ── PAGE ─────────────────────────────────────────────────────────

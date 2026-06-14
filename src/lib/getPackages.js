@@ -6,12 +6,22 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import fs   from "fs";
 import path from "path";
-import { packages as staticPackages } from "../data/packagesData.json";
+import { packages as staticPackages } from "../app/models/objAll/packages";
 
 const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
 
-// Cache for packages data - helps with performance
+// Cache for packages data - helps with performance.
+// The mtime check keeps admin JSON edits visible without a server restart.
 let packagesCache = null;
+let packagesMtimeMs = 0;
+
+function hasPackagesChanged() {
+  try {
+    return fs.statSync(DATA_FILE).mtimeMs !== packagesMtimeMs;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Returns all packages — from JSON store if populated, else static fallback.
@@ -19,7 +29,7 @@ let packagesCache = null;
  * @returns {Array}
  */
 export function getPackages() {
-  if (packagesCache) return packagesCache;
+  if (packagesCache && !hasPackagesChanged()) return packagesCache;
 
   try {
     if (fs.existsSync(DATA_FILE)) {
@@ -27,6 +37,7 @@ export function getPackages() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
         packagesCache = parsed;
+        packagesMtimeMs = fs.statSync(DATA_FILE).mtimeMs;
         return parsed;
       }
     }
@@ -34,7 +45,12 @@ export function getPackages() {
     console.error("[getPackages] read error:", err.message);
   }
   packagesCache = staticPackages;
+  packagesMtimeMs = fs.existsSync(DATA_FILE) ? fs.statSync(DATA_FILE).mtimeMs : 0;
   return staticPackages;
+}
+
+export function getPackagesMtimeMs() {
+  return packagesMtimeMs;
 }
 
 /**
@@ -42,6 +58,7 @@ export function getPackages() {
  */
 export function clearPackagesCache() {
   packagesCache = null;
+  packagesMtimeMs = 0;
 }
 
 /**

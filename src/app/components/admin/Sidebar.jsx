@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Star,
   Package,
+  FileText,
   LogOut,
   Menu,
   Activity,
@@ -36,6 +37,12 @@ const navItems = [
     href: "/admin/packages",
     icon: Package,
     description: "Manage tour packages",
+  },
+  {
+    name: "Blogs",
+    href: "/admin/blogs",
+    icon: FileText,
+    description: "Manage travel stories",
   },
   {
     name: "Testimonials",

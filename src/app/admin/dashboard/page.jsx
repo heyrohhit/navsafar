@@ -12,6 +12,7 @@ import {
   Star,
   Package,
   MessageSquare,
+  FileText,
   TrendingUp,
   CheckCircle,
   Clock,
@@ -46,6 +47,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState({
     testimonials: { total: 0, approved: 0, pending: 0, featured: 0 },
     packages: { total: 0, published: 0 },
+    blogs: { total: 0, published: 0, featured: 0 },
     contacts: { total: 0, pending: 0 },
   });
   const [recentActivity, setRecentActivity] = useState([]);
@@ -79,6 +81,20 @@ export default function AdminDashboard() {
           packages: {
             total: p.length,
             published: p.length,
+          },
+        }));
+      }
+
+      // Fetch blogs
+      const blogsRes = await apiFetch("/api/admin/blogs");
+      if (blogsRes.success) {
+        const b = blogsRes.data;
+        setStats((prev) => ({
+          ...prev,
+          blogs: {
+            total: b.length,
+            published: b.filter((x) => x.status === "published").length,
+            featured: b.filter((x) => x.featured).length,
           },
         }));
       }
@@ -274,6 +290,13 @@ export default function AdminDashboard() {
           subtext={`${stats.packages.published} active`}
         />
         <StatCard
+          icon={FileText}
+          label="Blogs"
+          value={stats.blogs.total}
+          color="from-indigo-500 to-violet-600"
+          subtext={`${stats.blogs.published} published · ${stats.blogs.featured} featured`}
+        />
+        <StatCard
           icon={MessageSquare}
           label="Pending Messages"
           value={stats.contacts.pending}
@@ -416,7 +439,7 @@ export default function AdminDashboard() {
               <div>
                 <h4 className="font-semibold text-white">Total Visitors</h4>
                 <p className="text-sm text-slate-400">
-                  Check visitor's
+                  Check visitors
                 </p>
               </div>
             </a>

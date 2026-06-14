@@ -28,6 +28,7 @@ const nextConfig = {
       { protocol: "https", hostname: "drive.google.com", pathname: "/**" },
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
       { protocol: "https", hostname: "pexels.com", pathname: "/**" },
+      { protocol: "https", hostname: "africageographic.com", pathname: "/**" },
     ],
   },
 
