@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "async-country-state-city": "^1.2.3",
     "axios": "^1.13.6",
     "clsx": "^2.1.1",

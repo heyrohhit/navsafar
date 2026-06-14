@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { headers } from "next/headers";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 
 import ClientLoaderWrapper from "./components/loading/ClientLoaderWrapper";
@@ -242,8 +244,11 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+
         {/* Dynamic shell */}
         <Suspense fallback={null}>
+          <SpeedInsights/>
+          <Analytics/>
           <DynamicShell>{children}</DynamicShell>
         </Suspense>
 
