@@ -25,9 +25,7 @@ import {
 // CONFIG — apna Google Sheet ID yahan daalo (sheet "Anyone with link can view"
 // hona chahiye, tabhi yeh CSV endpoint kaam karega)
 // ─────────────────────────────────────────────────────────────────────────────
-const SHEET_ID = "1nWdpA5g4616RwWMG6J1ohLku8UCKjPo0QJQF77NNN3c";
-const SHEET_GID = "0";
-const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+const CSV_URL = "/api/visitors";
 
 // Column order as per the sheet (A → O)
 const COLUMNS = [

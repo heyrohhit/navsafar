@@ -26,22 +26,22 @@ const navItems = [
     description: "Overview & stats",
   },
   {
-    name: "Testimonials",
-    href: "/admin/testimonials",
-    icon: Star,
-    description: "Customer reviews",
+    name: "Visitor's",
+    href: "/admin/visitors",
+    icon: Activity,
+    description: "Visitor's ",
   },
-  {
+   {
     name: "Packages",
     href: "/admin/packages",
     icon: Package,
     description: "Manage tour packages",
   },
   {
-    name: "Visitor's",
-    href: "/admin/visitors",
-    icon: Activity,
-    description: "Visitor's ",
+    name: "Testimonials",
+    href: "/admin/testimonials",
+    icon: Star,
+    description: "Customer reviews",
   },
    {
     name: "Contacts",
