@@ -1,6 +1,7 @@
 // src/app/admin/packages/page.jsx
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -630,17 +631,19 @@ export default function AdminPackages() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         {pkg.image ? (
-                          <Image
-                            src={
-                              pkg.image.includes("drive.google")
-                                ? pkg.image.replace("/file/d/", "https://lh3.googleusercontent.com/d/")
-                                : pkg.image
-                            }
-                            alt={pkg.title}
-                            className="w-12 h-12 rounded-lg object-cover bg-slate-700 flex-shrink-0"
-                            fill
-                            unoptimized
-                          />
+                          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
+                            <Image
+                              src={
+                                pkg.image.includes("drive.google")
+                                  ? pkg.image.replace("/file/d/", "https://lh3.googleusercontent.com/d/")
+                                  : pkg.image
+                              }
+                              alt={pkg.title}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          </div>
                         ) : (
                           <div className="w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0">
                             <Image src="/assets/logo.png" alt="Placeholder" width={20} height={20} className="text-slate-400" />

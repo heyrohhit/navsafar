@@ -281,6 +281,7 @@ export default function AdminDashboard() {
           subtext="Requires attention"
           trend="Action needed"
         />
+        
       </div>
 
       {/* Activity Feed */}
@@ -401,6 +402,21 @@ export default function AdminDashboard() {
                 <h4 className="font-semibold text-white">Review Contacts</h4>
                 <p className="text-sm text-slate-400">
                   Check pending messages
+                </p>
+              </div>
+            </a>
+
+            <a
+              href="/admin/visitors"
+              className="flex items-center gap-4 p-4 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-blue-500/50 transition-all group"
+            >
+              <div className="p-3 rounded-lg bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors">
+                <Activity size={22} className="text-blue-400" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-white">Total Visitors</h4>
+                <p className="text-sm text-slate-400">
+                  Check visitor's
                 </p>
               </div>
             </a>
