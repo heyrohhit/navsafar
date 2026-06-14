@@ -207,7 +207,7 @@ export default function SearchComponents() {
           </div>
 
           {/* 4. Passengers */}
-          <div className="relative z-[99999]" ref={passengerRef}>
+          <div className="relative" ref={passengerRef}>
             <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
               Travellers
             </label>
