@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Users,
@@ -119,6 +120,7 @@ const DeviceIcon = ({ device, size = 14 }) => {
 // Main Page
 // ─────────────────────────────────────────────────────────────────────────────
 export default function AdminVisitors() {
+    const router = useRouter();
   const [rawRows, setRawRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
