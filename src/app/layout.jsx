@@ -8,6 +8,7 @@ import "./globals.css";
 
 import ClientLoaderWrapper from "./components/loading/ClientLoaderWrapper";
 import SiteShell from "./components/SiteShell";
+import GlobalSEO from "./components/seo/GlobalSEO";
 
 import {
   PRIMARY_DOMAIN,
@@ -141,6 +142,13 @@ export async function generateMetadata() {
     robots: {
       index: true,
       follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-snippet": -1,
+        "max-image-preview": "large",
+        "max-video-preview": -1,
+      },
     },
   };
 }
@@ -149,33 +157,10 @@ export async function generateMetadata() {
    DYNAMIC SHELL
 ───────────────────────────────────────────────────────────── */
 async function DynamicShell({ children }) {
-  const headersList = await headers();
-
-  const domain = headersList.get("x-domain") ?? "navsafar.com";
-
-  const domainEntry = getDomainEntry(domain);
-
-  const siteName = domainEntry?.label ?? "NavSafar";
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "TravelAgency",
-    name: siteName,
-    url: PRIMARY_DOMAIN,
-    logo: `${PRIMARY_DOMAIN}/assets/logo.png`,
-    description:
-      "Leading travel agency in India offering domestic & international tour packages.",
-  };
-
   return (
     <>
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd),
-        }}
-      />
+      {/* SEO + AEO + GEO + AIO — runs once for every page */}
+      <GlobalSEO />
 
       <ClientLoaderWrapper>
         <SiteShell>{children}</SiteShell>
