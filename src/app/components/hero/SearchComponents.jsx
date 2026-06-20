@@ -121,13 +121,13 @@ export default function SearchComponents() {
     <div className="w-full max-w-5xl mx-auto px-4 md:-translate-y-[20%] max-[780px]:translate-y-[-5%]" style={{ zIndex: 50, position: "relative" }}>
 
       {/* ── Main search card ─────────────────────────────────────────────── */}
-      <div className="bg-[#0f6477] rounded-2xl p-5 shadow-2xl border border-white/10 backdrop-blur-sm">
+      <div className="bg-[#fff] text-[#0f6477] rounded-2xl p-5 shadow-2xl border border-white/10 backdrop-blur-sm">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
 
           {/* 1. City (From) */}
           <div className="relative z-[999]">
-            <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
+            <label className="block text-[#0f6477] text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
               From (City)
             </label>
             <input
@@ -141,15 +141,15 @@ export default function SearchComponents() {
               }}
               onFocus={() => fromCity && setShowFromDrop(true)}
               onBlur={() => setTimeout(() => setShowFromDrop(false), 200)}
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 outline-none focus:border-white/60 focus:bg-white/15 transition-all text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-[#0f6477] text-[#0f6477] placeholder-[#0f6477] outline-none focus:border-white/60 focus:bg-[#0f6477] transition-all text-sm focus:text-white"
             />
             <AnimatePresence>
               {showFromDrop && fromSuggestions.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="absolute top-full mt-1 w-full bg-[#0a3d4d] border border-white/20 rounded-xl z-50 max-h-52 overflow-y-auto shadow-2xl">
+                  className="absolute top-full mt-1 w-full bg-[#fff] border border-[#0f6477]/20 rounded-xl z-50 max-h-52 overflow-y-auto shadow-2xl">
                   {fromSuggestions.map((loc, i) => (
                     <div key={i} onMouseDown={() => { setFromCity(loc.label); setShowFromDrop(false); }}
-                      className="px-4 py-2.5 text-white/80 hover:bg-white/10 cursor-pointer text-sm border-b border-white/5 last:border-none">
+                      className="px-4 py-2.5 text-[#0f6477]/80 hover:bg-white/10 cursor-pointer text-sm border-b border-white/5 last:border-none">
                       📍 {loc.label}
                     </div>
                   ))}
@@ -160,7 +160,7 @@ export default function SearchComponents() {
 
           {/* 2. Destination */}
           <div className="relative">
-            <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
+            <label  className="block text-[#0f6477] text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
               Destination
             </label>
             <input
@@ -174,15 +174,15 @@ export default function SearchComponents() {
               }}
               onFocus={() => destination && setShowDestDrop(true)}
               onBlur={() => setTimeout(() => setShowDestDrop(false), 200)}
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 outline-none focus:border-white/60 focus:bg-white/15 transition-all text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-[#0f6477] text-[#0f6477] placeholder-[#0f6477] outline-none focus:border-white/60 focus:bg-[#0f6477] transition-all text-sm focus:text-white"
             />
             <AnimatePresence>
               {showDestDrop && destSuggestions.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="absolute top-full mt-1 w-full bg-[#0a3d4d] border border-white/20 rounded-xl z-50 max-h-52 overflow-y-auto shadow-2xl">
+                  className="absolute top-full mt-1 w-full bg-[#fff] border border-[#0f6477]/20 rounded-xl z-50 max-h-52 overflow-y-auto shadow-2xl">
                   {destSuggestions.map((loc, i) => (
                     <div key={i} onMouseDown={() => { setDestination(loc.label); setShowDestDrop(false); }}
-                      className="px-4 py-2.5 text-white/80 hover:bg-white/10 cursor-pointer text-sm border-b border-white/5 last:border-none">
+                     className="px-4 py-2.5 text-[#0f6477]/80 hover:bg-white/10 cursor-pointer text-sm border-b border-white/5 last:border-none">
                       🌍 {loc.label}
                     </div>
                   ))}
@@ -193,7 +193,7 @@ export default function SearchComponents() {
 
           {/* 3. Travel Date */}
           <div>
-            <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
+            <label  className="block text-[#0f6477] text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
               Travel Date
             </label>
             <input
@@ -201,19 +201,19 @@ export default function SearchComponents() {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               min={new Date().toISOString().split("T")[0]}
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white outline-none focus:border-white/60 focus:bg-white/15 transition-all text-sm"
+             className="w-full px-4 py-3 rounded-xl border border-[#0f6477] text-[#0f6477] placeholder-[#0f6477] outline-none focus:border-white/60 focus:bg-[#0f6477] transition-all text-sm focus:text-white"
               style={{ colorScheme: "dark" }}
             />
           </div>
 
           {/* 4. Passengers */}
           <div className="relative" ref={passengerRef}>
-            <label className="block text-white/70 text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
+            <label  className="block text-[#0f6477] text-xs font-semibold uppercase tracking-wider mb-1.5 px-1">
               Travellers
             </label>
             <button type="button"
               onClick={() => setShowPassenger(!showPassenger)}
-              className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-left text-sm outline-none hover:border-white/50 transition-all flex items-center justify-between">
+              className="w-full px-4 py-3 rounded-xl border border-[#0f6477] text-[#0f6477] placeholder-[#0f6477] outline-none focus:border-white/60 focus:bg-[#0f6477] transition-all text-sm focus:text-white">
               <span className="truncate">{passengerLabel}</span>
               <span className={`ml-2 transition-transform duration-200 ${showPassenger ? "rotate-180" : ""}`}>▾</span>
             </button>

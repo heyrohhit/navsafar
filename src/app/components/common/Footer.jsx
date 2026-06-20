@@ -75,7 +75,7 @@ const Footer = () => {
     { icon: Linkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" }
   ]
 
-  const paymentMethods = ["Visa", "Mastercard", "American Express", "PayPal", "UPI", "NetBanking"]
+  const paymentMethods = ["Visa", "Mastercard", "PayPal", "UPI", "NetBanking"]
 
   const trustBadges = [
     { icon: Shield, text: "100% Secure Booking", sub: "SSL Encrypted" },
@@ -86,53 +86,6 @@ const Footer = () => {
   return (
     <footer className="overflow-x-hidden font-sans relative z-[2]">
 
-      {/* ── NEWSLETTER STRIP ── */}
-      <section className="bg-gradient-to-r from-[#0d5567] via-[#0f6477] to-[#0d7a8a] relative overflow-hidden">
-        {/* decorative circles */}
-        <div className="absolute -top-10 -left-10 w-48 h-48 rounded-full bg-white/5 blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-10 right-20 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 max-w-5xl mx-auto px-6 py-16 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <span className="inline-block bg-white/15 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-5 border border-white/20">
-              ✉️ Newsletter
-            </span>
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-3 leading-tight">
-              Get Exclusive Travel Deals
-            </h3>
-            <p className="text-white/70 mb-10 max-w-lg mx-auto text-base">
-              Subscribe and receive handpicked offers, travel tips, and destination guides straight to your inbox.
-            </p>
-
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your email address"
-                required
-                className="flex-1 px-5 py-3.5 rounded-xl bg-white/10 border border-white/25 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:bg-white/20 transition-all text-sm"
-              />
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-gray-900 font-bold px-7 py-3.5 rounded-xl shadow-lg shadow-amber-500/30 transition-all duration-300 text-sm whitespace-nowrap"
-              >
-                {isSubscribed ? (
-                  <><CheckCircle className="w-4 h-4" /><span>Subscribed!</span></>
-                ) : (
-                  <><Send className="w-4 h-4" /><span>Subscribe</span></>
-                )}
-              </motion.button>
-            </form>
-          </motion.div>
-        </div>
-      </section>
 
       {/* ── MAIN FOOTER ── */}
       <div className="bg-[#0f6477]">
@@ -148,8 +101,8 @@ const Footer = () => {
               viewport={{ once: true }}
               className="lg:col-span-2"
             >
-              <div className="mb-5">
-                <Image src="/assets/logo.png" alt="Navsafar" width={120} height={40} className="h-12 object-contain" />
+              <div className="">
+                <Image src="/assets/logo.png" alt="Navsafar" width={120} height={120} className="object-contain" />
               </div>
 
               <p className="text-white/60 mb-7 leading-relaxed text-sm">
