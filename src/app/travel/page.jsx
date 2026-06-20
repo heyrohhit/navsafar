@@ -101,7 +101,7 @@ export default async function TravelPage() {
   destinations.forEach((d, i) => { indexMap[d.name] = i; });
 
   return (
-    <main className="min-h-screen bg-[#f7f4ef] pt-24 pb-20">
+    <main className="min-h-screen bg-[#f7f4ef] pt-[8vh] pb-20">
 
       {/* ─── HERO ─── */}
       <section className="relative overflow-hidden px-6 md:px-16 pb-20 pt-10">
