@@ -1,6 +1,8 @@
 // src/app/tour-packages/page.jsx
 // ✅ SERVER COMPONENT — metadata yahan kaam karta hai
 import TourPackagesClient from "./TourPackagesClient";
+import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
+import { getPackages } from "../../lib/getPackages";
 
 export const metadata = {
   title: "Tour Packages | Domestic & International - NavSafar",
@@ -21,5 +23,16 @@ export const metadata = {
 // Metadata server component se export hoti hai, client component se NAHI.
 // isliye page.jsx server component raha aur interactive logic alag file mein gaya.
 export default function TourPackagesPage() {
-  return <TourPackagesClient />;
+  const packages = getPackages();
+  return (
+    <>
+      <UniversalSchemaInjector
+        type="itemList"
+        items={packages}
+        pageUrl="https://navsafar.com/tour-packages"
+        listName="Domestic & International Tour Packages — NavSafar"
+      />
+      <TourPackagesClient />
+    </>
+  );
 }

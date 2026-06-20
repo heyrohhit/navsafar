@@ -74,12 +74,21 @@ export async function generateMetadata() {
   const headersList = await headers();
 
   const domain = headersList.get("x-domain") ?? "navsafar.com";
+  const pathname = headersList.get("x-pathname") ?? "/";
 
   const domainEntry = getDomainEntry(domain);
 
   const siteName = domainEntry?.label ?? "NavSafar";
 
   const keywords = getDailyKeywords();
+
+  // ── Dynamic canonical/OG URL for the CURRENT page ──────────────
+  // Without this, every page that doesn't set its own `canonical`
+  // would incorrectly inherit the homepage URL (duplicate-canonical
+  // issue). Pages with their own `alternates.canonical` / `openGraph.url`
+  // still take precedence over this default.
+  const currentUrl =
+    pathname === "/" ? PRIMARY_DOMAIN : `${PRIMARY_DOMAIN}${pathname}`;
 
   return {
     metadataBase: new URL(PRIMARY_DOMAIN),
@@ -104,8 +113,8 @@ export async function generateMetadata() {
     ],
 
     alternates: {
-      canonical: PRIMARY_DOMAIN,
-      languages: buildHreflangAlternates(),
+      canonical: currentUrl,
+      languages: buildHreflangAlternates(pathname === "/" ? "" : pathname),
     },
 
     authors: [{ name: "NavSafar Team" }],
@@ -116,7 +125,7 @@ export async function generateMetadata() {
       title: `${siteName} - Explore World's Best Destinations`,
       description:
         "Book domestic & international tour packages with NavSafar.",
-      url: PRIMARY_DOMAIN,
+      url: currentUrl,
       siteName,
       type: "website",
       locale: "en_IN",
@@ -174,7 +183,7 @@ async function DynamicShell({ children }) {
 ───────────────────────────────────────────────────────────── */
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en-IN" suppressHydrationWarning>
       <head>
         {/* Performance */}
         <link

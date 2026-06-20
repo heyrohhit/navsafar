@@ -8,42 +8,53 @@
 // The duplicate `export default function PackagesPage()` at the bottom has been removed.
 
 import PackagesPageClient from "./PackagesPageClient";
+import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
+import { getPackages } from "../../lib/getPackages";
 
 export const metadata = {
-  // ✅ FIX 2: Removed TypeScript `: Metadata` type annotation — this is a .jsx file
   title: "Tour Packages - Domestic & International | NavSafar",
   description:
-    "Explore 100+ domestic and international tour packages. Best price guarantee. Includes flights, hotels, visa. Book now!",
+    "Explore 50+ domestic and international tour packages. Best price guarantee, customised itineraries, flights & hotels included. Book now with NavSafar!",
   keywords: [
     "tour packages india",
     "domestic tour packages",
     "international tours",
-    "holiday packages",
-    "honeymoon packages",
-    "family tours",
-    "adventure packages",
+    "holiday packages india",
+    "honeymoon packages india",
+    "family tour packages",
+    "adventure packages india",
   ],
+  alternates: {
+    canonical: "https://navsafar.com/packages",
+  },
   openGraph: {
     title: "Tour Packages - Domestic & International | NavSafar",
     description:
-      "Explore 100+ domestic and international tour packages with best prices",
-    images: [
-      {
-        url: "/assets/bg.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Tour Packages",
-      },
-    ],
+      "Explore 50+ domestic and international tour packages with best prices.",
+    url: "https://navsafar.com/packages",
+    type: "website",
+    locale: "en_IN",
+    images: [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "Tour Packages - NavSafar" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Tour Packages - Domestic & International | NavSafar",
-    description:
-      "Explore 100+ domestic and international tour packages with best prices",
+    description: "Explore 50+ domestic and international tour packages with best prices.",
+    images: ["https://navsafar.com/assets/bg.jpg"],
   },
 };
 
 export default function PackagesPage() {
-  return <PackagesPageClient />;
+  const packages = getPackages();
+  return (
+    <>
+      <UniversalSchemaInjector
+        type="itemList"
+        items={packages}
+        pageUrl="https://navsafar.com/packages"
+        listName="Tour Packages — NavSafar"
+      />
+      <PackagesPageClient />
+    </>
+  );
 }

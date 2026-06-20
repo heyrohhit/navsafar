@@ -102,12 +102,12 @@ export default function HeroSection() {
           >
             <Image
               src={slide.image}
-              alt="Hero background"
+              alt={`NavSafar travel — ${slide.accent}`}
               fill
               priority
-              quality={75}
+              quality={80}
               sizes={"100vw"}
-              style={{ objectFit: "cover", transform: "scale(1.04)" }}
+              style={{ objectFit: "cover" }}
             />
           </motion.div>
         </AnimatePresence>

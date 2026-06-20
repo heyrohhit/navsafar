@@ -17,11 +17,23 @@ export const metadata = {
     "Explore 100+ handpicked travel packages — hill stations, beaches, religious tours, adventure, international trips. Best price guaranteed. Book with NavSafar trusted by 50,000+ Indians.",
   keywords:
     "travel packages india, best tour packages, holiday packages india, cheap travel deals, domestic international tours",
+  alternates: {
+    canonical: "https://navsafar.com/travel",
+  },
   openGraph: {
     title: "Travel Packages | Best Tour & Holiday Deals - NavSafar",
     description:
       "100+ handpicked holidays, tours & adventures with unbeatable deals.",
     type: "website",
+    url: "https://navsafar.com/travel",
+    locale: "en_IN",
+    images: [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "Travel Packages - NavSafar" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Travel Packages | Best Tour & Holiday Deals - NavSafar",
+    description: "100+ handpicked holidays, tours & adventures with unbeatable deals.",
+    images: ["https://navsafar.com/assets/bg.jpg"],
   },
 };
 

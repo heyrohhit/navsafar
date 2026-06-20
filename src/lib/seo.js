@@ -36,16 +36,16 @@ export const seoData = {
     path: "/services",
   },
   about: {
-    title: "About Us | Navsafar Travel Solutions",
+    title: "About Us | NavSafar Travel Solutions",
     description:
-      "Learn more about Navsafar Travel Solutions, our mission, vision, and expertise in providing reliable travel services in India.",
-    path: "/about",
+      "Learn more about NavSafar Travel Solutions — India-based travel agency in New Delhi offering domestic & international tour packages for Indian travellers.",
+    path: "/pages/about-us",
   },
   contact: {
-    title: "Contact Us | Navsafar Travel Solutions",
+    title: "Contact Us | NavSafar Travel Solutions",
     description:
-      "Get in touch with Navsafar Travel Solutions for travel inquiries, bookings, and customized tour packages.",
-    path: "/contact",
+      "Get in touch with NavSafar Travel Solutions. Call +91-8882128640, email info@navsafartravels.com or visit our office in New Delhi for tour packages & travel enquiries.",
+    path: "/pages/contact",
   },
   blog: {
     title: "Travel Blog | Navsafar Travel",

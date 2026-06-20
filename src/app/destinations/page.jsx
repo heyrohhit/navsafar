@@ -7,7 +7,28 @@
  */
 
 import DestinationsDetailsShow from "./DestinationsDetailsShow";
+import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
+import { getPackages } from "../../lib/getPackages";
 
 export default function DestinationsPage() {
-  return <DestinationsDetailsShow />;
+  const packages = getPackages();
+  // Deduplicate by city for ItemList
+  const seen = new Set();
+  const destinations = packages.filter((p) => {
+    if (seen.has(p.city)) return false;
+    seen.add(p.city);
+    return true;
+  });
+
+  return (
+    <>
+      <UniversalSchemaInjector
+        type="itemList"
+        items={destinations}
+        pageUrl="https://navsafar.com/destinations"
+        listName="Travel Destinations — NavSafar"
+      />
+      <DestinationsDetailsShow />
+    </>
+  );
 }

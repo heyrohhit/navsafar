@@ -1,25 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import LoadingScreen from "./LoadingScreen";
-
+// ⚡ FCP / LCP FIX
+// Loading splash screen content ko 1.2s+ tak opacity:0 ke peeche chhupa rahi thi.
+// Browser LCP element (hero image) ko paint nahi kar sakta tha tab tak.
+// Solution: splash hata do — content seedha render hoga, FCP/LCP instant.
 export default function ClientLoaderWrapper({ children }) {
-  const [loading, setLoading] = useState(true);
-
-  return (
-    <>
-      {/*
-        ✅ opacity:0 instead of visibility:hidden
-           - Browser still paints + loads images behind the loader
-           - When setLoading(false) → instant opacity:1, zero flash
-           - No transition needed — onComplete fires AS loader fades,
-             so both cross-fade simultaneously (see LoadingScreen fix)
-      */}
-      <div style={{ opacity: loading ? 0 : 1 }}>
-        {children}
-      </div>
-
-      {loading && <LoadingScreen onComplete={() => setLoading(false)} />}
-    </>
-  );
+  return <>{children}</>;
 }
