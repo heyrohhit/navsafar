@@ -9,6 +9,7 @@ import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import PopUpFeature, { handleGetQuery } from "../components/packages/PopUpFeature";
 import { usePackages } from "../hooks/usePackages"; // ✅ FIX 4: usePackages must be imported (create this hook if it doesn't exist)
 
 // ─── META ─────────────────────────────────────────────────────────────────────
@@ -18,6 +19,21 @@ const CATEGORY_META = {
   religion:      { label: "Religious",     emoji: "🕌",  accent: "#d97706" },
   domestic:      { label: "Domestic",      emoji: "🇮🇳", accent: "#16a34a" },
 };
+
+// ─── Package Data ──────────────────────────────────────────────────────────────
+import ALL_PACKAGES_RAW from "../../data/packagesData.json";
+
+// ✅ toSlug helper — city name → URL-safe slug
+function toSlug(city) {
+  return city
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
 
 const TYPE_META = {
   Cultural:   { emoji: "🏛️", accent: "#7c3aed", bg: "#f5f3ff", border: "#ddd6fe" },
@@ -140,7 +156,7 @@ function PackageCard({ pkg, accent }) {
 
         <div className="flex gap-2">
           <Link
-            href={`/packages/${pkg.id}`}
+            href={`/destinations/${toSlug(pkg.city)}`}
             className="flex-1 text-center text-[10px] font-black tracking-widest uppercase py-2.5 rounded-xl transition-all duration-300"
             style={{
               background: hovered ? accent : `${accent}10`,
@@ -172,11 +188,13 @@ function PackagesInner() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const type = searchParams.get("type");
+  const country = searchParams.get("country");
 
   const { packages, loading } = usePackages();
 
   const isCat = category && category in CATEGORY_META;
   const isType = type && type in TYPE_META;
+  const isCountry = Boolean(country);
 
   const meta = isCat
     ? {
@@ -186,16 +204,23 @@ function PackagesInner() {
       }
     : isType
     ? { label: type, emoji: TYPE_META[type].emoji, accent: TYPE_META[type].accent }
+    : isCountry
+    ? { label: country, emoji: "🌍", accent: "#0f6477" }
     : { label: "All Packages", emoji: "🌍", accent: "#0f6477" };
 
   const filtered = useMemo(() => {
     if (!packages.length) return [];
+    let result = packages;
+
     if (isCat)
-      return packages.filter((p) => (p.category ?? []).includes(category));
+      result = result.filter((p) => (p.category ?? []).includes(category));
     if (isType)
-      return packages.filter((p) => (p.tourism_type ?? []).includes(type));
-    return packages;
-  }, [packages, isCat, isType, category, type]);
+      result = result.filter((p) => (p.tourism_type ?? []).includes(type));
+    if (isCountry)
+      result = result.filter((p) => p.country?.toLowerCase() === country.toLowerCase());
+
+    return result;
+  }, [packages, isCat, isType, isCountry, category, type, country]);
 
   return (
     <div className="min-h-screen bg-white">
