@@ -3,10 +3,15 @@
 
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
-import Header         from "./header/header";
-import Footer         from "./common/Footer";
-import VisitorTracker from "./tracking/VisitorTracker";
-import WhatsAppFloat  from "./sections/WhatsAppFloat";
+import dynamic from "next/dynamic";
+import Header      from "./header/header";
+import Footer      from "./common/Footer";
+import WhatsAppFloat from "./sections/WhatsAppFloat";
+
+// ✅ VisitorTracker lazy load — FCP pe load nahi padega
+const VisitorTracker = dynamic(() => import("./tracking/VisitorTracker"), {
+  ssr: false,
+});
 
 // ✅ Inner component uses the hook — wrapped in Suspense below
 function ShellContent({ children }) {

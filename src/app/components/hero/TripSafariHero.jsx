@@ -14,11 +14,11 @@ const slides = [
 ];
 
 const badges = [
-  { icon: "🌍", label: "50+ Destinations", path: "/destinations"            },
-  { icon: "🏨", label: "Premium Hotels",   path: "/tour-packages"           },
+  { icon: "🌍", label: "50+ Destinations", path: "/destinations"              },
+  { icon: "🏨", label: "Premium Hotels",   path: "/tour-packages"             },
   { icon: "🎯", label: "Expert Guidance",  path: "https://wa.me/+918882128640" },
   { icon: "💎", label: "Best Prices",      path: "https://wa.me/+918882128640" },
-  { icon: "🕐", label: "24/7 Support",     path: "tel:+918882128640"        },
+  { icon: "🕐", label: "24/7 Support",     path: "tel:+918882128640"          },
 ];
 
 /* ── Variants defined outside component → never re-created on re-render ── */
@@ -29,12 +29,12 @@ const bgVariants = {
 };
 const eyebrowVariants = {
   initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0,   transition: { duration: 0.4, ease: "easeOut" } },
-  exit:    { opacity: 0, y: -8,  transition: { duration: 0.25, ease: "easeIn"  } },
+  animate: { opacity: 1, y: 0,  transition: { duration: 0.4, ease: "easeOut" } },
+  exit:    { opacity: 0, y: -8, transition: { duration: 0.25, ease: "easeIn" } },
 };
 const titleVariants = {
-  initial: { y: 50, opacity: 0 },
-  animate: { y: 0,  opacity: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+  initial: { y: 50,  opacity: 0 },
+  animate: { y: 0,   opacity: 1, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
   exit:    { y: -28, opacity: 0, transition: { duration: 0.25, ease: "easeIn" } },
 };
 const accentVariants = {
@@ -45,33 +45,37 @@ const accentVariants = {
 const subtitleVariants = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0,  transition: { duration: 0.4, delay: 0.08, ease: "easeOut" } },
-  exit:    { opacity: 0, y: -8, transition: { duration: 0.2,  ease: "easeIn"  } },
+  exit:    { opacity: 0, y: -8, transition: { duration: 0.2, ease: "easeIn" } },
 };
 
 export default function HeroSection() {
   const [index, setIndex] = useState(0);
+  // ✅ Mounted state — first slide bina animation ke dikhao (LCP boost)
+  const [mounted, setMounted] = useState(false);
   const slide = useMemo(() => slides[index], [index]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   /* preload next image ahead of time */
   useEffect(() => {
+    if (!mounted) return;
     const next = slides[(index + 1) % slides.length].image;
     const img = new window.Image();
     img.src = next;
-  }, [index]);
+  }, [index, mounted]);
 
-  /* auto-advance */
+  /* auto-advance — sirf mount ke baad shuru karo */
   useEffect(() => {
+    if (!mounted) return;
     const t = setInterval(() => setIndex((p) => (p + 1) % slides.length), 5500);
     return () => clearInterval(t);
-  }, []);
+  }, [mounted]);
 
   const goTo = useCallback((i) => setIndex(i), []);
 
   return (
-    /* ─────────────────────────────────────────────────────────────
-       NO mount animation — component is already rendered behind
-       the LoadingScreen. It appears instantly when loader fades.
-    ───────────────────────────────────────────────────────────── */
     <section
       className="relative w-full overflow-hidden text-white pt-8 pb-5"
       style={{ fontFamily: "'Georgia', serif" }}
@@ -90,27 +94,44 @@ export default function HeroSection() {
 
       {/* Background */}
       <div className="absolute inset-0 z-0">
-        <AnimatePresence mode="sync">
-          <motion.div
-            key={slide.image + index}
-            variants={bgVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="relative w-full h-[120vh] -z-10"
-            style={{ willChange: "opacity" }}
-          >
+        {/* ✅ FIX: Pehla slide bina AnimatePresence ke seedha dikhao — LCP ke liye critical */}
+        {!mounted ? (
+          <div className="relative w-full h-[120vh] -z-10">
             <Image
-              src={slide.image}
-              alt={`NavSafar travel — ${slide.accent}`}
+              src={slides[0].image}
+              alt="NavSafar travel destination"
               fill
-              priority
-              quality={80}
-              sizes={"100vw"}
+              priority={true}
+              quality={75}
+              sizes="100vw"
               style={{ objectFit: "cover" }}
+              // ✅ fetchpriority high — browser ko signal deta hai ye LCP image hai
+              fetchPriority="high"
             />
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        ) : (
+          <AnimatePresence mode="sync">
+            <motion.div
+              key={slide.image + index}
+              variants={bgVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="relative w-full h-[120vh] -z-10"
+              style={{ willChange: "opacity" }}
+            >
+              <Image
+                src={slide.image}
+                alt={`NavSafar travel — ${slide.accent}`}
+                fill
+                priority={index === 0}
+                quality={75}
+                sizes="100vw"
+                style={{ objectFit: "cover" }}
+              />
+            </motion.div>
+          </AnimatePresence>
+        )}
       </div>
 
       {/* Overlays */}

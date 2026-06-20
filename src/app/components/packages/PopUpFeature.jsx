@@ -55,12 +55,9 @@ const PopUpFeature = ({ selectedPackage: pkg, onClose }) => {
   const [tab, setTab] = useState("overview");
   const overlayRef   = useRef(null);
 
-  // components mount states
-const [mounted, setMounted] = useState(false);
-
-useEffect(() => {
-  setMounted(true);
-}, []);
+  // ✅ FIX: mounted state hata diya — ye popup show hone mein delay karta tha
+  // createPortal sirf browser pe kaam karta hai, aur ye "use client" component hai
+  // isliye directly render kar sakte hain
 
   // ESC to close
   useEffect(() => {
@@ -69,11 +66,12 @@ useEffect(() => {
     return () => window.removeEventListener("keydown", fn);
   }, [onClose]);
 
-  // Lock body scroll
+  // ✅ FIX: body scroll lock — overflow-y: hidden use karo taaki x-scroll preserve rahe
+  // aur cleanup theek se ho
   useEffect(() => {
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
+    const prev = document.body.style.overflowY;
+    document.body.style.overflowY = "hidden";
+    return () => { document.body.style.overflowY = prev || ""; };
   }, []);
 
   if (!pkg) return null;
@@ -93,7 +91,8 @@ useEffect(() => {
     activities: "linear-gradient(135deg, #0f6477, #0f766e)",
   };
 
- if (!mounted) return null;
+  // ✅ FIX: document check — SSR safe
+  if (typeof document === "undefined") return null;
 
   return createPortal(
   <>

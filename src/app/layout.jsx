@@ -207,12 +207,19 @@ export default function RootLayout({ children }) {
           href="https://www.googletagmanager.com"
         />
 
-        {/* Hero preload */}
+        {/* ✅ Hero LCP image preload — fetchpriority high se browser seedha download karta hai */}
         <link
           rel="preload"
           as="image"
           href="/assets/bg.jpg"
+          // @ts-ignore
+          fetchpriority="high"
+          imageSizes="100vw"
         />
+
+        {/* ✅ Next slide preload */}
+        <link rel="prefetch" as="image" href="/assets/kd.jpg" />
+        <link rel="prefetch" as="image" href="/assets/mt.jpg" />
 
         {/* PWA */}
         <link rel="manifest" href="/manifest.json" />

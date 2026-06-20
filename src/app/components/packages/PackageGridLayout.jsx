@@ -1,16 +1,16 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
-import PopUpFeature from "./PopUpFeature";
+import PopUpFeature, { handleGetQuery } from "./PopUpFeature";
 
 // ─── Card accent gradients ─────────────────────────────────────────
 const ACCENTS = [
-  { from: "#f43f5e", to: "#fb923c" },   // rose → orange
-  { from: "#8b5cf6", to: "#6366f1" },   // violet → indigo
-  { from: "#10b981", to: "#14b8a6" },   // emerald → teal
-  { from: "#f59e0b", to: "#facc15" },   // amber → yellow
-  { from: "#38bdf8", to: "#22d3ee" },   // sky → cyan
-  { from: "#d946ef", to: "#ec4899" },   // fuchsia → pink
+  { from: "#f43f5e", to: "#fb923c" },
+  { from: "#8b5cf6", to: "#6366f1" },
+  { from: "#10b981", to: "#14b8a6" },
+  { from: "#f59e0b", to: "#facc15" },
+  { from: "#38bdf8", to: "#22d3ee" },
+  { from: "#d946ef", to: "#ec4899" },
 ];
 
 const ASPECT_CLASSES = [
@@ -18,7 +18,6 @@ const ASPECT_CLASSES = [
   "aspect-[4/3]", "aspect-[1/1]", "aspect-[3/2]",
 ];
 
-// Fisher-Yates shuffle
 function shuffleArray(arr) {
   const s = [...arr];
   for (let i = s.length - 1; i > 0; i--) {
@@ -50,17 +49,21 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
     setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
 
+  // ✅ FIX: handleBtnClick mein getQuery case add kiya
   const handleBtnClick = (btn, pkg) => {
     switch (btn.type) {
       case "viewDetails":
       case "readMore":
         setSelectedItem(pkg);
         break;
+      case "getQuery":
+        handleGetQuery(pkg);
+        break;
       case "callMe":
         window.location.href = `tel:${btn.number || "+918882128640"}`;
         break;
       default:
-        console.warn("Unknown button type:", btn.type);
+        setSelectedItem(pkg); // fallback: popup dikhao
     }
   };
 
@@ -80,7 +83,6 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
         </div>
 
         <div className="relative max-w-7xl mx-auto">
-          {/* Masonry grid */}
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-5">
             {shuffled.map((pkg, index) => {
               const accent = ACCENTS[index % ACCENTS.length];
@@ -109,7 +111,6 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                       transform: isHovered ? "translateY(-4px)" : "none",
                     }}
                   >
-                    {/* Gradient accent bar */}
                     <div
                       className="absolute top-0 left-0 right-0 h-0.5 z-10"
                       style={{ background: gradientCss }}
@@ -125,12 +126,9 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                         loading="lazy"
                         quality={80}
                         className="object-cover transition-transform duration-700"
-                        style={{
-                          transform: isHovered ? "scale(1.08)" : "scale(1)",
-                        }}
+                        style={{ transform: isHovered ? "scale(1.08)" : "scale(1)" }}
                       />
 
-                      {/* Overlay */}
                       <div
                         className="absolute inset-0 transition-opacity duration-300"
                         style={{
@@ -139,35 +137,24 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                         }}
                       />
 
-                      {/* Duration Badge */}
                       {pkg.duration && (
                         <div className="absolute top-3 left-3 z-10">
-                          <span
-                            className="px-3 py-1 text-white text-xs font-semibold rounded-full"
-                            style={{
-                              background: "rgba(0,0,0,0.55)",
-                              backdropFilter: "blur(6px)",
-                              border: "1px solid rgba(255,255,255,0.15)",
-                            }}
-                          >
+                          <span className="px-3 py-1 text-white text-xs font-semibold rounded-full"
+                            style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.15)" }}>
                             ⏱ {pkg.duration}
                           </span>
                         </div>
                       )}
 
-                      {/* Discount Badge */}
                       {pkg.discount && (
                         <div className="absolute top-3 right-3 z-10">
-                          <span
-                            className="px-3 py-1 text-white text-xs font-bold rounded-full shadow-lg"
-                            style={{ background: gradientCss }}
-                          >
+                          <span className="px-3 py-1 text-white text-xs font-bold rounded-full shadow-lg"
+                            style={{ background: gradientCss }}>
                             {pkg.discount}
                           </span>
                         </div>
                       )}
 
-                      {/* Popular Badge */}
                       {pkg.popular && (
                         <div className="absolute bottom-3 right-3 z-10">
                           <span className="px-3 py-1 bg-amber-400 text-slate-900 text-xs font-black rounded-full shadow-lg">
@@ -176,11 +163,11 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                         </div>
                       )}
 
-                      {/* View Details Button */}
+                      {/* ✅ View Details button — seedha setSelectedItem call karo */}
                       {isTouch ? (
                         <div className="absolute bottom-3 left-3 z-10">
                           <button
-                            onClick={() => setSelectedItem(pkg)}
+                            onClick={(e) => { e.stopPropagation(); setSelectedItem(pkg); }}
                             className="px-4 py-2 text-white text-xs font-bold rounded-2xl shadow-xl active:scale-95 transition-transform duration-150 cursor-pointer"
                             style={{ background: gradientCss }}
                           >
@@ -193,7 +180,7 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                           style={{ opacity: isHovered ? 1 : 0 }}
                         >
                           <button
-                            onClick={() => setSelectedItem(pkg)}
+                            onClick={(e) => { e.stopPropagation(); setSelectedItem(pkg); }}
                             className="px-5 py-2.5 text-white text-sm font-bold rounded-2xl shadow-xl transition-transform duration-200 hover:scale-105 cursor-pointer"
                             style={{ background: gradientCss }}
                           >
@@ -205,56 +192,33 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
 
                     {/* Card Content */}
                     <div className="p-5">
-                      {/* Title */}
                       <h3 className="font-bold text-base leading-snug mb-1 transition-all duration-300"
-                        style={{
-                          color: isHovered ? accent.from : "#38bdf8",
-                        }}
-                      >
+                        style={{ color: isHovered ? accent.from : "#38bdf8" }}>
                         {pkg.title}
                       </h3>
 
-                      {/* Tagline */}
                       {pkg.tagline && (
-                        <p
-                          className="text-xs font-semibold mb-1.5 text-[#999]"
-                          
-                        >
-                          {pkg.tagline}
-                        </p>
+                        <p className="text-xs font-semibold mb-1.5 text-[#999]">{pkg.tagline}</p>
                       )}
 
-                      {/* Rating */}
                       {pkg.rating && (
-                        <div className="mb-2">
-                          <StarMini rating={pkg.rating} />
-                        </div>
+                        <div className="mb-2"><StarMini rating={pkg.rating} /></div>
                       )}
 
-                      {/* Description */}
                       {pkg.description && (
                         <p className="text-slate-400 text-sm leading-relaxed mb-4 line-clamp-3">
                           {pkg.description}
                         </p>
                       )}
 
-                      {/* Price */}
                       {pkg.price && (
                         <div className="mb-4 flex items-baseline gap-1">
-                          <span
-                            className="text-2xl font-black"
-                            style={{
-                              background: gradientCss,
-                              WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent",
-                            }}
-                          >
+                          <span className="text-2xl font-black"
+                            style={{ background: gradientCss, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                             {pkg.price}
                           </span>
                           {pkg.priceNote && (
-                            <span className="text-slate-500 text-xs">
-                              {pkg.priceNote}
-                            </span>
+                            <span className="text-slate-500 text-xs">{pkg.priceNote}</span>
                           )}
                         </div>
                       )}
@@ -265,20 +229,12 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                           btns.map((btn, idx) => (
                             <button
                               key={idx}
-                              onClick={() => handleBtnClick(btn, pkg)}
+                              onClick={(e) => { e.stopPropagation(); handleBtnClick(btn, pkg); }}
                               className="w-full py-2.5 px-4 text-sm font-semibold rounded-2xl transition-all duration-200 hover:scale-[1.02]"
                               style={
                                 btn.type === "getQuery"
-                                  ? {
-                                      background: gradientCss,
-                                      color: "#fff",
-                                      boxShadow: `0 4px 20px ${accent.from}40`,
-                                    }
-                                  : {
-                                      background: "rgba(255,255,255,0.07)",
-                                      color: "#cbd5e1",
-                                      border: "1px solid rgba(255,255,255,0.12)",
-                                    }
+                                  ? { background: gradientCss, color: "#fff", boxShadow: `0 4px 20px ${accent.from}40` }
+                                  : { background: "rgba(255,255,255,0.07)", color: "#cbd5e1", border: "1px solid rgba(255,255,255,0.12)" }
                               }
                             >
                               {btn.label}
@@ -286,12 +242,9 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
                           ))
                         ) : (
                           <button
-                            onClick={() => setSelectedItem(pkg)}
+                            onClick={(e) => { e.stopPropagation(); setSelectedItem(pkg); }}
                             className="w-full py-2.5 px-4 text-sm font-semibold rounded-2xl text-white transition-all duration-200 hover:scale-[1.02]"
-                            style={{
-                              background: gradientCss,
-                              boxShadow: `0 4px 20px ${accent.from}40`,
-                            }}
+                            style={{ background: gradientCss, boxShadow: `0 4px 20px ${accent.from}40` }}
                           >
                             Read More →
                           </button>
@@ -306,13 +259,12 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
         </div>
       </div>
 
+      {/* ✅ FIX: Popup — selectedItem set hone par seedha render */}
       {selectedItem && (
-        
-          <PopUpFeature
+        <PopUpFeature
           selectedPackage={selectedItem}
           onClose={() => setSelectedItem(null)}
         />
-       
       )}
     </>
   );

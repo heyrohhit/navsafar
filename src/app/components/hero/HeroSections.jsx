@@ -1,15 +1,14 @@
-"use client"
-
-import SearchComponents from "./SearchComponents"
-import TripSafariHero from "./TripSafariHero"
+// Server Component — "use client" nahi
+import TripSafariHero from "./TripSafariHero";
+import SearchComponentsLoader from "./SearchComponentsLoader";
 
 const Herosections = () => {
   return (
     <div className="w-full relative">
-        <TripSafariHero/>
-        <SearchComponents/>
+      <TripSafariHero />
+      <SearchComponentsLoader />
     </div>
-  )
-}
+  );
+};
 
-export default Herosections
+export default Herosections;

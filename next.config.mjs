@@ -1,5 +1,4 @@
 // next.config.mjs
-
 import { buildRemotePatterns } from "./src/lib/domainConfig.js";
 
 /** @type {import('next').NextConfig} */
@@ -7,20 +6,17 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
-
-  // Performance optimizations
   generateEtags: false,
-  httpAgentOptions: {
-    keepAlive: true,
-  },
+  httpAgentOptions: { keepAlive: true },
 
   images: {
+    // ✅ WebP + AVIF — modern browsers ke liye faster images
     formats: ["image/avif", "image/webp"],
-    deviceSizes: [320, 420, 640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    deviceSizes: [320, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // ✅ 60 din cache — hero images frequently change nahi hoti
     minimumCacheTTL: 5184000,
     disableStaticImages: false,
-
     remotePatterns: [
       ...buildRemotePatterns(),
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
@@ -32,24 +28,40 @@ const nextConfig = {
     ],
   },
 
-  // Enable better caching
-  cacheComponents: false,
-
-  // Enable optimized CSS
   experimental: {
     optimizeCss: true,
-    optimizePackageImports: ['lucide-react', 'framer-motion'],
+    optimizePackageImports: ["lucide-react", "framer-motion"],
   },
 
-  // Security headers
   async headers() {
     return [
+      // ✅ Security headers
       {
-        source: '/(.*)',
+        source: "/(.*)",
         headers: [
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'X-Frame-Options', value: 'DENY' },
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-XSS-Protection", value: "1; mode=block" },
+        ],
+      },
+      // ✅ Static assets ke liye aggressive caching — FCP/LCP improve hoga
+      {
+        source: "/assets/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      // ✅ Fonts ke liye bhi caching
+      {
+        source: "/fonts/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
         ],
       },
     ];
