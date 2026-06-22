@@ -19,7 +19,9 @@ function withSeoHeaders(req) {
   });
 }
 
-export function middleware(req) { // 'middleware' is the standard exported function name
+// 🔥 FIX 1: Added 'default' export. Next.js was throwing an error because 
+// it strictly needed either a default export or a specific "proxy" export.
+export default function middleware(req) { 
   const url = req.nextUrl.clone();
   const hostHeader = req.headers.get("host") || "";
   const host = normalizeHost(hostHeader);
@@ -44,6 +46,10 @@ export function middleware(req) { // 'middleware' is the standard exported funct
 
   return withSeoHeaders(req);
 }
+
+// 🔥 FIX 2: Added a named export as 'proxy' just to be 100% safe against the error 
+// you were seeing (in case of specific older Next.js version requirements).
+export { middleware as proxy };
 
 export const config = {
   // 🔥 Optimization FIX: Bypass static files, images, and API routes

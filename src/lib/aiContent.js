@@ -6,7 +6,7 @@
 //  - Caching: Next.js unstable_cache (Vercel CDN Ready)
 // ─────────────────────────────────────────────────────────────────
 
-import { unstable_cache } from "next/cache";
+import { unstable_cache, revalidateTag } from "next/cache"; // revalidateTag add kiya gaya hai
 
 // ══════════════════════════════════════════════════════════════
 //  1. IMAGE FETCHING FUNCTION (PEXELS API)
@@ -227,4 +227,23 @@ export const generateContent = async (keyword) => {
   );
 
   return getCachedData();
+};
+
+
+// ══════════════════════════════════════════════════════════════
+//  5. CACHE MANAGEMENT (NEWLY ADDED)
+// ══════════════════════════════════════════════════════════════
+
+/**
+ * Ye function specific keyword ka cache clear karta hai (On-Demand Revalidation).
+ * Ise aap kisi admin API route ya Server Action se call kar sakte hain.
+ * @param {string} keyword - Destination ka naam jiska cache delete karna hai
+ */
+export const deleteCache = (keyword) => {
+  const safeKey = keyword.toLowerCase().replace(/[^a-z0-9]/g, "-");
+  
+  // Tag ke basis pe cache ko clear kar dega
+  revalidateTag(`ai-content-${safeKey}`);
+  
+  console.log(`[aiContent] Cache cleared for tag: ai-content-${safeKey}`);
 };
