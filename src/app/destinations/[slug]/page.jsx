@@ -113,6 +113,11 @@ export async function generateMetadata({ params }) {
     ],
     alternates: {
       canonical: `https://navsafar.com/destinations/${slug}`,
+      languages: {
+        "x-default": `https://navsafar.com/destinations/${slug}`,
+        "en-IN": `https://navsafar.com/destinations/${slug}`,
+        "en": `https://navsafar.com/destinations/${slug}`,
+      },
     },
     openGraph: {
       title: `${dest.city} | NavSafar`,

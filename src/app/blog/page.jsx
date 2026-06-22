@@ -56,6 +56,11 @@ export const metadata = {
   ],
   alternates: {
     canonical: `${SITE_URL}/blog`,
+    languages: {
+      "x-default": `${SITE_URL}/blog`,
+      "en-IN": `${SITE_URL}/blog`,
+      "en": `${SITE_URL}/blog`,
+    },
   },
   openGraph: {
     title: "Travel Blog | Tips, Guides & Destination Stories | NavSafar",

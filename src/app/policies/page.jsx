@@ -27,7 +27,7 @@ export const metadata = {
       "Transparent policies from Navsafar Travels covering privacy, bookings, refunds, and your legal rights.",
   },
   alternates: {
-    canonical: "https://www.navsafar.com/policies",
+    canonical: "https://navsafar.com/policies",
   },
   robots: {
     index: true,
@@ -408,11 +408,11 @@ export default function PoliciesPage() {
             name: "Policies — Navsafar Travels",
             description:
               "Privacy Policy, Terms & Conditions, and Refund & Cancellation Policy for Navsafar Travels Private Limited.",
-            url: "https://www.navsafar.com/policies",
+            url: "https://navsafar.com/policies",
             publisher: {
               "@type": "Organization",
               name: "Navsafar Travels Private Limited",
-              url: "https://www.navsafar.com",
+              url: "https://navsafar.com",
             },
           }),
         }}

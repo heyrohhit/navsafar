@@ -23,6 +23,11 @@ export async function generateMetadata({ params }) {
     keywords: blog.tags ?? [],
     alternates: {
       canonical: `${SITE_URL}/blog/${slug}`,
+      languages: {
+        "x-default": `${SITE_URL}/blog/${slug}`,
+        "en-IN": `${SITE_URL}/blog/${slug}`,
+        "en": `${SITE_URL}/blog/${slug}`,
+      },
     },
     openGraph: {
       title: `${blog.title} — NavSafar Travel Blog`,

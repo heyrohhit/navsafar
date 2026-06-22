@@ -1,30 +1,34 @@
 // src/app/components/seo/GlobalSEO.jsx
 // ─────────────────────────────────────────────────────────────────
-// 🇮🇳 GLOBAL SEO + AEO + GEO + AIO COMPONENT
+// 🇮🇳 GLOBAL SEO + AEO + GEO + AIO + OXS COMPONENT
 //
-// Drop this ONE component once into the root layout
-// (src/app/layout.jsx) and EVERY page automatically gets:
+// Drop this ONE component once into the root layout and EVERY page
+// automatically gets:
 //
 //   • SEO   → Organization / LocalBusiness / TravelAgency JSON-LD
 //             + WebSite (sitelinks search box) + auto BreadcrumbList
+//             + per-page WebPage schema with dynamic title/description
 //   • AEO   → FAQPage structured data (Answer Engine Optimization —
 //             Google featured snippets, AI Overviews, voice assistants)
-//   • GEO   → India-specific geo meta tags (geo.region, geo.placename,
-//             ICBM, geo coordinates) + "areaServed: India" signals so
-//             Generative Engines (ChatGPT/Perplexity/Gemini/Copilot)
-//             correctly geo-target answers to India
-//   • AIO   → "speakable" + WebPage schema that helps AI/voice
-//             assistants and LLM answer engines extract clean,
-//             citable content from every page
+//   • GEO   → India geo meta tags (geo.region, geo.placename, ICBM)
+//             + "areaServed: India" for Generative Engines
+//   • AIO   → "speakable" + WebPage schema for AI/voice assistants
+//             + LLM-friendly content signals
+//   • OXS   → On-page Experience Signals: breadcrumb JSON-LD,
+//             publisher signals, navigation schema
 //
-// 👉 You do NOT need to add anything to individual pages.
-//    To change business info / FAQs, edit:
+// 👉 To change business info / FAQs, edit:
 //      - src/lib/localBusinessConfig.js
 //      - src/lib/aeoFaqData.js
 // ─────────────────────────────────────────────────────────────────
 
 import { headers } from "next/headers";
-import { BUSINESS, SITE_URL, LOGO_URL, DEFAULT_OG_IMAGE } from "../../../lib/localBusinessConfig.js";
+import {
+  BUSINESS,
+  SITE_URL,
+  LOGO_URL,
+  DEFAULT_OG_IMAGE,
+} from "../../../lib/localBusinessConfig.js";
 import { getFaqsForPath } from "../../../lib/aeoFaqData.js";
 
 /* ── Friendly labels for known route segments (used in breadcrumbs) ── */
@@ -46,9 +50,7 @@ const LABEL_MAP = {
   terms: "Terms & Conditions",
 };
 
-// Path segments that are routing/grouping folders only and should be
-// skipped when building human-readable breadcrumbs (they don't map to
-// a real visitable page on their own).
+// Route segments that are folder-only groupings, not real pages
 const SKIP_SEGMENTS = new Set(["pages"]);
 
 function humanize(segment) {
@@ -87,7 +89,7 @@ function buildBreadcrumbJsonLd(pathname) {
     });
   }
 
-  // No point showing a 1-item breadcrumb for the homepage
+  // Don't show 1-item breadcrumb for homepage
   if (items.length < 2) return null;
 
   return {
@@ -106,7 +108,12 @@ function buildBusinessJsonLd() {
     name: BUSINESS.legalName,
     alternateName: BUSINESS.brandName,
     url: SITE_URL,
-    logo: LOGO_URL,
+    logo: {
+      "@type": "ImageObject",
+      url: LOGO_URL,
+      width: 200,
+      height: 60,
+    },
     image: DEFAULT_OG_IMAGE,
     description: BUSINESS.description,
     telephone: BUSINESS.phone,
@@ -134,6 +141,14 @@ function buildBusinessJsonLd() {
       opens: BUSINESS.openingHours.opens,
       closes: BUSINESS.openingHours.closes,
     },
+    hasMap: `https://maps.google.com/?q=${BUSINESS.geo.latitude},${BUSINESS.geo.longitude}`,
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: BUSINESS.phone,
+      contactType: "customer service",
+      areaServed: "IN",
+      availableLanguage: ["English", "Hindi"],
+    },
   };
 
   if (BUSINESS.sameAs && BUSINESS.sameAs.length > 0) {
@@ -150,18 +165,22 @@ function buildWebsiteJsonLd() {
     "@type": "WebSite",
     "@id": `${SITE_URL}/#website`,
     name: BUSINESS.brandName,
+    alternateName: BUSINESS.legalName,
     url: SITE_URL,
     inLanguage: BUSINESS.languages,
     publisher: { "@id": `${SITE_URL}/#organization` },
     potentialAction: {
       "@type": "SearchAction",
-      target: `${SITE_URL}/search?q={search_term_string}`,
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+      },
       "query-input": "required name=search_term_string",
     },
   };
 }
 
-/* ── FAQPage JSON-LD (AEO) for the current route, if available ── */
+/* ── FAQPage JSON-LD (AEO) for the current route ── */
 function buildFaqJsonLd(pathname) {
   const faqs = getFaqsForPath(pathname);
   if (!faqs || faqs.length === 0) return null;
@@ -180,13 +199,31 @@ function buildFaqJsonLd(pathname) {
   };
 }
 
-/* ── WebPage + speakable JSON-LD (helps AI/voice assistants) ── */
+/* ── WebPage + speakable JSON-LD (AIO/GEO: helps AI/voice assistants) ── */
 function buildWebPageJsonLd(pathname) {
-  const url = `${SITE_URL}${pathname === "/" ? "" : pathname}`;
+  const url =
+    pathname === "/" ? SITE_URL : `${SITE_URL}${pathname}`;
+
+  // Determine page type from pathname
+  const isBlog =
+    pathname.startsWith("/blog");
+  const isProduct =
+    pathname.startsWith("/packages") ||
+    pathname.startsWith("/tour-packages") ||
+    pathname.startsWith("/destinations") ||
+    pathname.startsWith("/experiences") ||
+    pathname.startsWith("/travel");
+  const isContact = pathname.startsWith("/pages/contact");
+  const isAbout = pathname.startsWith("/pages/about-us");
+
+  let pageType = "WebPage";
+  if (isBlog) pageType = "Blog";
+  if (isAbout) pageType = "AboutPage";
+  if (isContact) pageType = "ContactPage";
 
   return {
     "@context": "https://schema.org",
-    "@type": "WebPage",
+    "@type": pageType,
     "@id": `${url}#webpage`,
     url,
     inLanguage: "en-IN",
@@ -194,11 +231,39 @@ function buildWebPageJsonLd(pathname) {
     about: {
       "@type": "Place",
       name: "India",
+      addressCountry: "IN",
     },
+    publisher: { "@id": `${SITE_URL}/#organization` },
     speakable: {
       "@type": "SpeakableSpecification",
-      cssSelector: ["h1", "h1 + p", "[data-speakable]"],
+      cssSelector: ["h1", "h1 + p", "[data-speakable]", "main p:first-of-type"],
     },
+    // OXS: breadcrumb signal in WebPage
+    breadcrumb: {
+      "@type": "BreadcrumbList",
+      "@id": `${url}#breadcrumb`,
+    },
+  };
+}
+
+/* ── SiteNavigation JSON-LD (OXS: helps search engines understand site structure) ── */
+function buildSiteNavigationJsonLd() {
+  const navItems = [
+    { name: "Home", url: `${SITE_URL}/` },
+    { name: "Destinations", url: `${SITE_URL}/destinations` },
+    { name: "Tour Packages", url: `${SITE_URL}/tour-packages` },
+    { name: "Travel Guides", url: `${SITE_URL}/travel` },
+    { name: "Experiences", url: `${SITE_URL}/experiences` },
+    { name: "Blog", url: `${SITE_URL}/blog` },
+    { name: "About Us", url: `${SITE_URL}/pages/about-us` },
+    { name: "Contact Us", url: `${SITE_URL}/pages/contact` },
+  ];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "SiteNavigationElement",
+    name: navItems.map((i) => i.name),
+    url: navItems.map((i) => i.url),
   };
 }
 
@@ -210,13 +275,16 @@ export default async function GlobalSEO() {
 
   // Set by src/proxy.js for every request
   const pathname =
-    headersList.get("x-pathname") || headersList.get("x-invoke-path") || "/";
+    headersList.get("x-pathname") ||
+    headersList.get("x-invoke-path") ||
+    "/";
 
   const businessJsonLd = buildBusinessJsonLd();
   const websiteJsonLd = buildWebsiteJsonLd();
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(pathname);
   const faqJsonLd = buildFaqJsonLd(pathname);
   const webPageJsonLd = buildWebPageJsonLd(pathname);
+  const siteNavJsonLd = buildSiteNavigationJsonLd();
 
   const geoPosition = `${BUSINESS.geo.latitude};${BUSINESS.geo.longitude}`;
 
@@ -229,6 +297,10 @@ export default async function GlobalSEO() {
       <meta name="ICBM" content={geoPosition} />
       <meta httpEquiv="content-language" content="en-IN" />
 
+      {/* ── AIO: LLM / AI assistant discovery hints ── */}
+      <meta name="llm-context" content="Indian travel agency, New Delhi, tour packages India" />
+      <meta name="ai-content-type" content="travel-agency-india" />
+
       {/* ── SEO: Organization / LocalBusiness / TravelAgency ── */}
       <script
         type="application/ld+json"
@@ -239,6 +311,12 @@ export default async function GlobalSEO() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+
+      {/* ── OXS: Site navigation structure ── */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavJsonLd) }}
       />
 
       {/* ── SEO: Auto breadcrumb for the current page ── */}

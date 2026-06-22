@@ -2,22 +2,38 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Terms of Service | Navsafar Travels",
+  title: "Terms of Service | NavSafar Travels",
   description:
-    "Read Navsafar Travels' Terms & Conditions — the legally binding agreement covering bookings, payments, liability, visa responsibility, and more.",
+    "Read NavSafar Travels' Terms & Conditions — the legally binding agreement covering bookings, payments, liability, visa responsibility, and more.",
   keywords: [
-    "Navsafar Travels terms and conditions",
+    "NavSafar Travels terms and conditions",
     "travel agency terms of service India",
     "booking terms travel",
     "travel agency legal agreement",
   ],
-  openGraph: {
-    title: "Terms of Service | Navsafar Travels",
-    description: "Legally binding Terms & Conditions for all Navsafar Travels bookings and services.",
-    type: "website",
-    siteName: "Navsafar Travels",
+  alternates: {
+    canonical: "https://navsafar.com/policies/terms",
+    languages: {
+      "x-default": "https://navsafar.com/policies/terms",
+      "en-IN": "https://navsafar.com/policies/terms",
+      "en": "https://navsafar.com/policies/terms",
+    },
   },
-  alternates: { canonical: "https://www.navsafar.com/policies/terms" },
+  openGraph: {
+    title: "Terms of Service | NavSafar Travels",
+    description: "Legally binding Terms & Conditions for all NavSafar Travels bookings and services.",
+    url: "https://navsafar.com/policies/terms",
+    type: "website",
+    siteName: "NavSafar Travels",
+    locale: "en_IN",
+    images: [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "NavSafar" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Service | NavSafar Travels",
+    description: "Legally binding Terms & Conditions for all NavSafar Travels bookings and services.",
+    images: ["https://navsafar.com/assets/bg.jpg"],
+  },
   robots: { index: true, follow: true },
 };
 
@@ -114,8 +130,8 @@ export default function TermsPage() {
             "@type": "WebPage",
             name: "Terms of Service — Navsafar Travels",
             description: "Terms & Conditions for Navsafar Travels covering bookings, liability, and legal agreements.",
-            url: "https://www.navsafar.com/policies/terms",
-            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
+            url: "https://navsafar.com/policies/terms",
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://navsafar.com" },
           }),
         }}
       />

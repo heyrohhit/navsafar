@@ -75,6 +75,11 @@ export async function generateMetadata({ params }) {
     ],
     alternates: {
       canonical: `${SITE_URL}/travel/${slug}`,
+      languages: {
+        "x-default": `${SITE_URL}/travel/${slug}`,
+        "en-IN": `${SITE_URL}/travel/${slug}`,
+        "en": `${SITE_URL}/travel/${slug}`,
+      },
     },
     openGraph: {
       title,

@@ -26,6 +26,11 @@ export const metadata = {
   ],
   alternates: {
     canonical: "https://navsafar.com/packages",
+    languages: {
+      "x-default": "https://navsafar.com/packages",
+      "en-IN": "https://navsafar.com/packages",
+      "en": "https://navsafar.com/packages",
+    },
   },
   openGraph: {
     title: "Tour Packages - Domestic & International | NavSafar",

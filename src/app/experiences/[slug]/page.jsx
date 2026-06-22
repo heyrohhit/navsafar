@@ -20,6 +20,11 @@ export async function generateMetadata({ params }) {
     keywords: [`${label.toLowerCase()} tour package`, `${label.toLowerCase()} holiday india`, `${label.toLowerCase()} travel package india`],
     alternates: {
       canonical: canonicalUrl,
+      languages: {
+        "x-default": canonicalUrl,
+        "en-IN": canonicalUrl,
+        "en": canonicalUrl,
+      },
     },
     openGraph: {
       title,

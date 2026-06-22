@@ -2,22 +2,38 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Privacy Policy | Navsafar Travels",
+  title: "Privacy Policy | NavSafar Travels",
   description:
-    "Read Navsafar Travels' Privacy Policy. Learn how we collect, use, and protect your personal data in compliance with the Information Technology Act, 2000 (India).",
+    "Read NavSafar Travels' Privacy Policy. Learn how we collect, use, and protect your personal data in compliance with the Information Technology Act, 2000 (India).",
   keywords: [
-    "Navsafar Travels privacy policy",
+    "NavSafar Travels privacy policy",
     "travel agency data protection India",
     "personal data travel booking",
     "IT Act 2000 privacy",
   ],
-  openGraph: {
-    title: "Privacy Policy | Navsafar Travels",
-    description: "How Navsafar Travels collects, uses, and protects your personal information.",
-    type: "website",
-    siteName: "Navsafar Travels",
+  alternates: {
+    canonical: "https://navsafar.com/policies/privacy",
+    languages: {
+      "x-default": "https://navsafar.com/policies/privacy",
+      "en-IN": "https://navsafar.com/policies/privacy",
+      "en": "https://navsafar.com/policies/privacy",
+    },
   },
-  alternates: { canonical: "https://navsafar.com/policies/privacy" },
+  openGraph: {
+    title: "Privacy Policy | NavSafar Travels",
+    description: "How NavSafar Travels collects, uses, and protects your personal information.",
+    url: "https://navsafar.com/policies/privacy",
+    type: "website",
+    siteName: "NavSafar Travels",
+    locale: "en_IN",
+    images: [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "NavSafar" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | NavSafar Travels",
+    description: "How NavSafar Travels collects, uses, and protects your personal information.",
+    images: ["https://navsafar.com/assets/bg.jpg"],
+  },
   robots: { index: true, follow: true },
 };
 

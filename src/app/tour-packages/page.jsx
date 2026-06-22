@@ -10,6 +10,11 @@ export const metadata = {
     "Browse 50+ tour packages across domestic and international destinations. Best price guarantee, custom itineraries, flights, hotels included.",
   alternates: {
     canonical: "https://navsafar.com/tour-packages",
+    languages: {
+      "x-default": "https://navsafar.com/tour-packages",
+      "en-IN": "https://navsafar.com/tour-packages",
+      "en": "https://navsafar.com/tour-packages",
+    },
   },
   openGraph: {
     title: "Tour Packages | Domestic & International - NavSafar",

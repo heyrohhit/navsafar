@@ -16,8 +16,20 @@ export const metadata = {
   },
   description:
     "Explore 50+ iconic destinations across 30+ countries — Europe, Asia, Middle East, Americas, Africa, India & more. Book customised tour packages with NavSafar.",
+  keywords: [
+    "destinations india",
+    "travel destinations",
+    "international destinations",
+    "top tourist places india",
+    "tour packages destinations",
+  ],
   alternates: {
     canonical: "https://navsafar.com/destinations",
+    languages: {
+      "x-default": "https://navsafar.com/destinations",
+      "en-IN": "https://navsafar.com/destinations",
+      "en": "https://navsafar.com/destinations",
+    },
   },
   openGraph: {
     title: "Destinations | NavSafar Travel",
