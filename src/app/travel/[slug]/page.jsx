@@ -131,7 +131,7 @@ export default async function Page({ params }) {
   const faqs = getTravelFaqs(content, keyword);
 
   return (
-    <main className="bg-[#f7f4ef] text-gray-900 font-sans min-h-screen pt-[8vh]">
+    <main className="bg-[#f7f4ef] text-gray-900 font-sans min-h-screen pt-[7.8vh]">
 
       {/* ─── 1. HERO SECTION ─── */}
       <section className="relative w-full h-90 sm:h-90 overflow-hidden shadow-xl">
