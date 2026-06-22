@@ -131,10 +131,10 @@ export default async function Page({ params }) {
   const faqs = getTravelFaqs(content, keyword);
 
   return (
-    <main className="bg-[#f7f4ef] text-gray-900 font-sans min-h-screen">
+    <main className="bg-[#f7f4ef] text-gray-900 font-sans min-h-screen pt-[8vh]">
 
       {/* ─── 1. HERO SECTION ─── */}
-      <section className="relative w-full h-72 sm:h-[480px] overflow-hidden shadow-xl">
+      <section className="relative w-full h-90 sm:h-90 overflow-hidden shadow-xl">
         <Image
           src={content.images?.[0]?.url || `https://picsum.photos/seed/${slug}/1280/720`}
           alt={content.images?.[0]?.alt || `${keyword} tour`}
@@ -143,23 +143,23 @@ export default async function Page({ params }) {
           style={{ objectFit: 'cover', objectPosition: 'center' }}
           className="scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/100 via-black/30 to-transparent" />
 
         {/* Breadcrumb for SEO Navigation */}
-        <div className="absolute top-6 left-6 flex items-center gap-2 text-white/70 text-sm">
-          <Link href="/" className="hover:text-white transition-colors">Home</Link>
+        <div className="absolute top-6 left-6 flex items-center gap-2 text-white/70 text-[11px] bg-[#0f6474] p-2 rounded-2xl">
+          <Link href="/" className="hover:text-white transition-colors text-white">Home</Link>
           <span>/</span>
-          <Link href="/travel" className="hover:text-white transition-colors">Travel</Link>
+          <Link href="/travel" className="hover:text-white transition-colors text-white">Travel</Link>
           <span>/</span>
           <span className="text-white capitalize">{keyword}</span>
         </div>
 
         {/* Hero Title */}
-        <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-14 pb-10">
+        <div className="absolute top-20 left-0 right-0 px-6 sm:px-14 pb-10">
           <span className="inline-block bg-[#14a098] text-white text-xs font-bold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4">
             Travel Package
           </span>
-          <h1 className="text-4xl sm:text-6xl font-black text-white capitalize leading-tight drop-shadow-lg">
+          <h1 className="text-3xl md:text-5xl sm:text-4xl font-black text-white capitalize leading-tight drop-shadow-lg">
             {content.title || keyword}
           </h1>
           <div className="flex flex-wrap items-center gap-4 mt-4">
@@ -201,8 +201,8 @@ export default async function Page({ params }) {
               <div key={row.label} className="flex items-start gap-3 mb-4 last:mb-0">
                 <span className="text-lg">{row.icon}</span>
                 <div>
-                  <p className="text-[#a8c8cb] text-xs">{row.label}</p>
-                  <p className="font-semibold text-sm capitalize">{row.val}</p>
+                  <p className="text-[#ccc] text-xs">{row.label}</p>
+                  <p className="font-semibold text-sm capitalize text-[#888]">{row.val}</p>
                 </div>
               </div>
             ))}

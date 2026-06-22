@@ -23,7 +23,8 @@ const nextConfig = {
       { protocol: "https", hostname: "plus.unsplash.com", pathname: "/**" },
       { protocol: "https", hostname: "drive.google.com", pathname: "/**" },
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
-      { protocol: "https", hostname: "pexels.com", pathname: "/**" },
+      { protocol: "https", hostname: "fastly.picsum.photos", pathname: "/**" }, // ✅ Added for Picsum redirects
+      { protocol: "https", hostname: "images.pexels.com", pathname: "/**" }, // ✅ Fix: Changed from pexels.com
       { protocol: "https", hostname: "africageographic.com", pathname: "/**" },
     ],
   },
