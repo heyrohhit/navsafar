@@ -1,48 +1,60 @@
-// proxy.js - handles domain redirects and host normalization
+// src/middleware.js (Standard Next.js filename)
 
 import { NextResponse } from "next/server";
 import { shouldRedirect, PRIMARY_DOMAIN, normalizeHost } from "./lib/domainConfig";
 
 // Forward the current pathname + host to the app via request headers so
-// server components (e.g. GlobalSEO) can build per-page structured data
-// (breadcrumbs, FAQs, canonical URLs) without each page passing it down.
-function withSeoHeaders(req, res) {
-  res.headers.set("x-pathname", req.nextUrl.pathname);
-  res.headers.set("x-domain", normalizeHost(req.headers.get("host") || ""));
-  return res;
+// server components (e.g. GlobalSEO) can build per-page structured data.
+function withSeoHeaders(req) {
+  // Modern App Router way: Clone request headers
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", req.nextUrl.pathname);
+  requestHeaders.set("x-domain", normalizeHost(req.headers.get("host") || ""));
+
+  // Pass mutated headers downstream to Server Components
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
-export function proxy(req) {
+export function middleware(req) { // 'middleware' is the standard exported function name
+  const url = req.nextUrl.clone();
   const hostHeader = req.headers.get("host") || "";
   const host = normalizeHost(hostHeader);
 
-  // ✅ 1. Allow localhost (DEV)
+  // ✅ 1, 2 & 3. Combine Dev & Preview logic for cleaner code
   if (
     host.includes("localhost") ||
     host.startsWith("127.0.0.1") ||
-    host.endsWith(".local")
+    host.endsWith(".local") ||
+    host.includes(".vercel.app") ||
+    process.env.NODE_ENV === "development"
   ) {
-    return withSeoHeaders(req, NextResponse.next());
-  }
-
-  // ✅ 2. Allow Vercel preview deployments (VERY IMPORTANT)
-  if (host.includes(".vercel.app")) {
-    return withSeoHeaders(req, NextResponse.next());
-  }
-
-  // ✅ 3. Allow in development mode (extra safety)
-  if (process.env.NODE_ENV === "development") {
-    return withSeoHeaders(req, NextResponse.next());
+    return withSeoHeaders(req);
   }
 
   // 🚫 Production domain control
   if (shouldRedirect(host)) {
-    return NextResponse.redirect(PRIMARY_DOMAIN, 301);
+    // 🔥 SEO FIX: Preserve the original path and query parameters during redirect!
+    const targetUrl = new URL(url.pathname + url.search, PRIMARY_DOMAIN);
+    return NextResponse.redirect(targetUrl, 301);
   }
 
-  return withSeoHeaders(req, NextResponse.next());
+  return withSeoHeaders(req);
 }
 
 export const config = {
-  matcher: "/:path*",
+  // 🔥 Optimization FIX: Bypass static files, images, and API routes
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico, sitemap.xml, robots.txt (SEO static files)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+  ],
 };
