@@ -1,107 +1,136 @@
 // src/app/api/search/route.js
+// ✅ FIXED: Search now uses static packages data as primary source
+// + saves search lead to Contactdata.json (encrypted)
 import { NextResponse } from "next/server";
-import { supabase } from "../../lib/supabaseClient";
+import { readSearchLeads, writeSearchLeads } from "../../../lib/getContacts";
+import { packages as staticPackages } from "../../models/objAll/packages";
+import { getPackages } from "../../../lib/getPackages";
 
 export const dynamic = "force-dynamic";
+
+// ── Slug helper ──────────────────────────────────────────────
+function toSlug(str) {
+  return String(str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
+// ── Search packages from static/JSON data ───────────────────
+function searchPackages(query, allPackages) {
+  if (!query) return [];
+  const q = query.toLowerCase();
+
+  return allPackages
+    .filter((pkg) => {
+      const searchable = [
+        pkg.title, pkg.city, pkg.country,
+        pkg.tagline, pkg.description,
+        ...(pkg.tourism_type || []),
+        ...(pkg.category || []),
+        ...(pkg.highlights || []),
+      ].join(" ").toLowerCase();
+      return searchable.includes(q);
+    })
+    .slice(0, 20)
+    .map((pkg) => ({
+      id:          pkg.id,
+      type:        "package",
+      title:       pkg.title,
+      subtitle:    `${pkg.city}${pkg.country ? `, ${pkg.country}` : ""}`,
+      description: pkg.tagline || pkg.description?.substring(0, 120) || "",
+      rating:      pkg.rating  || null,
+      price:       pkg.price   || null,
+      image:       pkg.image   || null,
+      duration:    pkg.duration || "",
+      href:        `/destinations/${toSlug(pkg.city)}`,
+    }));
+}
+
+// ── Search destinations (deduplicated cities) ────────────────
+function searchDestinations(query, allPackages) {
+  if (!query) return [];
+  const q = query.toLowerCase();
+
+  const seen = new Set();
+  return allPackages
+    .filter((pkg) => {
+      const searchable = [pkg.city, pkg.country].join(" ").toLowerCase();
+      if (!searchable.includes(q)) return false;
+      if (seen.has(pkg.city)) return false;
+      seen.add(pkg.city);
+      return true;
+    })
+    .slice(0, 10)
+    .map((pkg) => ({
+      id:          pkg.id,
+      type:        "destination",
+      title:       pkg.city,
+      subtitle:    pkg.country || "",
+      description: pkg.tagline || pkg.description?.substring(0, 120) || "",
+      image:       pkg.image || null,
+      href:        `/destinations/${toSlug(pkg.city)}`,
+    }));
+}
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const q = searchParams.get("q")?.toLowerCase().trim();
-    const type = searchParams.get("type"); // packages, destinations, all
-    const limit = parseInt(searchParams.get("limit") || "10");
+    const q           = searchParams.get("q")?.trim() || "";
+    const type        = searchParams.get("type") || "all";
+    const from        = searchParams.get("from") || "";
+    const date        = searchParams.get("date") || "";
+    const travellers  = searchParams.get("travellers") || "1";
 
     if (!q || q.length < 2) {
       return NextResponse.json({
         success: true,
         data: { packages: [], destinations: [] },
-        message: "Search query too short (min 2 chars)",
+        message: "Query too short",
       });
     }
 
+    // Get all packages (JSON store → static fallback)
+    const allPackages = getPackages();
+
     const results = {
-      packages: [],
-      destinations: [],
-      total: 0,
+      packages:     type === "destinations" ? [] : searchPackages(q, allPackages),
+      destinations: type === "packages"     ? [] : searchDestinations(q, allPackages),
     };
-
-    // Search packages (if table exists)
-    try {
-      let packageQuery = supabase
-        .from("packages")
-        .select("id,title,city,country,duration,rating,price,image,tourism_type,category")
-        .ilike("title", `%${q}%`)
-        .limit(limit);
-
-      // Filter by type if specified
-      if (type === "packages") {
-        // Only packages
-      } else if (type === "destinations") {
-        // Skip packages
-        packageQuery = supabase.from("packages").select("id").limit(0); // Empty query
-      }
-
-      const { data: packages, error: pkgError } = await packageQuery;
-
-      if (!pkgError && packages) {
-        results.packages = packages.map(p => ({
-          id: p.id,
-          type: "package",
-          title: p.title,
-          subtitle: `${p.city}, ${p.country}`,
-          description: `${p.duration} • ${(p.tourism_type || []).join(", ")}`,
-          rating: p.rating,
-          price: p.price,
-          image: p.image,
-          href: `/packages/${p.id}`,
-        }));
-      }
-    } catch (e) {
-      // Packages table might not exist, skip
-      console.log("Packages table not found or error:", e.message);
-    }
-
-    // Search destinations (if table exists)
-    if (type !== "packages") {
-      try {
-        const { data: destinations, error: destError } = await supabase
-          .from("destinations")
-          .select("id,name,description,country,image")
-          .ilike("name", `%${q}%`)
-          .limit(limit);
-
-        if (!destError && destinations) {
-          results.destinations = destinations.map(d => ({
-            id: d.id,
-            type: "destination",
-            title: d.name,
-            subtitle: d.country,
-            description: d.description?.substring(0, 100) + "...",
-            image: d.image,
-            href: `/destinations/${d.id}`,
-          }));
-        }
-      } catch (e) {
-        // Destinations table might not exist, skip
-        console.log("Destinations table not found or error:", e.message);
-      }
-    }
-
     results.total = results.packages.length + results.destinations.length;
 
-    // If no results from DB, search in hardcoded data (fallback)
-    if (results.total === 0) {
-      const fallback = getFallbackSearchResults(q);
-      results.packages = fallback.packages;
-      results.destinations = fallback.destinations;
-      results.total = fallback.total;
+    // ── Save search lead (without personal info — just query + params) ──
+    // Personal info is captured via the PopUp form separately
+    try {
+      const leads = readSearchLeads();
+      const existing = leads.find(
+        (l) => l.query === q && l.from === from && l.date === date
+      );
+      if (!existing) {
+        leads.unshift({
+          id:         `search-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+          type:       "search_query",
+          query:      q,
+          from:       from,
+          date:       date,
+          travellers: travellers,
+          results:    results.total,
+          createdAt:  new Date().toISOString(),
+        });
+        // Keep last 500 search logs
+        writeSearchLeads(leads.slice(0, 500));
+      }
+    } catch (logErr) {
+      console.error("[search] log error:", logErr.message);
     }
 
     return NextResponse.json({
       success: true,
-      data: results,
-      query: q,
-      hasMore: results.total >= limit,
+      data:    results,
+      query:   q,
+      total:   results.total,
     });
 
   } catch (error) {
@@ -111,15 +140,4 @@ export async function GET(request) {
       { status: 500 }
     );
   }
-}
-
-// Fallback search in hardcoded data (for demo purposes)
-function getFallbackSearchResults(query) {
-  // This will be used if database tables don't exist yet
-  // You can import your existing package/destination data here
-  const packages = [];
-  const destinations = [];
-
-  // Return empty for now - will work when DB has data
-  return { packages, destinations, total: 0 };
 }

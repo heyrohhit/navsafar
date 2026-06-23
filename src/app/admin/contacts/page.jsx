@@ -317,6 +317,8 @@ export default function AdminContacts() {
   const [authenticated, setAuthenticated] = useState(false);
 
   const [contacts, setContacts] = useState([]);
+  const [searchLeads, setSearchLeads] = useState([]);
+  const [activeTab, setActiveTab] = useState("contacts");
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -327,11 +329,17 @@ export default function AdminContacts() {
   const fetchContacts = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await apiFetch("/api/admin/contacts");
-      if (res.success) {
-        setContacts(res.data);
+      const [contactsRes, leadsRes] = await Promise.all([
+        apiFetch("/api/admin/contacts"),
+        apiFetch("/api/search-lead"),
+      ]);
+      if (contactsRes.success) {
+        // Split: contacts = non-search_lead entries; searchLeads = search_lead entries
+        const all = contactsRes.data || [];
+        setContacts(all.filter((c) => c.type !== "search_lead"));
+        setSearchLeads(leadsRes.success ? leadsRes.data : all.filter((c) => c.type === "search_lead"));
       } else {
-        setMessage({ type: "error", text: res.message });
+        setMessage({ type: "error", text: contactsRes.message });
       }
     } catch (error) {
       setMessage({ type: "error", text: "Failed to fetch contacts" });
@@ -430,6 +438,8 @@ export default function AdminContacts() {
     pending: contacts.filter((c) => c.status === "pending").length,
     contacted: contacts.filter((c) => c.status === "contacted").length,
     resolved: contacts.filter((c) => c.status === "resolved").length,
+    searchLeads: searchLeads.length,
+    newLeads: searchLeads.filter((l) => l.status === "new").length,
   };
 
   return (
@@ -437,9 +447,9 @@ export default function AdminContacts() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Contacts</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Contacts & Leads</h1>
           <p className="text-slate-400 text-sm">
-            Manage customer inquiries and messages
+            Manage customer inquiries, search leads and messages
           </p>
         </div>
         <button
@@ -451,14 +461,46 @@ export default function AdminContacts() {
         </button>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-slate-700 pb-0">
+        {[
+          { key: "contacts", label: "Contact Messages", count: stats.total },
+          { key: "leads",    label: "Search Leads",    count: stats.searchLeads, badge: stats.newLeads },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-5 py-3 text-sm font-semibold rounded-t-xl border-b-2 transition-all flex items-center gap-2 ${
+              activeTab === tab.key
+                ? "border-amber-500 text-amber-400 bg-slate-800/60"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            {tab.label}
+            <span className="bg-slate-700 text-slate-300 text-xs px-2 py-0.5 rounded-full">{tab.count}</span>
+            {tab.badge > 0 && (
+              <span className="bg-amber-500 text-slate-900 text-xs px-1.5 py-0.5 rounded-full font-bold animate-pulse">{tab.badge} new</span>
+            )}
+          </button>
+        ))}
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: "Total", value: stats.total },
-          { label: "Pending", value: stats.pending },
-          { label: "Contacted", value: stats.contacted },
-          { label: "Resolved", value: stats.resolved },
-        ].map((stat) => (
+        {(activeTab === "contacts"
+          ? [
+              { label: "Total",     value: stats.total     },
+              { label: "Pending",   value: stats.pending   },
+              { label: "Contacted", value: stats.contacted },
+              { label: "Resolved",  value: stats.resolved  },
+            ]
+          : [
+              { label: "Total Leads",  value: stats.searchLeads },
+              { label: "New Leads",    value: stats.newLeads    },
+              { label: "With Email",   value: searchLeads.filter((l) => l.email).length },
+              { label: "With Dates",   value: searchLeads.filter((l) => l.travelDate).length },
+            ]
+        ).map((stat) => (
           <div
             key={stat.label}
             className="bg-slate-800/50 border border-slate-700 rounded-xl p-4"
@@ -471,8 +513,8 @@ export default function AdminContacts() {
         ))}
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4">
+      {/* Filters — contacts tab only */}
+      {activeTab === "contacts" && <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search
             size={18}
@@ -536,6 +578,7 @@ export default function AdminContacts() {
           </p>
         </div>
       ) : (
+        activeTab === "contacts" ? (
         <div className="space-y-4">
           {filteredContacts.map((contact, idx) => (
             <motion.div
@@ -638,6 +681,7 @@ export default function AdminContacts() {
             </motion.div>
           ))}
         </div>
+        ) : null
       )}
 
       {/* Detail Modal */}
@@ -651,6 +695,120 @@ export default function AdminContacts() {
           />
         )}
       </AnimatePresence>
+
+      {/* ── SEARCH LEADS TAB ──────────────────────────────────── */}
+      {activeTab === "leads" && (
+        <div className="space-y-4">
+          {searchLeads.length === 0 ? (
+            <div className="text-center py-20 text-slate-500">
+              <div className="text-5xl mb-4">🔍</div>
+              <p className="text-lg font-medium">No search leads yet</p>
+              <p className="text-sm mt-1">Leads appear here when users submit the search popup form</p>
+            </div>
+          ) : (
+            <>
+              {/* Export CSV button */}
+              <div className="flex justify-end">
+                <button
+                  onClick={() => {
+                    const headers = ["Name","Email","Mobile","From","Destination","Travel Date","Persons","Date","Status"];
+                    const rows = searchLeads.map((l) => [
+                      `${l.firstName} ${l.lastName}`.trim(),
+                      l.email || "",
+                      l.mobile || "",
+                      l.from || "",
+                      l.destination || "",
+                      l.travelDate || "",
+                      l.persons || "",
+                      l.date || "",
+                      l.status || "",
+                    ]);
+                    const csv = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(",")).join("
+");
+                    const blob = new Blob([csv], { type: "text/csv" });
+                    const url  = URL.createObjectURL(blob);
+                    const a    = document.createElement("a");
+                    a.href = url; a.download = `navsafar-leads-${new Date().toISOString().split("T")[0]}.csv`;
+                    a.click(); URL.revokeObjectURL(url);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30 rounded-xl text-sm font-medium transition-all"
+                >
+                  ↓ Export CSV
+                </button>
+              </div>
+
+              {/* Leads table */}
+              <div className="overflow-x-auto rounded-xl border border-slate-700">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-800 text-slate-400 text-xs uppercase tracking-wider">
+                    <tr>
+                      {["Name","Mobile","Email","From","Destination","Travel Date","Persons","Date","Status"].map((h) => (
+                        <th key={h} className="px-4 py-3 text-left font-semibold whitespace-nowrap">{h}</th>
+                      ))}
+                      <th className="px-4 py-3 text-left font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700/50">
+                    {searchLeads.map((lead, idx) => (
+                      <motion.tr
+                        key={lead.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: idx * 0.02 }}
+                        className="bg-slate-800/30 hover:bg-slate-700/40 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-medium text-white whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                              {(lead.firstName?.[0] || "?").toUpperCase()}
+                            </div>
+                            {lead.firstName} {lead.lastName}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-slate-300">
+                          <a href={`tel:${lead.mobile}`} className="hover:text-amber-400 transition-colors">{lead.mobile}</a>
+                        </td>
+                        <td className="px-4 py-3 text-slate-400 max-w-[160px] truncate">
+                          {lead.email ? (
+                            <a href={`mailto:${lead.email}`} className="hover:text-amber-400 transition-colors">{lead.email}</a>
+                          ) : <span className="text-slate-600">—</span>}
+                        </td>
+                        <td className="px-4 py-3 text-slate-400">{lead.from || "—"}</td>
+                        <td className="px-4 py-3 text-white font-medium">{lead.destination || "—"}</td>
+                        <td className="px-4 py-3 text-slate-300 whitespace-nowrap">{lead.travelDate || "—"}</td>
+                        <td className="px-4 py-3 text-center text-slate-300">{lead.persons || 1}</td>
+                        <td className="px-4 py-3 text-slate-400 whitespace-nowrap text-xs">{lead.date}</td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${
+                            lead.status === "new"
+                              ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
+                              : "bg-green-500/20 text-green-400 border-green-500/30"
+                          }`}>
+                            {lead.status || "new"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => {
+                              if (confirm("Delete this lead?")) {
+                                apiFetch(`/api/search-lead?id=${lead.id}`, { method: "DELETE" })
+                                  .then((res) => { if (res.success) fetchContacts(); });
+                              }
+                            }}
+                            className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

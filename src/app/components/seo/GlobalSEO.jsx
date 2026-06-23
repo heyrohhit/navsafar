@@ -29,6 +29,7 @@ import {
   LOGO_URL,
   DEFAULT_OG_IMAGE,
 } from "../../../lib/localBusinessConfig.js";
+import { KNOWN_HOSTS } from "../../../lib/domainConfig.js";
 import { getFaqsForPath } from "../../../lib/aeoFaqData.js";
 
 /* ── Friendly labels for known route segments (used in breadcrumbs) ── */
@@ -153,6 +154,21 @@ function buildBusinessJsonLd() {
 
   if (BUSINESS.sameAs && BUSINESS.sameAs.length > 0) {
     data.sameAs = BUSINESS.sameAs;
+  }
+
+  if (BUSINESS.services && BUSINESS.services.length > 0) {
+    data.hasOfferCatalog = {
+      "@type": "OfferCatalog",
+      name: "Travel Services",
+      itemListElement: BUSINESS.services.map((service) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service,
+          areaServed: { "@type": "Country", name: "India" },
+        },
+      })),
+    };
   }
 
   return data;

@@ -1,70 +1,69 @@
 // src/app/sitemap.js
-
+// ✅ COMPREHENSIVE SITEMAP — all routes included
 import { generateKeywords } from "../lib/seoKeywords";
-import { PRIMARY_DOMAIN } from "../lib/domainConfig"; // DOMAINS ki zaroorat nahi yahan
+import { PRIMARY_DOMAIN } from "../lib/domainConfig";
 import { getBlogs } from "../lib/getBlogs";
 import { getPackages } from "../lib/getPackages";
 
-// Standardizing slugs for clean URLs
 function toSlug(value) {
   return String(value || "")
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Fixed regex for diacritics
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "");
 }
 
+// Experience categories (must match /experiences/[slug] routes)
+const EXPERIENCE_SLUGS = [
+  "international","domestic","family","religious","cultural",
+  "adventure","beach","luxury","wildlife","romantic","historical","urban",
+];
+
 export default function sitemap() {
-  const keywords = generateKeywords();
-  const blogs = getBlogs();
-  const packages = getPackages();
-  const now = new Date();
+  const keywords    = generateKeywords();
+  const blogs       = getBlogs();
+  const packages    = getPackages();
+  const now         = new Date();
 
-  // 1. Core Static Pages
+  // ── Static pages ──────────────────────────────────────────
   const staticPages = [
-    {
-      url: PRIMARY_DOMAIN,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 1,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/travel`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/packages`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/destinations`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/blog`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-  ];
+    { url: PRIMARY_DOMAIN,                          priority: 1.0,  changeFrequency: "daily"   },
+    { url: `${PRIMARY_DOMAIN}/destinations`,        priority: 0.95, changeFrequency: "daily"   },
+    { url: `${PRIMARY_DOMAIN}/tour-packages`,       priority: 0.95, changeFrequency: "daily"   },
+    { url: `${PRIMARY_DOMAIN}/packages`,            priority: 0.90, changeFrequency: "daily"   },
+    { url: `${PRIMARY_DOMAIN}/travel`,              priority: 0.90, changeFrequency: "daily"   },
+    { url: `${PRIMARY_DOMAIN}/experiences`,         priority: 0.88, changeFrequency: "weekly"  },
+    { url: `${PRIMARY_DOMAIN}/blog`,                priority: 0.88, changeFrequency: "daily"   },
+    { url: `${PRIMARY_DOMAIN}/search`,              priority: 0.80, changeFrequency: "weekly"  },
+    { url: `${PRIMARY_DOMAIN}/booking`,             priority: 0.85, changeFrequency: "weekly"  },
+    { url: `${PRIMARY_DOMAIN}/pages/about-us`,      priority: 0.75, changeFrequency: "monthly" },
+    { url: `${PRIMARY_DOMAIN}/pages/contact`,       priority: 0.80, changeFrequency: "monthly" },
+    { url: `${PRIMARY_DOMAIN}/pages/services`,      priority: 0.82, changeFrequency: "monthly" },
+    { url: `${PRIMARY_DOMAIN}/policies`,            priority: 0.50, changeFrequency: "yearly"  },
+    { url: `${PRIMARY_DOMAIN}/policies/privacy`,    priority: 0.45, changeFrequency: "yearly"  },
+    { url: `${PRIMARY_DOMAIN}/policies/terms`,      priority: 0.45, changeFrequency: "yearly"  },
+    { url: `${PRIMARY_DOMAIN}/policies/refund`,     priority: 0.55, changeFrequency: "monthly" },
+  ].map((p) => ({ ...p, lastModified: now }));
 
-  // 2. Travel Keyword Pages (Fixed to use toSlug)
-  const travelPages = keywords.map((keyword) => ({
-    url: `${PRIMARY_DOMAIN}/travel/${toSlug(keyword)}`,
+  // ── Experience category pages ─────────────────────────────
+  const experiencePages = EXPERIENCE_SLUGS.map((slug) => ({
+    url: `${PRIMARY_DOMAIN}/experiences/${slug}`,
     lastModified: now,
-    changeFrequency: "daily",
-    priority: 0.8,
+    changeFrequency: "weekly",
+    priority: 0.82,
   }));
 
-  // 3. Destination Pages (Unique cities)
-  const destinationPages = [...new Set(packages.map((pkg) => pkg.city))]
+  // ── /travel/[keyword] pages ───────────────────────────────
+  const travelPages = keywords.map((keyword) => ({
+    url: `${PRIMARY_DOMAIN}/travel/${keyword.replace(/\s+/g, "-")}`,
+    lastModified: now,
+    changeFrequency: "daily",
+    priority: 0.80,
+  }));
+
+  // ── /destinations/[city] pages ────────────────────────────
+  const destinationPages = [...new Set(packages.map((p) => p.city))]
     .filter(Boolean)
     .map((city) => ({
       url: `${PRIMARY_DOMAIN}/destinations/${toSlug(city)}`,
@@ -73,17 +72,21 @@ export default function sitemap() {
       priority: 0.78,
     }));
 
-  // 4. Blog Pages (Only published)
+  // ── /blog/[slug] pages ────────────────────────────────────
   const blogPages = blogs
-    .filter((blog) => blog.status !== "draft")
-    .map((blog) => ({
-      url: `${PRIMARY_DOMAIN}/blog/${toSlug(blog.slug)}`, // Safety check with toSlug
-      lastModified: blog.updatedAt || blog.publishedAt || now,
+    .filter((b) => b.status !== "draft")
+    .map((b) => ({
+      url: `${PRIMARY_DOMAIN}/blog/${b.slug}`,
+      lastModified: b.updatedAt || b.publishedAt || now,
       changeFrequency: "weekly",
       priority: 0.75,
     }));
 
-  // 🚫 REMOVED: Alternate domains shouldn't be in the primary sitemap
-
-  return [...staticPages, ...travelPages, ...destinationPages, ...blogPages];
+  return [
+    ...staticPages,
+    ...experiencePages,
+    ...travelPages,
+    ...destinationPages,
+    ...blogPages,
+  ];
 }

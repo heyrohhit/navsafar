@@ -1,137 +1,174 @@
-"use client"
-import { useState } from "react"
-import { motion } from "framer-motion"
-import Image from "next/image"
+// src/app/components/common/Footer.jsx
+// ✅ OFF-PAGE + LOCAL SEO: Real social links (from localBusinessConfig)
+//    NAP schema-friendly markup, corrected internal links
+"use client";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Youtube,
-  Linkedin,
-  Mail,
-  Phone,
-  MapPin,
-  Send,
-  Heart,
-  ArrowUp,
-  Shield,
-  Award,
-  Users,
-  CheckCircle
-} from "lucide-react"
+  Facebook, Twitter, Instagram, Youtube, Linkedin,
+  Mail, Phone, MapPin, Send, Heart, ArrowUp, Shield,
+} from "lucide-react";
+import { BUSINESS } from "../../../lib/localBusinessConfig";
 
 const Footer = () => {
-  const [email, setEmail] = useState("")
-  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [email, setEmail]         = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
   const handleSubscribe = (e) => {
-    e.preventDefault()
-    setIsSubscribed(true)
-    setTimeout(() => {
-      setIsSubscribed(false)
-      setEmail("")
-    }, 3000)
-  }
+    e.preventDefault();
+    setIsSubscribed(true);
+    setTimeout(() => { setIsSubscribed(false); setEmail(""); }, 3000);
+  };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
+  // ── Internal links (corrected paths) ──────────────────────
   const footerLinks = {
     company: [
-      { name: "About Us", href: "/about" },
-      { name: "Our Story", href: "/story" },
-      { name: "Team", href: "/team" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press", href: "/press" }
+      { name: "About Us",    href: "/pages/about-us" },
+      { name: "Our Services",href: "/pages/services"  },
+      { name: "Contact Us",  href: "/pages/contact"   },
     ],
     explore: [
-      { name: "Destinations", href: "/destinations" },
-      { name: "Travel Packages", href: "/packages" },
-      { name: "Special Offers", href: "/offers" },
-      { name: "Travel Blog", href: "/blog" },
-      { name: "Gallery", href: "/gallery" }
+      { name: "Destinations",    href: "/destinations"  },
+      { name: "Tour Packages",   href: "/tour-packages" },
+      { name: "Experiences",     href: "/experiences"   },
+      { name: "Travel Guides",   href: "/travel"        },
+      { name: "Travel Blog",     href: "/blog"          },
     ],
     support: [
-      { name: "Help Center", href: "/help" },
-      { name: "Contact Us", href: "/contact" },
-      { name: "FAQs", href: "/faq" },
-      { name: "Booking Guide", href: "/guide" },
-      { name: "Cancellation Policy", href: "/cancellation" }
+      { name: "Search Packages", href: "/search"   },
+      { name: "Book a Trip",     href: "/booking"  },
+      { name: "Contact Us",      href: "/pages/contact" },
     ],
     legal: [
-      { name: "Terms of Service", href: "/policies/terms" },
-      { name: "Privacy Policy", href: "/policies/privacy" },
-      { name: "Refund Policy", href: "/policies/refund" },
-      // { name: "Travel Insurance", href: "/insurance" }
-    ]
-  }
+      { name: "Terms of Service", href: "/policies/terms"   },
+      { name: "Privacy Policy",   href: "/policies/privacy" },
+      { name: "Refund Policy",    href: "/policies/refund"  },
+    ],
+  };
 
+  // ── Social links pulled from single source of truth ───────
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook", color: "hover:bg-blue-600" },
-    { icon: Twitter, href: "#", label: "Twitter", color: "hover:bg-sky-500" },
-    { icon: Instagram, href: "#", label: "Instagram", color: "hover:bg-pink-600" },
-    { icon: Youtube, href: "#", label: "Youtube", color: "hover:bg-red-600" },
-    { icon: Linkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" }
-  ]
+    { icon: Facebook,  href: BUSINESS.socials.facebook,  label: "Facebook",  color: "hover:bg-blue-600"  },
+    { icon: Twitter,   href: BUSINESS.socials.twitter,   label: "Twitter/X", color: "hover:bg-sky-500"   },
+    { icon: Instagram, href: BUSINESS.socials.instagram, label: "Instagram", color: "hover:bg-pink-600"  },
+    { icon: Youtube,   href: BUSINESS.socials.youtube,   label: "YouTube",   color: "hover:bg-red-600"   },
+    { icon: Linkedin,  href: BUSINESS.socials.linkedin,  label: "LinkedIn",  color: "hover:bg-blue-700"  },
+  ];
 
-  const paymentMethods = ["Visa", "Mastercard", "PayPal", "UPI", "NetBanking"]
+  const paymentMethods = ["Visa", "Mastercard", "UPI", "Net Banking", "NEFT"];
 
   const trustBadges = [
     { icon: Shield, text: "100% Secure Booking", sub: "SSL Encrypted" },
-    // { icon: Award, text: "Award Winning", sub: "Best Travel Agency 2024" },
-    // { icon: Users, text: "50K+ Happy Customers", sub: "And counting..." }
-  ]
+  ];
 
   return (
-    <footer className="overflow-x-hidden font-sans relative z-[2]">
+    <footer
+      className="overflow-x-hidden font-sans relative z-[2]"
+      // ── LOCAL SEO: schema.org-friendly footer ──────────────
+      itemScope
+      itemType="https://schema.org/TravelAgency"
+    >
+      {/* Hidden machine-readable NAP for Local SEO */}
+      <meta itemProp="name"      content={BUSINESS.legalName} />
+      <meta itemProp="telephone" content={BUSINESS.phone}     />
+      <meta itemProp="email"     content={BUSINESS.email}     />
+      <link itemProp="url"       href="https://navsafar.com"  />
 
-
-      {/* ── MAIN FOOTER ── */}
+      {/* ── MAIN FOOTER ─────────────────────────────────────── */}
       <div className="bg-[#0f6477]">
         <div className="max-w-7xl mx-auto px-6 pt-16 pb-10">
 
           {/* top grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-10 pb-12 border-b border-white/10">
 
-            {/* Brand */}
+            {/* ── Brand + NAP + Social ── */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="lg:col-span-2"
             >
-              <div className="">
-                <Image src="/assets/logo.png" alt="Navsafar" width={120} height={120} className="object-contain" />
-              </div>
+              <Link href="/" aria-label="NavSafar Home">
+                <Image
+                  src="/assets/logo.png"
+                  alt="NavSafar Travel Solutions"
+                  width={120}
+                  height={120}
+                  className="object-contain"
+                />
+              </Link>
 
               <p className="text-white/60 mb-7 leading-relaxed text-sm">
-                Your trusted partner for unforgettable travel experiences. We curate the world's most amazing destinations and create memories that last a lifetime.
+                Your trusted travel partner for unforgettable domestic &amp; international holidays. We curate the best tour packages for Indian travellers.
               </p>
 
-              {/* Contact */}
-              <ul className="space-y-3 mb-8">
-                {[
-                  { icon: Phone, text: "+91 8882128640" },
-                  { icon: Mail, text: "info@navsafartravels.com" },
-                  { icon: MapPin, text: "WZ-447, First Floor, Left Side\nNangal Raya, Delhi 110046" }
-                ].map(({ icon: Icon, text }, i) => (
-                  <li key={i} className="flex items-start gap-3 text-white/60 text-sm">
+              {/* NAP — marked up for Local SEO */}
+              <address
+                className="not-italic"
+                itemScope
+                itemType="https://schema.org/PostalAddress"
+              >
+                <ul className="space-y-3 mb-8">
+                  {/* Phone */}
+                  <li className="flex items-start gap-3 text-white/60 text-sm">
                     <span className="mt-0.5 w-8 h-8 rounded-lg bg-amber-400/15 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-4 h-4 text-amber-400" />
+                      <Phone className="w-4 h-4 text-amber-400" />
                     </span>
-                    <span className="whitespace-pre-line">{text}</span>
+                    <a
+                      href={`tel:${BUSINESS.phone}`}
+                      itemProp="telephone"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      {BUSINESS.phoneDisplay}
+                    </a>
                   </li>
-                ))}
-              </ul>
 
-              {/* Social */}
+                  {/* Email */}
+                  <li className="flex items-start gap-3 text-white/60 text-sm">
+                    <span className="mt-0.5 w-8 h-8 rounded-lg bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-4 h-4 text-amber-400" />
+                    </span>
+                    <a
+                      href={`mailto:${BUSINESS.email}`}
+                      itemProp="email"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      {BUSINESS.email}
+                    </a>
+                  </li>
+
+                  {/* Address */}
+                  <li className="flex items-start gap-3 text-white/60 text-sm">
+                    <span className="mt-0.5 w-8 h-8 rounded-lg bg-amber-400/15 flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-4 h-4 text-amber-400" />
+                    </span>
+                    <a
+                      href={BUSINESS.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-400 transition-colors"
+                    >
+                      <span itemProp="streetAddress">{BUSINESS.address.streetAddress}</span>,{" "}
+                      <span itemProp="addressLocality">{BUSINESS.address.addressLocality}</span>{" "}
+                      <span itemProp="postalCode">{BUSINESS.address.postalCode}</span>
+                    </a>
+                  </li>
+                </ul>
+              </address>
+
+              {/* Social links — real URLs for Off-Page SEO */}
               <div className="flex gap-2 flex-wrap">
                 {socialLinks.map((s) => (
                   <motion.a
                     key={s.label}
                     href={s.href}
-                    aria-label={s.label}
+                    aria-label={`NavSafar on ${s.label}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     whileHover={{ y: -3, scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     className={`w-9 h-9 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white/70 hover:text-white ${s.color} hover:border-transparent transition-all duration-300`}
@@ -142,7 +179,7 @@ const Footer = () => {
               </div>
             </motion.div>
 
-            {/* Links — Company, Explore, Support */}
+            {/* ── Link columns ── */}
             {["company", "explore", "support"].map((cat, idx) => (
               <motion.div
                 key={cat}
@@ -158,14 +195,13 @@ const Footer = () => {
                 <ul className="space-y-3">
                   {footerLinks[cat].map((link) => (
                     <li key={link.name}>
-                      <motion.a
+                      <Link
                         href={link.href}
-                        whileHover={{ x: 4 }}
                         className="text-white/55 hover:text-amber-400 transition-colors duration-300 text-sm inline-flex items-center gap-1.5 group"
                       >
                         <span className="w-1 h-1 rounded-full bg-amber-400/0 group-hover:bg-amber-400 transition-all duration-300 inline-block flex-shrink-0" />
                         {link.name}
-                      </motion.a>
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -221,13 +257,13 @@ const Footer = () => {
           <div className="pt-6 pb-2 border-b border-white/10">
             <div className="flex flex-wrap gap-x-6 gap-y-2">
               {footerLinks.legal.map((link) => (
-                <a
+                <Link
                   key={link.name}
                   href={link.href}
                   className="text-white/40 hover:text-amber-400 text-xs transition-colors duration-200"
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -238,15 +274,14 @@ const Footer = () => {
       <div className="bg-[#0d5567]">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/45 text-sm">
-            © {new Date().getFullYear()} <span className="text-white/70 font-semibold">Navsafar</span>. All rights reserved.
+            © {new Date().getFullYear()}{" "}
+            <span className="text-white/70 font-semibold">NavSafar Travel Solutions</span>. All rights reserved.
           </p>
-
           <div className="flex items-center gap-1.5 text-white/45 text-sm">
             <span>Made with</span>
             <Heart className="w-4 h-4 text-red-400 fill-red-400" />
             <span>in India</span>
           </div>
-
           <motion.button
             onClick={scrollToTop}
             whileHover={{ scale: 1.1, y: -2 }}
@@ -258,9 +293,8 @@ const Footer = () => {
           </motion.button>
         </div>
       </div>
-
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;
