@@ -542,7 +542,7 @@ export default function AdminContacts() {
           </select>
         </div>
       </div>
-
+      }
       {/* Message */}
       {message.text && (
         <motion.div
@@ -723,8 +723,7 @@ export default function AdminContacts() {
                       l.date || "",
                       l.status || "",
                     ]);
-                    const csv = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(",")).join("
-");
+                    const csv = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(",")).join("");
                     const blob = new Blob([csv], { type: "text/csv" });
                     const url  = URL.createObjectURL(blob);
                     const a    = document.createElement("a");
