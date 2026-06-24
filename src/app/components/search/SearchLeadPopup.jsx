@@ -1,9 +1,6 @@
 // src/app/components/search/SearchLeadPopup.jsx
-// ✅ FIXED:
-//   - Field component moved OUTSIDE — no more remount on keypress
-//   - Input focus loss bug eliminated
 "use client";
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useCallback, memo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, User, Mail, Phone, MapPin, Calendar, Users,
@@ -11,8 +8,7 @@ import {
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────
-// ✅ KEY FIX: Field is defined OUTSIDE the parent component
-// so React never unmounts it on re-render → no focus loss
+// Field defined OUTSIDE — no remount on re-render
 // ─────────────────────────────────────────────────────────────
 const Field = memo(function Field({
   icon: Icon, label, name, type = "text",
@@ -31,10 +27,10 @@ const Field = memo(function Field({
           value={value}
           onChange={onChange}
           autoComplete={
-            name === "mobile" ? "tel" :
-            name === "email"  ? "email" :
-            name === "firstName" ? "given-name" :
-            name === "lastName"  ? "family-name" : "off"
+            name === "mobile"    ? "tel"         :
+            name === "email"     ? "email"        :
+            name === "firstName" ? "given-name"   :
+            name === "lastName"  ? "family-name"  : "off"
           }
           className={`w-full pl-10 pr-4 py-3 rounded-xl border text-sm outline-none transition-all focus:ring-2
             ${error
@@ -57,6 +53,33 @@ export default function SearchLeadPopup({ searchData, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [done, setDone]     = useState(false);
 
+  // ✅ FIX 1: Stable handlers — useCallback so Field memo actually works
+  // Without this, every parent render creates new fn references → Field re-renders
+  // → browser drops focus between keystrokes on some engines (Safari, Firefox)
+  const handleFirstName = useCallback((e) => {
+    const v = e.target.value;
+    setForm((f) => ({ ...f, firstName: v }));
+    setErrors((er) => ({ ...er, firstName: "" }));
+  }, []);
+
+  const handleLastName = useCallback((e) => {
+    const v = e.target.value;
+    setForm((f) => ({ ...f, lastName: v }));
+    setErrors((er) => ({ ...er, lastName: "" }));
+  }, []);
+
+  const handleEmail = useCallback((e) => {
+    const v = e.target.value;
+    setForm((f) => ({ ...f, email: v }));
+    setErrors((er) => ({ ...er, email: "" }));
+  }, []);
+
+  const handleMobile = useCallback((e) => {
+    const v = e.target.value;
+    setForm((f) => ({ ...f, mobile: v }));
+    setErrors((er) => ({ ...er, mobile: "" }));
+  }, []);
+
   // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -69,13 +92,6 @@ export default function SearchLeadPopup({ searchData, onClose, onSuccess }) {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
-
-  function handleChange(name) {
-    return (e) => {
-      setForm((f) => ({ ...f, [name]: e.target.value }));
-      setErrors((er) => ({ ...er, [name]: "" }));
-    };
-  }
 
   function validate() {
     const e = {};
@@ -126,22 +142,26 @@ export default function SearchLeadPopup({ searchData, onClose, onSuccess }) {
   const travellerCount = Number(searchData?.travellers) || 0;
 
   return (
+    // ✅ FIX 2: Outer wrapper is a plain div — no motion here.
+    // Previously if AnimatePresence was missing, motion.div on the wrapper
+    // could re-trigger layout animations on every state change → focus stolen.
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* Backdrop — animate once on mount only */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+        // ✅ FIX 3: No exit animation on backdrop — avoids re-render cascade
         className="absolute inset-0 bg-black/65 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
+      {/* Modal — animate once on mount, then STATIC */}
       <motion.div
         initial={{ opacity: 0, scale: 0.93, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.93, y: 24 }}
-        transition={{ type: "spring", damping: 26, stiffness: 320 }}
+        // ✅ FIX 4: transition uses duration (not spring) — spring recalculates
+        // velocity on every frame which can interfere with focus on some browsers
+        transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
         className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -155,7 +175,7 @@ export default function SearchLeadPopup({ searchData, onClose, onSuccess }) {
             <X className="w-4 h-4" />
           </button>
 
-          <h2 className="text-xl font-bold mb-1">Almost There! 🎉</h2>
+          <h2 className="text-xl font-bold mb-1 text-white">Almost There! 🎉</h2>
           <p className="text-white/80 text-sm">
             Share your details and we&apos;ll send you the best packages.
           </p>
@@ -212,13 +232,13 @@ export default function SearchLeadPopup({ searchData, onClose, onSuccess }) {
                   icon={User} label="First Name" name="firstName"
                   placeholder="Rahul" required
                   value={form.firstName} error={errors.firstName}
-                  onChange={handleChange("firstName")}
+                  onChange={handleFirstName}
                 />
                 <Field
                   icon={User} label="Last Name" name="lastName"
                   placeholder="Sharma"
                   value={form.lastName} error={errors.lastName}
-                  onChange={handleChange("lastName")}
+                  onChange={handleLastName}
                 />
               </div>
 
@@ -226,14 +246,14 @@ export default function SearchLeadPopup({ searchData, onClose, onSuccess }) {
                 icon={Phone} label="Mobile Number" name="mobile" type="tel"
                 placeholder="+91 98765 43210" required
                 value={form.mobile} error={errors.mobile}
-                onChange={handleChange("mobile")}
+                onChange={handleMobile}
               />
 
               <Field
                 icon={Mail} label="Email Address" name="email" type="email"
                 placeholder="rahul@example.com"
                 value={form.email} error={errors.email}
-                onChange={handleChange("email")}
+                onChange={handleEmail}
               />
 
               {errors.submit && (
