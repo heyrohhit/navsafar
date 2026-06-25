@@ -4,6 +4,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { kvRead, kvWrite } from "../../../../lib/kvStore";
+import { clearPackagesCache } from "../../../../lib/getPackages";
 import { packages as staticPackages } from "../../../models/objAll/packages";
 
 export const dynamic = "force-dynamic";
@@ -92,11 +93,12 @@ export async function POST(req) {
     packages.unshift(newPkg);
     await savePackages(packages);
 
-    revalidatePath("/packages");
-    revalidatePath("/tour-packages");
-    revalidatePath("/destinations");
-    revalidatePath("/experiences");
-    revalidatePath("/");
+    clearPackagesCache();
+    revalidatePath("/packages", "page");
+    revalidatePath("/tour-packages", "page");
+    revalidatePath("/destinations", "page");
+    revalidatePath("/experiences", "page");
+    revalidatePath("/", "page");
 
     return NextResponse.json({ success: true, data: newPkg, message: "Package created." }, { status: 201 });
   } catch (err) {
@@ -139,12 +141,13 @@ export async function PUT(req) {
     packages[idx] = updated;
     await savePackages(packages);
 
-    revalidatePath("/packages");
-    revalidatePath("/tour-packages");
-    revalidatePath("/destinations");
-    revalidatePath("/experiences");
-    revalidatePath(`/destinations/${updated.city?.toLowerCase().replace(/\s+/g, "-")}`);
-    revalidatePath("/");
+    clearPackagesCache();
+    revalidatePath("/packages", "page");
+    revalidatePath("/tour-packages", "page");
+    revalidatePath("/destinations", "page");
+    revalidatePath("/experiences", "page");
+    revalidatePath(`/destinations/${updated.city?.toLowerCase().replace(/\s+/g, "-")}`, "page");
+    revalidatePath("/", "page");
 
     return NextResponse.json({ success: true, data: updated, message: "Package updated." });
   } catch (err) {
@@ -171,11 +174,12 @@ export async function DELETE(req) {
 
     await savePackages(filtered);
 
-    revalidatePath("/packages");
-    revalidatePath("/tour-packages");
-    revalidatePath("/destinations");
-    revalidatePath("/experiences");
-    revalidatePath("/");
+    clearPackagesCache();
+    revalidatePath("/packages", "page");
+    revalidatePath("/tour-packages", "page");
+    revalidatePath("/destinations", "page");
+    revalidatePath("/experiences", "page");
+    revalidatePath("/", "page");
 
     return NextResponse.json({ success: true, message: "Package deleted." });
   } catch (err) {

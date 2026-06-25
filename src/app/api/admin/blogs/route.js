@@ -4,6 +4,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { kvRead, kvWrite } from "../../../../lib/kvStore";
+import { clearBlogsCache } from "../../../../lib/getBlogs";
 import { blogs as staticBlogs } from "../../../models/objAll/blog";
 import { parseFaqText } from "../../../../lib/parseFaqText";
 
@@ -90,8 +91,9 @@ export async function POST(req) {
     await saveBlogs(blogs);
 
     // Invalidate Next.js cache so users see new blog immediately
-    revalidatePath("/blog");
-    revalidatePath("/");
+    clearBlogsCache(); // force fresh read on next request
+    revalidatePath("/blog", "page");
+    revalidatePath("/", "page");
 
     return NextResponse.json({ success: true, data: newBlog, message: "Blog created." }, { status: 201 });
   } catch (err) {
@@ -134,9 +136,10 @@ export async function PUT(req) {
     blogs[idx] = updated;
     await saveBlogs(blogs);
 
-    revalidatePath("/blog");
-    revalidatePath(`/blog/${updated.slug}`);
-    revalidatePath("/");
+    clearBlogsCache();
+    revalidatePath("/blog", "page");
+    revalidatePath(`/blog/${updated.slug}`, "page");
+    revalidatePath("/", "page");
 
     return NextResponse.json({ success: true, data: updated, message: "Blog updated." });
   } catch (err) {
@@ -166,8 +169,9 @@ export async function DELETE(req) {
 
     await saveBlogs(filtered);
 
-    revalidatePath("/blog");
-    revalidatePath("/");
+    clearBlogsCache();
+    revalidatePath("/blog", "page");
+    revalidatePath("/", "page");
 
     return NextResponse.json({ success: true, message: "Blog deleted." });
   } catch (err) {
