@@ -1,324 +1,162 @@
 // src/app/api/admin/blogs/route.js
-// Protected CRUD for blog data stored in src/data/blogsData.json.
+// ✅ FIXED: Uses kvStore (Vercel KV → /tmp) instead of local filesystem
+// Admin changes now persist across deployments
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { kvRead, kvWrite } from "../../../../lib/kvStore";
 import { blogs as staticBlogs } from "../../../models/objAll/blog";
 import { parseFaqText } from "../../../../lib/parseFaqText";
 
-const DATA_FILE = path.join(process.cwd(), "src", "data", "blogsData.json");
+export const dynamic = "force-dynamic";
 
 function isAuthorized(req) {
-  const auth = req.headers.get("Authorization") ?? "";
+  const auth  = req.headers.get("Authorization") ?? "";
   const token = process.env.ADMIN_SECRET_TOKEN;
   return Boolean(token && auth === `Bearer ${token}`);
 }
 
-function unauthorizedResponse() {
-  return NextResponse.json(
-    { success: false, message: "Unauthorized — invalid or missing token." },
-    { status: 401 }
-  );
-}
-
-function readBlogs() {
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (err) {
-    console.error("[readBlogs]", err.message);
-  }
-  return [...staticBlogs];
-}
-
-function writeBlogs(data) {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(DATA_FILE, `${JSON.stringify(data, null, 2)}\n`, "utf-8");
-}
-
-function toArray(value, fallback = []) {
-  if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean);
-  if (typeof value === "string" && value.trim()) return value.split(",").map((item) => item.trim()).filter(Boolean);
-  return fallback;
-}
-
-function slugify(value) {
-  const slug = String(value || "")
+function toSlug(value) {
+  return String(value || "")
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/&/g, " and ")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug || "blog";
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 }
 
-function generateSlug(title, existingIds = []) {
-  const base = slugify(title);
-  let slug = base;
-  let index = 2;
-  while (existingIds.has(slug)) {
-    slug = `${base}-${index}`;
-    index += 1;
-  }
-  return slug;
+async function getBlogs() {
+  const stored = await kvRead("blogs");
+  if (Array.isArray(stored) && stored.length > 0) return stored;
+  return staticBlogs;
 }
 
-function safeHtml(html = "") {
-  return String(html)
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
-    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-    .replace(/\son[a-z]+\s*=\s*(['"]).*?\1/gi, "")
-    .replace(/\son[a-z]+\s*=\s*[^>\s]+/gi, "");
+async function saveBlogs(blogs) {
+  await kvWrite("blogs", blogs);
 }
 
-function parseLines(value) {
-  return String(value || "")
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean);
-}
-
-function parseItinerary(value) {
-  const text = String(value || "").replace(/\r\n/g, "\n").trim();
-  if (!text) return [];
-
-  function parsePipeLine(line) {
-    if (!line.includes("|")) return null;
-    const [rawDay = "", rawTitle = "", ...rawDescription] = line.split("|");
-    const day = rawDay.trim().replace(/^Day\s*/i, "");
-    const title = rawTitle.trim();
-    const description = rawDescription.join("|").trim();
-
-    if (!title && !description) return null;
-    return {
-      day,
-      title: title || (day ? `Day ${day}` : "Itinerary"),
-      description,
-    };
-  }
-
-  function parseHeading(line) {
-    const match = line.match(/^(Day\s*\d+(?:\s*[-–]\s*\d+)?|\d+(?:\s*[-–]\s*\d+)?)\s*[:\-–]\s*(.*)$/i);
-    if (!match || !match[2].trim()) return null;
-
-    return {
-      day: match[1].trim(),
-      title: match[2].trim(),
-      description: "",
-    };
-  }
-
-  const lines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
-  const items = [];
-  let currentItem = null;
-
-  lines.forEach((line) => {
-    const pipeItem = parsePipeLine(line);
-    const headingItem = parseHeading(line);
-    const parsedItem = pipeItem || headingItem;
-
-    if (parsedItem) {
-      if (currentItem) items.push(currentItem);
-      currentItem = parsedItem;
-      return;
-    }
-
-    if (currentItem) {
-      currentItem.description = [currentItem.description, line].filter(Boolean).join(" ");
-    } else {
-      const title = line.replace(/^[-*•]\s*/, "").trim();
-      if (title) items.push({ day: "", title, description: "" });
-    }
-  });
-
-  if (currentItem) items.push(currentItem);
-  return items.filter((item) => item.title);
-}
-
-function buildStructuredContent(body, original = {}) {
-  const originalStructured = original.structuredContent || {};
-  const intro = body.intro?.trim() || body.structuredContent?.intro || originalStructured.intro || body.excerpt?.trim() || original.excerpt || "";
-  const highlights = toArray(body.highlights, originalStructured.highlights || []);
-  const tips = toArray(body.tips, originalStructured.tips || []);
-  const itinerary = Array.isArray(body.itinerary)
-    ? body.itinerary
-    : parseItinerary(body.itinerary || originalStructured.itineraryText || "");
-  const parsedFaq = parseFaqText(body.faqText || originalStructured.faqText || "");
-  const faq = Array.isArray(body.faq) ? body.faq : parsedFaq;
-
-  return {
-    intro,
-    highlights,
-    tips,
-    itinerary,
-    faq,
-    faqText: parsedFaq.length ? body.faqText || originalStructured.faqText || "" : "",
-    itineraryText: body.itinerary || originalStructured.itineraryText || "",
-  };
-}
-
-function structuredContentToPlainText(structuredContent = {}) {
-  const itineraryText = (structuredContent.itinerary || [])
-    .map((item) => `${item.title || ""} ${item.description || ""}`)
-    .join(" ");
-
-  return [
-    structuredContent.intro,
-    ...(structuredContent.highlights || []),
-    ...(structuredContent.tips || []),
-    itineraryText,
-    ...(structuredContent.faq || []).flatMap((item) => [item.q, item.a]),
-  ].join(" ");
-}
-
-function normalizeBlog(body, existingIds = new Set(), original = {}) {
-  const now = new Date().toISOString();
-  const title = body.title?.trim() || original.title || "";
-  const id = body.id?.trim() || original.id || `blog-${Date.now()}`;
-  const requestedSlug = body.slug?.trim() || original.slug;
-  const tags = toArray(body.tags, original.tags || []);
-  const category = body.category?.trim() || original.category || "Travel";
-  const structuredContent = body.structuredContent || buildStructuredContent(body, original);
-  const legacyContent = safeHtml(body.content || original.content || "");
-  const content = legacyContent || structuredContentToPlainText(structuredContent);
-
-  return {
-    id,
-    slug: requestedSlug ? slugify(requestedSlug) : generateSlug(title, existingIds),
-    title,
-    excerpt: body.excerpt?.trim() || original.excerpt || structuredContent.intro?.slice(0, 170) || "",
-    coverImage: body.coverImage?.trim() || original.coverImage || "",
-    category,
-    tags,
-    author: {
-      name: body.author?.name?.trim() || original.author?.name || "Navsafar Travels",
-      avatar: body.author?.avatar?.trim() || original.author?.avatar || "/assets/logo.jpeg",
-      designation: body.author?.designation?.trim() || original.author?.designation || "Senior Travel Writer",
-    },
-    publishedAt: body.publishedAt?.trim() || original.publishedAt || new Date().toISOString().slice(0, 10),
-    readTime: body.readTime?.trim() || original.readTime || `${Math.max(1, Math.ceil(content.replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length / 200))} min read`,
-    featured: body.featured === true || body.featured === "true" || original.featured === true,
-    status: body.status?.trim() || original.status || "published",
-    content: legacyContent,
-    structuredContent,
-    createdAt: original.createdAt || now,
-    updatedAt: now,
-  };
-}
-
+// ── GET — admin list ─────────────────────────────────────────
 export async function GET(req) {
-  if (!isAuthorized(req)) return unauthorizedResponse();
-
-  try {
-    const blogs = readBlogs();
-    return NextResponse.json(
-      { success: true, data: blogs, total: blogs.length },
-      {
-        headers: {
-          "Cache-Control": "private, no-store",
-        },
-      }
-    );
-  } catch (err) {
-    console.error("[GET /api/admin/blogs]", err);
-    return NextResponse.json({ success: false, message: "Internal server error." }, { status: 500 });
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
   }
+  const blogs = await getBlogs();
+  return NextResponse.json({ success: true, data: blogs, total: blogs.length });
 }
 
+// ── POST — create blog ───────────────────────────────────────
 export async function POST(req) {
-  if (!isAuthorized(req)) return unauthorizedResponse();
-
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
+  }
   try {
     const body = await req.json();
     if (!body.title?.trim()) {
-      return NextResponse.json({ success: false, message: "Field 'title' is required." }, { status: 400 });
-    }
-    if (!body.excerpt?.trim() && !body.intro?.trim() && !body.structuredContent?.intro) {
-      return NextResponse.json({ success: false, message: "Field 'excerpt' or structured intro is required." }, { status: 400 });
+      return NextResponse.json({ success: false, message: "Title is required." }, { status: 400 });
     }
 
-    const blogs = readBlogs();
-    const existingIds = new Set(blogs.map((blog) => blog.id));
-    const proposedSlug = slugify(body.slug?.trim() || generateSlug(body.title, existingIds));
-    if (blogs.some((blog) => blog.slug === proposedSlug && blog.id !== body.id)) {
-      return NextResponse.json(
-        { success: false, message: "A blog with this slug already exists. Use a unique slug." },
-        { status: 409 }
-      );
+    const blogs = await getBlogs();
+    const slug  = body.slug?.trim() || toSlug(body.title);
+
+    if (blogs.find((b) => b.slug === slug)) {
+      return NextResponse.json({ success: false, message: "Slug already exists." }, { status: 409 });
     }
 
-    const newBlog = normalizeBlog(body, existingIds);
+    const structuredContent = body.structuredContent ?? {};
+    if (!Array.isArray(structuredContent.faq) || structuredContent.faq.length === 0) {
+      structuredContent.faq = parseFaqText(structuredContent.faqText || "");
+    }
+
+    const newBlog = {
+      id:          body.id          || `blog-${Date.now()}`,
+      slug,
+      title:       body.title.trim(),
+      excerpt:     body.excerpt     || "",
+      coverImage:  body.coverImage  || "/assets/bg.jpg",
+      category:    body.category    || "General",
+      tags:        body.tags        || [],
+      author:      body.author      || { name: "NavSafar Travels", avatar: "/assets/logo.jpeg", designation: "Travel Expert" },
+      publishedAt: body.publishedAt || new Date().toISOString().slice(0, 10),
+      readTime:    body.readTime    || "3 min read",
+      featured:    body.featured    ?? false,
+      status:      body.status      || "draft",
+      content:     body.content     || "",
+      structuredContent,
+      destination: body.destination || {},
+      createdAt:   new Date().toISOString(),
+      updatedAt:   new Date().toISOString(),
+    };
+
     blogs.unshift(newBlog);
-    writeBlogs(blogs);
+    await saveBlogs(blogs);
 
-    return NextResponse.json(
-      { success: true, data: newBlog, message: "Blog created successfully." },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true, data: newBlog, message: "Blog created." }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/admin/blogs]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
 
+// ── PUT — update blog ────────────────────────────────────────
 export async function PUT(req) {
-  if (!isAuthorized(req)) return unauthorizedResponse();
-
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
+  }
   try {
     const body = await req.json();
-    if (!body.id) {
-      return NextResponse.json({ success: false, message: "Field 'id' is required for update." }, { status: 400 });
+    if (!body.id && !body.slug) {
+      return NextResponse.json({ success: false, message: "id or slug required." }, { status: 400 });
     }
 
-    const blogs = readBlogs();
-    const idx = blogs.findIndex((blog) => blog.id === body.id);
+    const blogs = await getBlogs();
+    const idx   = blogs.findIndex(
+      (b) => b.id === body.id || b.slug === body.slug
+    );
     if (idx === -1) {
-      return NextResponse.json({ success: false, message: `Blog with id '${body.id}' not found.` }, { status: 404 });
+      return NextResponse.json({ success: false, message: "Blog not found." }, { status: 404 });
     }
 
-    const existingIds = new Set(blogs.filter((blog) => blog.id !== body.id).map((blog) => blog.id));
-    const proposedSlug = slugify(body.slug?.trim() || body.title || generateSlug(blogs[idx].title, existingIds));
-    if (blogs.some((blog) => blog.slug === proposedSlug && blog.id !== body.id)) {
-      return NextResponse.json(
-        { success: false, message: "Another blog already uses this slug." },
-        { status: 409 }
-      );
+    const structuredContent = body.structuredContent ?? blogs[idx].structuredContent ?? {};
+    if (!Array.isArray(structuredContent.faq) || structuredContent.faq.length === 0) {
+      structuredContent.faq = parseFaqText(structuredContent.faqText || "");
     }
 
-    const updated = normalizeBlog({ ...body, id: body.id }, existingIds, blogs[idx]);
+    const updated = {
+      ...blogs[idx],
+      ...body,
+      structuredContent,
+      updatedAt: new Date().toISOString(),
+    };
+
     blogs[idx] = updated;
-    writeBlogs(blogs);
+    await saveBlogs(blogs);
 
-    return NextResponse.json({ success: true, data: updated, message: "Blog updated successfully." });
+    return NextResponse.json({ success: true, data: updated, message: "Blog updated." });
   } catch (err) {
     console.error("[PUT /api/admin/blogs]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
 
+// ── DELETE — delete blog ─────────────────────────────────────
 export async function DELETE(req) {
-  if (!isAuthorized(req)) return unauthorizedResponse();
-
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
+  }
   try {
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
+    const id = searchParams.get("id") || searchParams.get("slug");
     if (!id) {
-      return NextResponse.json({ success: false, message: "Query param 'id' is required." }, { status: 400 });
+      return NextResponse.json({ success: false, message: "id or slug required." }, { status: 400 });
     }
 
-    const blogs = readBlogs();
-    const filtered = blogs.filter((blog) => blog.id !== id);
+    const blogs   = await getBlogs();
+    const filtered = blogs.filter((b) => b.id !== id && b.slug !== id);
+
     if (filtered.length === blogs.length) {
-      return NextResponse.json({ success: false, message: `Blog with id '${id}' not found.` }, { status: 404 });
+      return NextResponse.json({ success: false, message: "Blog not found." }, { status: 404 });
     }
 
-    writeBlogs(filtered);
-    return NextResponse.json({ success: true, message: "Blog deleted successfully." });
+    await saveBlogs(filtered);
+    return NextResponse.json({ success: true, message: "Blog deleted." });
   } catch (err) {
     console.error("[DELETE /api/admin/blogs]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });

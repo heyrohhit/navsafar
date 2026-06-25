@@ -5,6 +5,7 @@
 import fs from "fs";
 import path from "path";
 import { blogs as staticBlogs, blogCategories as staticBlogCategories } from "../app/models/objAll/blog.js";
+import { kvReadSync } from "./kvStore.js";
 import { parseFaqText } from "./parseFaqText";
 import { getPackages, getPackagesMtimeMs } from "./getPackages";
 
@@ -254,15 +255,12 @@ function generatePackageFaq(pkg) {
 
 function readStoredBlogs() {
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
+    // kvReadSync: /tmp first (latest admin writes) → src/data seed fallback
+    const stored = kvReadSync("blogs");
+    if (Array.isArray(stored) && stored.length > 0) return stored;
   } catch (err) {
-    console.error("[getBlogs] read error:", err.message);
+    console.error("[getBlogs] kvReadSync error:", err.message);
   }
-
   return staticBlogs;
 }
 
