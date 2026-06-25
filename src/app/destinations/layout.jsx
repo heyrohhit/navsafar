@@ -1,3 +1,6 @@
+// ISR: revalidate every 60s
+export const revalidate = 60;
+
 /**
  * FILE: src/app/destinations/layout.jsx
  *

@@ -2,6 +2,7 @@
 // ✅ FIXED: Uses kvStore (Vercel KV → /tmp) instead of local filesystem
 // Admin changes now persist across deployments
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { kvRead, kvWrite } from "../../../../lib/kvStore";
 import { blogs as staticBlogs } from "../../../models/objAll/blog";
 import { parseFaqText } from "../../../../lib/parseFaqText";
@@ -88,6 +89,10 @@ export async function POST(req) {
     blogs.unshift(newBlog);
     await saveBlogs(blogs);
 
+    // Invalidate Next.js cache so users see new blog immediately
+    revalidatePath("/blog");
+    revalidatePath("/");
+
     return NextResponse.json({ success: true, data: newBlog, message: "Blog created." }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/admin/blogs]", err);
@@ -129,6 +134,10 @@ export async function PUT(req) {
     blogs[idx] = updated;
     await saveBlogs(blogs);
 
+    revalidatePath("/blog");
+    revalidatePath(`/blog/${updated.slug}`);
+    revalidatePath("/");
+
     return NextResponse.json({ success: true, data: updated, message: "Blog updated." });
   } catch (err) {
     console.error("[PUT /api/admin/blogs]", err);
@@ -156,6 +165,10 @@ export async function DELETE(req) {
     }
 
     await saveBlogs(filtered);
+
+    revalidatePath("/blog");
+    revalidatePath("/");
+
     return NextResponse.json({ success: true, message: "Blog deleted." });
   } catch (err) {
     console.error("[DELETE /api/admin/blogs]", err);

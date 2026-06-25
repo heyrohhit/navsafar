@@ -1,5 +1,9 @@
 // src/app/experiences/page.jsx
 // ✅ SERVER COMPONENT
+
+// ISR: revalidate every 60s — admin changes reflect within 1 minute
+export const revalidate = 60;
+
 import ExperienceCategories from "./ExperienceCategories";
 
 export const metadata = {

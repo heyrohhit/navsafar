@@ -1,5 +1,8 @@
 // src/app/destinations/[slug]/page.jsx
 // SERVER COMPONENT — reads from packagesData.json via getPackages()
+
+// ISR: revalidate every 60s
+export const revalidate = 60;
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";

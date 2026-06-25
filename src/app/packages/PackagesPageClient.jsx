@@ -20,9 +20,6 @@ const CATEGORY_META = {
   domestic:      { label: "Domestic",      emoji: "🇮🇳", accent: "#16a34a" },
 };
 
-// ─── Package Data ──────────────────────────────────────────────────────────────
-import ALL_PACKAGES_RAW from "../../data/packagesData.json";
-
 // ✅ toSlug helper — city name → URL-safe slug
 function toSlug(city) {
   return city

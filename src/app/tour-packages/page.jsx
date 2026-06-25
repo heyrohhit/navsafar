@@ -1,5 +1,9 @@
 // src/app/tour-packages/page.jsx
 // ✅ SERVER COMPONENT — metadata yahan kaam karta hai
+
+// ISR: revalidate every 60s — admin changes reflect within 1 minute
+export const revalidate = 60;
+
 import TourPackagesClient from "./TourPackagesClient";
 import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
 import { getPackages } from "../../lib/getPackages";

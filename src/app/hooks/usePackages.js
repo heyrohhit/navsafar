@@ -47,7 +47,7 @@ export function usePackages(opts = {}) {
     setError(null);
 
     try {
-      const res  = await fetch(buildUrl(), { signal: abortRef.current.signal });
+      const res  = await fetch(buildUrl(), { signal: abortRef.current.signal, cache: "no-store" });
       if (!res.ok) throw new Error(`API error ${res.status}`);
       const json = await res.json();
       if (json.success && Array.isArray(json.data)) {

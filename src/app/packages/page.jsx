@@ -7,6 +7,10 @@
 // PackagesPageClient should be a separate file: src/app/packages/PackagesPageClient.jsx
 // The duplicate `export default function PackagesPage()` at the bottom has been removed.
 
+
+// ISR: revalidate every 60s — admin changes reflect within 1 minute
+export const revalidate = 60;
+
 import PackagesPageClient from "./PackagesPageClient";
 import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
 import { getPackages } from "../../lib/getPackages";
