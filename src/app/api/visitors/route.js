@@ -1,36 +1,37 @@
-const SHEET_ID = process.env.SHEET_ID;
-const SHEET_GID = process.env.SHEET_GID;
+// src/app/api/visitors/route.js
+// ✅ FIXED: Reads from Supabase visitors table (not Google Sheets)
+import { NextResponse } from "next/server";
+import { createSupabaseClient } from "../../../lib/supabaseClient";
 
-export async function GET() {
+export const dynamic = "force-dynamic";
+
+function isAuthorized(req) {
+  const auth  = req.headers.get("Authorization") ?? "";
+  const token = process.env.ADMIN_SECRET_TOKEN;
+  return Boolean(token && auth === `Bearer ${token}`);
+}
+
+export async function GET(req) {
+  if (!isAuthorized(req))
+    return NextResponse.json({ success: false, message: "Unauthorized." }, { status: 401 });
+
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
+    const { searchParams } = new URL(req.url);
+    const limit  = parseInt(searchParams.get("limit") || "200");
+    const offset = parseInt(searchParams.get("offset") || "0");
 
-    const response = await fetch(url, {
-      cache: "no-store",
-    });
+    const supabase = createSupabaseClient(true);
+    const { data, error, count } = await supabase
+      .from("visitors")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
-    if (!response.ok) {
-      return Response.json(
-        { error: "Failed to fetch sheet data" },
-        { status: 500 }
-      );
-    }
+    if (error) throw error;
 
-    const csv = await response.text();
-
-    return new Response(csv, {
-      headers: {
-        "Content-Type": "text/csv",
-      },
-    });
-  } catch (error) {
-    return Response.json(
-      {
-        error: error.message,
-      },
-      {
-        status: 500,
-      }
-    );
+    return NextResponse.json({ success: true, data: data ?? [], total: count ?? 0 });
+  } catch (err) {
+    console.error("[GET /api/visitors]", err);
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

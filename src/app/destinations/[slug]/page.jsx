@@ -1,12 +1,11 @@
 // src/app/destinations/[slug]/page.jsx
-// SERVER COMPONENT — reads from packagesData.json via getPackages()
+// SERVER COMPONENT — reads from Supabase packages table via getPackagesAsync()
 
-// ISR: revalidate every 60s
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getPackages } from "../../../lib/getPackages";
+import { getPackagesAsync } from "../../../lib/getPackages";
 
 // ── Helpers ───────────────────────────────────────────────────────
 function toSlug(city) {
@@ -89,7 +88,7 @@ function FAQSection({ faqs }) {
 
 // ── generateStaticParams ──────────────────────────────────────────
 export async function generateStaticParams() {
-  const packages = getPackages();
+  const packages = await getPackagesAsync();
   const cities   = [...new Set(packages.map((p) => p.city))];
   return cities.map((city) => ({ slug: toSlug(city) }));
 }
@@ -97,7 +96,7 @@ export async function generateStaticParams() {
 // ── generateMetadata ─────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const packages = getPackages();
+  const packages = await getPackagesAsync();
   const dest = packages.find((p) => toSlug(p.city) === slug);
   if (!dest) return { title: "Destination Not Found" };
 
@@ -144,7 +143,7 @@ export async function generateMetadata({ params }) {
 // ── JSON-LD Structured Data ──────────────────────────────────────
 export async function generateJsonLd({ params }) {
   const { slug } = await params;
-  const packages = getPackages();
+  const packages = await getPackagesAsync();
   const cityPackages = packages.filter((p) => toSlug(p.city) === slug);
   if (cityPackages.length === 0) return null;
 
@@ -195,7 +194,7 @@ export async function generateJsonLd({ params }) {
 // ── PAGE ─────────────────────────────────────────────────────────
 export default async function DestinationPage({ params }) { // ✅ async + await params
   const { slug } = await params;
-  const packages = getPackages();
+  const packages = await getPackagesAsync();
 
   const cityPackages = packages.filter((p) => toSlug(p.city) === slug);
   if (cityPackages.length === 0) notFound();

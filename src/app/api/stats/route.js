@@ -1,55 +1,54 @@
 // src/app/api/stats/route.js
+// ✅ FIXED: destinations table nahi hai → packages count use karo
 import { NextResponse } from "next/server";
-import { supabase } from "../../lib/supabaseClient";
+import { createSupabaseClient } from "../../lib/supabaseClient";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    // Get testimonials stats
-    const [
-      testimonialsRes,
-      packagesRes,
-      destinationsRes,
-    ] = await Promise.all([
-      supabase.from("testimonials").select("*", { count: "exact" }).eq("is_approved", true),
-      supabase.from("packages").select("*", { count: "exact" }), // Assuming packages table exists
-      supabase.from("destinations").select("*", { count: "exact" }), // Assuming destinations table
+    const supabase = createSupabaseClient(true);
+
+    const [testimonialsRes, packagesRes, blogsRes, leadsRes] = await Promise.all([
+      supabase.from("testimonials").select("rating", { count: "exact" }).eq("is_approved", true),
+      supabase.from("packages").select("id,popular", { count: "exact" }),
+      supabase.from("blogs").select("id,status", { count: "exact" }),
+      supabase.from("search_leads").select("id,status", { count: "exact" }),
     ]);
 
-    const stats = {
-      testimonials: {
-        total: testimonialsRes.count || 0,
-        avgRating: 0, // Will calculate below if we have data
-      },
-      packages: {
-        total: packagesRes.count || 0,
-        featured: 0,
-      },
-      destinations: {
-        total: destinationsRes.count || 0,
-      },
-      updatedAt: new Date().toISOString(),
-    };
+    const testimonials = testimonialsRes.data ?? [];
+    const packages     = packagesRes.data     ?? [];
+    const blogs        = blogsRes.data        ?? [];
+    const leads        = leadsRes.data        ?? [];
 
-    // Calculate average rating if we have testimonials
-    if (testimonialsRes.data && testimonialsRes.data.length > 0) {
-      const totalRating = testimonialsRes.data.reduce((sum, t) => sum + t.rating, 0);
-      stats.testimonials.avgRating = (totalRating / testimonialsRes.data.length).toFixed(1);
-    }
-
-    // Get featured packages count
-    if (packagesRes.data) {
-      stats.packages.featured = packagesRes.data.filter(p => p.popular || p.is_featured).length;
-    }
+    const avgRating = testimonials.length
+      ? (testimonials.reduce((s, t) => s + (t.rating || 0), 0) / testimonials.length).toFixed(1)
+      : "0.0";
 
     return NextResponse.json({
       success: true,
-      data: stats,
+      data: {
+        testimonials: {
+          total:     testimonialsRes.count ?? 0,
+          avgRating: parseFloat(avgRating),
+        },
+        packages: {
+          total:    packagesRes.count ?? 0,
+          featured: packages.filter((p) => p.popular).length,
+        },
+        blogs: {
+          total:     blogsRes.count ?? 0,
+          published: blogs.filter((b) => b.status === "published").length,
+        },
+        leads: {
+          total:  leadsRes.count ?? 0,
+          newLeads: leads.filter((l) => l.status === "new").length,
+        },
+        updatedAt: new Date().toISOString(),
+      },
     });
-  } catch (error) {
-    console.error("[GET /api/stats]", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch stats" },
-      { status: 500 }
-    );
+  } catch (err) {
+    console.error("[GET /api/stats]", err);
+    return NextResponse.json({ success: false, message: "Failed to fetch stats" }, { status: 500 });
   }
 }
