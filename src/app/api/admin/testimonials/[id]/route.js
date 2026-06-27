@@ -1,6 +1,6 @@
 // src/app/api/admin/testimonials/[id]/route.js
 import { NextResponse } from "next/server";
-import { createSupabaseClient } from "../../../../lib/supabaseClient";
+import { createSupabaseClient } from "../../../../../lib/supabaseClient";
 
 // Auth helper
 function isAuthorized(req) {

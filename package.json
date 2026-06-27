@@ -11,7 +11,9 @@
     "seed:testimonials": "node scripts/seed-testimonials.js"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.101.1",
+    "@supabase/server": "^1.2.0",
+    "@supabase/ssr": "^0.12.0",
+    "@supabase/supabase-js": "^2.108.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "async-country-state-city": "^1.2.3",
@@ -19,6 +21,7 @@
     "clsx": "^2.1.1",
     "country-state-city": "^3.2.1",
     "critters": "^0.0.23",
+    "dotenv": "^17.4.2",
     "framer-motion": "^12.34.3",
     "googleapis": "^171.4.0",
     "lucide-react": "^0.575.0",
