@@ -2,7 +2,7 @@
 // ✅ FIXED: Reads from Supabase (same source as admin writes)
 // SERVER-SIDE ONLY
 
-import { createSupabaseClient } from "../app/lib/supabaseClient.js";
+import { createSupabaseClient } from "./supabaseClient.js";
 import { packages as staticPackages } from "../app/models/objAll/packages.js";
 
 // ── Short TTL cache to avoid repeated DB calls within same request ──

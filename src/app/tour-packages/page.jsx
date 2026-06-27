@@ -1,12 +1,12 @@
+export const dynamic = "force-dynamic";
+
 // src/app/tour-packages/page.jsx
 // ✅ SERVER COMPONENT — metadata yahan kaam karta hai
 
 // ISR: revalidate every 60s — admin changes reflect within 1 minute
-export const revalidate = 60;
-
 import TourPackagesClient from "./TourPackagesClient";
 import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
-import { getPackages } from "../../lib/getPackages";
+import { getPackagesAsync } from "../../lib/getPackages";
 
 export const metadata = {
   title: "Tour Packages | Domestic & International - NavSafar",
@@ -31,8 +31,8 @@ export const metadata = {
 
 // Metadata server component se export hoti hai, client component se NAHI.
 // isliye page.jsx server component raha aur interactive logic alag file mein gaya.
-export default function TourPackagesPage() {
-  const packages = getPackages();
+export default async function TourPackagesPage() {
+  const packages = await getPackagesAsync();
   return (
     <>
       <UniversalSchemaInjector

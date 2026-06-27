@@ -2,8 +2,8 @@
 // ✅ COMPREHENSIVE SITEMAP — all routes included
 import { generateKeywords } from "../lib/seoKeywords";
 import { PRIMARY_DOMAIN } from "../lib/domainConfig";
-import { getBlogs } from "../lib/getBlogs";
-import { getPackages } from "../lib/getPackages";
+import { getBlogsAsync } from "../lib/getBlogs";
+import { getPackagesAsync } from "../lib/getPackages";
 
 function toSlug(value) {
   return String(value || "")
@@ -20,10 +20,10 @@ const EXPERIENCE_SLUGS = [
   "adventure","beach","luxury","wildlife","romantic","historical","urban",
 ];
 
-export default function sitemap() {
+export default async function sitemap() {
   const keywords    = generateKeywords();
-  const blogs       = getBlogs();
-  const packages    = getPackages();
+  const blogs       = await getBlogsAsync();
+  const packages    = await getPackagesAsync();
   const now         = new Date();
 
   // ── Static pages ──────────────────────────────────────────

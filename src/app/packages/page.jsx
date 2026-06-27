@@ -8,12 +8,11 @@
 // The duplicate `export default function PackagesPage()` at the bottom has been removed.
 
 
-// ISR: revalidate every 60s — admin changes reflect within 1 minute
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 import PackagesPageClient from "./PackagesPageClient";
 import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
-import { getPackages } from "../../lib/getPackages";
+import { getPackagesAsync } from "../../lib/getPackages";
 
 export const metadata = {
   title: "Tour Packages - Domestic & International | NavSafar",
@@ -53,8 +52,8 @@ export const metadata = {
   },
 };
 
-export default function PackagesPage() {
-  const packages = getPackages();
+export default async function PackagesPage() {
+  const packages = await getPackagesAsync();
   return (
     <>
       <UniversalSchemaInjector

@@ -23,7 +23,7 @@ export function clearBlogsCache() {
 async function fetchFromSupabase() {
   try {
     // Dynamic import so this file stays usable in static/edge contexts
-    const { createSupabaseClient } = await import("../app/lib/supabaseClient.js");
+    const { createSupabaseClient } = await import("./supabaseClient.js");
     const supabase = createSupabaseClient(false); // anon key for reads
 
     const { data, error } = await supabase
