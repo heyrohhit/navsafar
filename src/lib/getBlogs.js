@@ -39,7 +39,7 @@ async function fetchFromSupabase() {
   return null;
 }
 
-// DB column → camelCase
+// DB column → camelCase (exact Supabase blogs schema)
 function dbToFrontend(row) {
   if (!row) return row;
   const sc = row.structured_content ?? row.structuredContent ?? {};
@@ -48,9 +48,15 @@ function dbToFrontend(row) {
   }
   return {
     ...row,
-    coverImage:       row.cover_image       ?? row.coverImage,
-    publishedAt:      row.published_at      ?? row.publishedAt,
-    readTime:         row.read_time         ?? row.readTime,
+    // Reconstruct author from flat columns (author_name, author_avatar, author_designation)
+    author: row.author ?? {
+      name:        row.author_name        ?? "NavSafar Travels",
+      avatar:      row.author_avatar      ?? "/assets/logo.jpeg",
+      designation: row.author_designation ?? "Travel Expert",
+    },
+    coverImage:        row.cover_image        ?? row.coverImage  ?? "",
+    publishedAt:       row.published_at       ?? row.publishedAt ?? "",
+    readTime:          row.read_time          ?? row.readTime    ?? "",
     structuredContent: sc,
   };
 }
