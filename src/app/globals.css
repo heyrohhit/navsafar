@@ -65,7 +65,6 @@
   /* Font Families */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-display: 'Reey', cursive;
 }
 
 /* ==========================================
@@ -315,7 +314,7 @@
   font-display: swap;
 }
 
-.reey-font {
+.reey-fonts {
   font-family: 'Reey', cursive;
 }
 

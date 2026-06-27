@@ -196,7 +196,7 @@ export default function HeroSection() {
         <div className="flex gap-2 justify-center pb-2">
           {slides.map((s, i) => (
             <button key={i} onClick={() => goTo(i)}
-              className={`h-1 rounded-full cursor-pointer border-0 p-0 transition-all duration-300 ${i === index ? "w-7" : "w-3"}`}
+              className={`h-1 rounded-full cursor-pointer border-0 p-0 transition-all duration-300 reey-fonts ${i === index ? "w-7" : "w-3"}`}
               style={{ background: i === index ? s.color : "rgba(255,255,255,0.3)" }}
               aria-label={`Go to slide ${i + 1}`} />
           ))}
