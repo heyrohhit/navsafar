@@ -632,7 +632,7 @@ export default function AdminPackages() {
                       <div className="flex items-center gap-3">
                         {pkg.image && !pkg.image.startsWith("data:") ? (
                           <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
-                            <Image
+                            <img
                               src={
                                 pkg.image.includes("drive.google")
                                   ? pkg.image.replace("/file/d/", "https://lh3.googleusercontent.com/d/")
@@ -647,7 +647,7 @@ export default function AdminPackages() {
                           </div>
                         ) : (
                           <div className="w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0">
-                            <Image src="/assets/logo.png" alt="Placeholder" width={20} height={20} className="text-slate-400" />
+                            <img src="/assets/logo.png" alt="Placeholder" width={20} height={20} className="text-slate-400" />
                           </div>
                         )}
                         <div>

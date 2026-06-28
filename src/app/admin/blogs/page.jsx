@@ -726,7 +726,7 @@ export default function AdminBlogs() {
                       <div className="flex items-center gap-3">
                         {blog.coverImage ? (
                           <div className="relative w-16 h-12 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
-                            <Image src={blog.coverImage} alt={blog.title} fill className="object-cover" unoptimized />
+                            <img src={blog.coverImage} alt={blog.title} fill className="object-cover" unoptimized />
                           </div>
                         ) : (
                           <div className="w-16 h-12 rounded-lg bg-slate-700 flex items-center justify-center text-slate-400">
