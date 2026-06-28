@@ -103,6 +103,14 @@ function buildPackageBlog(pkg) {
   };
 }
 
+// ── Date sort helper — updated_at > created_at > publishedAt ─
+function getDateMs(blog) {
+  const d = blog.updated_at || blog.updatedAt || blog.created_at || blog.createdAt || blog.publishedAt || blog.published_at || "";
+  if (!d) return 0;
+  const ms = Date.parse(d);
+  return isNaN(ms) ? 0 : ms;
+}
+
 // ── MAIN — async (use in server components & API routes) ─────
 export async function getBlogsAsync() {
   if (isCacheValid()) return _cache;
@@ -116,6 +124,9 @@ export async function getBlogsAsync() {
     ...baseBLogs,
     ...packageBlogs.filter((b) => !usedSlugs.has(b.slug)),
   ];
+
+  // ✅ FIX: Supabase updated_at / created_at ke hisaab se sort — latest sabse upar
+  merged.sort((a, b) => getDateMs(b) - getDateMs(a));
 
   _cache     = merged;
   _cacheTime = Date.now();
@@ -141,13 +152,18 @@ export async function getBlogBySlug(slug) {
 
 export async function getFeaturedBlogs(limit = 1) {
   const blogs = await getBlogsAsync();
-  return blogs.filter((b) => b.featured === true).slice(0, limit);
+  // ✅ FIX: Featured blogs bhi date ke hisaab se sort — latest sabse upar
+  return blogs
+    .filter((b) => b.featured === true)
+    .sort((a, b) => getDateMs(b) - getDateMs(a))
+    .slice(0, limit);
 }
 
 export async function getRecentBlogs(limit = 6) {
   const blogs = await getBlogsAsync();
+  // ✅ FIX: updated_at ya created_at use karo — publishedAt nahi
   return [...blogs]
-    .sort((a, b) => new Date(b.publishedAt||0) - new Date(a.publishedAt||0))
+    .sort((a, b) => getDateMs(b) - getDateMs(a))
     .slice(0, limit);
 }
 
@@ -169,5 +185,6 @@ export async function getRelatedBlogs(currentSlug, category, limit = 3) {
   const blogs = await getBlogsAsync();
   return blogs
     .filter((b) => b.slug !== currentSlug && b.category === category)
+    .sort((a, b) => getDateMs(b) - getDateMs(a))
     .slice(0, limit);
 }

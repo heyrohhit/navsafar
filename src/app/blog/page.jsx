@@ -19,6 +19,11 @@ function formatDate(dateStr) {
   } catch { return ""; }
 }
 
+// ✅ FIX: Supabase updated_at > created_at > publishedAt priority
+function getDisplayDate(blog) {
+  return blog.updated_at || blog.updatedAt || blog.created_at || blog.createdAt || blog.publishedAt || blog.published_at || "";
+}
+
 function buildJsonLd(featuredBlogs) {
   return {
     "@context": "https://schema.org",
@@ -128,7 +133,7 @@ function FeaturedCard({ blog }) {
           </div>
           <div>
             <p className="text-white text-xs font-semibold">{blog.author?.name || "NavSafar Travels"}</p>
-            <p className="text-white/40 text-[11px]">{formatDate(blog.publishedAt)}</p>
+            <p className="text-white/40 text-[11px]">{formatDate(getDisplayDate(blog))}</p>
           </div>
         </div>
         <span className="inline-flex items-center gap-2 text-[#0f6477] text-xs font-bold tracking-widest uppercase group-hover:gap-4 transition-all duration-200">
@@ -146,7 +151,7 @@ function BlogCard({ blog }) {
   return (
     <Link
       href={`/blog/${blog.slug}`}
-      className="group flex flex-col bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden hover:border-[#0f6477]/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#0f6477]/10"
+      className="blog-card-lazy group flex flex-col bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden hover:border-[#0f6477]/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#0f6477]/10"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image
@@ -174,7 +179,7 @@ function BlogCard({ blog }) {
               <Image src={blog.author?.avatar || "/assets/logo.jpeg"} alt={blog.author?.name || "NavSafar"} fill className="object-cover" />
             </div>
             <span className="text-white/40 text-[11px]">
-              {blog.author?.name || "NavSafar Travels"} · {formatDate(blog.publishedAt)}
+              {blog.author?.name || "NavSafar Travels"} · {formatDate(getDisplayDate(blog))}
             </span>
           </div>
           <svg className="w-4 h-4 text-[#0f6477] opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
