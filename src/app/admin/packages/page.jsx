@@ -630,7 +630,7 @@ export default function AdminPackages() {
                   <tr key={pkg.id} className="hover:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        {pkg.image ? (
+                        {pkg.image && !pkg.image.startsWith("data:") ? (
                           <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
                             <Image
                               src={
@@ -638,10 +638,11 @@ export default function AdminPackages() {
                                   ? pkg.image.replace("/file/d/", "https://lh3.googleusercontent.com/d/")
                                   : pkg.image
                               }
-                              alt={pkg.title}
+                              alt={pkg.title || "Package"}
                               fill
                               className="object-cover"
                               unoptimized
+                              onError={(e) => { e.currentTarget.style.display = "none"; }}
                             />
                           </div>
                         ) : (

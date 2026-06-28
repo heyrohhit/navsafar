@@ -14,17 +14,27 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [320, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // ✅ 60 din cache — hero images frequently change nahi hoti
-    minimumCacheTTL: 5184000,
-    disableStaticImages: false,
+    unoptimized: true,
     remotePatterns: [
       ...buildRemotePatterns(),
+      // ── Image CDNs ───────────────────────────────────────────────────────
       { protocol: "https", hostname: "images.unsplash.com", pathname: "/**" },
       { protocol: "https", hostname: "plus.unsplash.com", pathname: "/**" },
-      { protocol: "https", hostname: "drive.google.com", pathname: "/**" },
+      {
+        protocol: "https",
+        hostname: "**", // or specific domain (recommended below)
+      },
       { protocol: "https", hostname: "picsum.photos", pathname: "/**" },
-      { protocol: "https", hostname: "fastly.picsum.photos", pathname: "/**" }, // ✅ Added for Picsum redirects
-      { protocol: "https", hostname: "images.pexels.com", pathname: "/**" }, // ✅ Fix: Changed from pexels.com
+      { protocol: "https", hostname: "fastly.picsum.photos", pathname: "/**" },
+      { protocol: "https", hostname: "images.pexels.com", pathname: "/**" },
+      // ── Supabase Storage — project subdomains ────────────────────────────
+      // Covers https://<project-ref>.supabase.co/storage/v1/object/public/...
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/**" },
+      { protocol: "https", hostname: "*.supabase.in", pathname: "/**" },
+      // ── Google links (Drive / Docs preview thumbnails) ───────────────────
+      { protocol: "https", hostname: "drive.google.com", pathname: "/**" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com", pathname: "/**" },
+      // ── Other ────────────────────────────────────────────────────────────
       { protocol: "https", hostname: "africageographic.com", pathname: "/**" },
     ],
   },

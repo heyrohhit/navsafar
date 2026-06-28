@@ -54,6 +54,7 @@ export default function HeroSection() {
   const [mounted, setMounted] = useState(false);
   const slide = useMemo(() => slides[index], [index]);
 
+  // console.log("slide data is :",slide.image)
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -98,7 +99,7 @@ export default function HeroSection() {
         {!mounted ? (
           <div className="relative w-full h-[120vh] -z-10">
             <Image
-              src={slides[0].image}
+              src={slides[2].image}
               alt="NavSafar travel destination"
               fill
               priority={true}
@@ -120,14 +121,10 @@ export default function HeroSection() {
               className="relative w-full h-[120vh] -z-10"
               style={{ willChange: "opacity" }}
             >
-              <Image
+              <img
                 src={slide.image}
                 alt={`NavSafar travel — ${slide.accent}`}
-                fill
-                priority={index === 0}
-                quality={75}
-                sizes="100vw"
-                style={{ objectFit: "cover" }}
+                style={{ objectFit: "cover",height: "100vh",width:"100vw" }}
               />
             </motion.div>
           </AnimatePresence>

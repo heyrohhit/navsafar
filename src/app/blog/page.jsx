@@ -129,7 +129,7 @@ function FeaturedCard({ blog }) {
         <p className="text-white/50 text-sm leading-relaxed mb-8 line-clamp-3">{blog.excerpt}</p>
         <div className="flex items-center gap-3 mb-6">
           <div className="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#0f6477]/50">
-            <Image src={blog.author?.avatar || "/assets/logo.jpeg"} alt={blog.author?.name || "NavSafar"} fill className="object-cover" />
+            <img src={blog.author?.avatar || "/assets/logo.jpeg"} alt={blog.author?.name || "NavSafar"} fill className="object-cover" />
           </div>
           <div>
             <p className="text-white text-xs font-semibold">{blog.author?.name || "NavSafar Travels"}</p>
@@ -154,11 +154,10 @@ function BlogCard({ blog }) {
       className="blog-card-lazy group flex flex-col bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden hover:border-[#0f6477]/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#0f6477]/10"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <Image
+        <img
           src={blog.coverImage || "/assets/bg.jpg"}
           alt={blog.title}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-500 group-hover:scale-105 h-full w-full"
           sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -176,7 +175,7 @@ function BlogCard({ blog }) {
         <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
           <div className="flex items-center gap-2">
             <div className="relative w-7 h-7 rounded-full overflow-hidden ring-1 ring-[#0f6477]/40">
-              <Image src={blog.author?.avatar || "/assets/logo.jpeg"} alt={blog.author?.name || "NavSafar"} fill className="object-cover" />
+              <img src={blog.author?.avatar || "/assets/logo.jpeg"} alt={blog.author?.name || "NavSafar"} fill className="object-cover" />
             </div>
             <span className="text-white/40 text-[11px]">
               {blog.author?.name || "NavSafar Travels"} · {formatDate(getDisplayDate(blog))}
@@ -222,7 +221,7 @@ export default async function BlogPage({ searchParams }) {
       {/* Hero */}
       <section className="relative h-[360px] sm:h-[420px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <Image
+          <img
             src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1600&q=80"
             alt="Travel blog hero"
             fill
@@ -290,7 +289,7 @@ export default async function BlogPage({ searchParams }) {
           <div className="flex gap-0 max-w-md mx-auto border border-white/[0.1] rounded-lg overflow-hidden focus-within:border-[#0f6477]/70 transition-colors">
             <input type="email" placeholder="Your email address"
               className="flex-1 bg-white/[0.04] text-white placeholder:text-white/25 text-sm px-5 py-4 outline-none" />
-            <button className="bg-[#0f6477] hover:bg-[#1a7d93] text-white text-[11px] font-black tracking-widest uppercase px-6 transition-colors">
+            <button className="bg-[#0f6477] hover:bg-[#1a7d93] text-white h-[50px]  text-[11px] font-black tracking-widest uppercase px-6 transition-colors">
               Subscribe
             </button>
           </div>

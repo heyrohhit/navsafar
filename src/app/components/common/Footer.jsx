@@ -121,7 +121,7 @@ const Footer = () => {
                     <a
                       href={`tel:${BUSINESS.phone}`}
                       itemProp="telephone"
-                      className="hover:text-amber-400 transition-colors"
+                      className="hover:text-amber-400 transition-colors text-white"
                     >
                       {BUSINESS.phoneDisplay}
                     </a>
@@ -135,7 +135,7 @@ const Footer = () => {
                     <a
                       href={`mailto:${BUSINESS.email}`}
                       itemProp="email"
-                      className="hover:text-amber-400 transition-colors"
+                      className="hover:text-amber-400 transition-colors text-white"
                     >
                       {BUSINESS.email}
                     </a>
@@ -150,7 +150,7 @@ const Footer = () => {
                       href={BUSINESS.googleMapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-amber-400 transition-colors"
+                      className="hover:text-amber-400 transition-colors text-white"
                     >
                       <span itemProp="streetAddress">{BUSINESS.address.streetAddress}</span>,{" "}
                       <span itemProp="addressLocality">{BUSINESS.address.addressLocality}</span>{" "}

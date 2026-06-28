@@ -55,7 +55,7 @@ function FeaturedCard({ blog }) {
       className="blog-featured-lazy group grid md:grid-cols-2 bg-white/[0.03] border border-white/[0.07] rounded-2xl overflow-hidden hover:border-[#0f6477]/60 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#0f6477]/10"
     >
       <div className="relative overflow-hidden min-h-[280px] md:min-h-0">
-        <Image
+        <img
           src={blog.coverImage || blog.cover_image || "/assets/bg.jpg"}
           alt={blog.title}
           fill
@@ -79,11 +79,10 @@ function FeaturedCard({ blog }) {
         <p className="text-white/50 text-sm leading-relaxed mb-8 line-clamp-3">{blog.excerpt}</p>
         <div className="flex items-center gap-3 mb-6">
           <div className="relative w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#0f6477]/50">
-            <Image
+            <img
               src={blog.author?.avatar || blog.author_avatar || "/assets/logo.jpeg"}
               alt={blog.author?.name || blog.author_name || "NavSafar"}
-              fill
-              className="object-cover"
+              className="object-cover h-full w-full"
             />
           </div>
           <div>
@@ -110,7 +109,7 @@ function BlogCard({ blog }) {
       className="blog-card-lazy group flex flex-col bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden hover:border-[#0f6477]/60 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#0f6477]/10"
     >
       <div className="relative aspect-[16/10] overflow-hidden">
-        <Image
+        <img
           src={blog.coverImage || blog.cover_image || "/assets/bg.jpg"}
           alt={blog.title}
           fill
@@ -133,11 +132,10 @@ function BlogCard({ blog }) {
         <div className="flex items-center justify-between pt-4 border-t border-white/[0.06]">
           <div className="flex items-center gap-2">
             <div className="relative w-7 h-7 rounded-full overflow-hidden ring-1 ring-[#0f6477]/40">
-              <Image
+              <img
                 src={blog.author?.avatar || blog.author_avatar || "/assets/logo.jpeg"}
                 alt={blog.author?.name || blog.author_name || "NavSafar"}
-                fill
-                className="object-cover"
+                className="object-cover h-full w-full"
               />
             </div>
             <span className="text-white/40 text-[11px]">
@@ -326,7 +324,7 @@ export default function BlogPage() {
               placeholder="Your email address"
               className="flex-1 bg-white/[0.04] text-white placeholder:text-white/25 text-sm px-5 py-4 outline-none"
             />
-            <button className="bg-[#0f6477] hover:bg-[#1a7d93] text-white text-[11px] font-black tracking-widest uppercase px-6 transition-colors">
+            <button className="bg-[#0f6477] hover:bg-[#1a7d93] text-white h-[50px] text-[11px] font-black tracking-widest uppercase px-6 transition-colors">
               Subscribe
             </button>
           </div>

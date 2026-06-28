@@ -1,73 +1,104 @@
 // src/app/hooks/usePackages.js
-// ─────────────────────────────────────────────────────────────────────────────
-// CLIENT HOOK — fetches packages from the public API.
-// Instantly returns static data as fallback so UI never flashes empty.
-// Re-fetches whenever any filter option changes.
-// ─────────────────────────────────────────────────────────────────────────────
 "use client";
-import { useState, useEffect, useRef } from "react";
-import { packages as staticPackages } from "../models/objAll/packages";
 
-/**
- * @param {Object}  opts
- * @param {string}  [opts.category]      – filter by category slug
- * @param {string}  [opts.tourism_type]  – filter by tourism type
- * @param {boolean} [opts.popular]       – only popular packages
- * @param {string}  [opts.search]        – free-text search
- * @param {number}  [opts.limit]         – max results
- *
- * @returns {{ packages: Array, loading: boolean, error: string|null, refetch: Function }}
- */
+import { useState, useEffect, useRef, useCallback } from "react";
+
 export function usePackages(opts = {}) {
-  // Start with static data — zero flicker on first render
-  const [packages, setPackages] = useState(staticPackages);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(null);
+  const {
+    category,
+    tourism_type,
+    popular,
+    search,
+    limit,
+  } = opts;
 
-  // Abort controller ref — cancel stale requests
+  const [packages, setPackages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const abortRef = useRef(null);
+  const retryCountRef = useRef(0);
 
-  function buildUrl() {
+  const MAX_RETRY = 2;
+
+  const buildUrl = useCallback(() => {
     const params = new URLSearchParams();
-    if (opts.category)     params.set("category",     opts.category);
-    if (opts.tourism_type) params.set("tourism_type", opts.tourism_type);
-    if (opts.popular)      params.set("popular",      "true");
-    if (opts.search)       params.set("search",       opts.search);
-    if (opts.limit)        params.set("limit",        String(opts.limit));
+
+    if (category) params.set("category", category);
+    if (tourism_type) params.set("tourism_type", tourism_type);
+    if (popular) params.set("popular", "true");
+    if (search) params.set("search", search);
+    if (limit) params.set("limit", String(limit));
+
     const qs = params.toString();
     return `/api/packages${qs ? `?${qs}` : ""}`;
-  }
+  }, [category, tourism_type, popular, search, limit]);
 
-  async function fetchPackages() {
-    // Cancel any in-flight request
-    if (abortRef.current) abortRef.current.abort();
-    abortRef.current = new AbortController();
+  const fetchPackages = useCallback(async () => {
+    // Abort previous request safely
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     setLoading(true);
     setError(null);
 
     try {
-      const res  = await fetch(buildUrl(), { signal: abortRef.current.signal, cache: "no-store" });
-      if (!res.ok) throw new Error(`API error ${res.status}`);
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        setPackages(json.data);
+      const res = await fetch(buildUrl(), {
+        signal: controller.signal,
+        cache: "no-store",
+      });
+
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`);
       }
+
+      const json = await res.json();
+
+      if (!json?.success) {
+        throw new Error(json?.message || "API returned failure");
+      }
+
+      if (!Array.isArray(json.data)) {
+        throw new Error("Invalid data format from API");
+      }
+
+      setPackages(json.data);
+      retryCountRef.current = 0; // reset retry on success
     } catch (err) {
-      if (err.name === "AbortError") return; // cancelled — ignore
-      console.warn("[usePackages] fetch failed, using static fallback:", err.message);
+      if (err.name === "AbortError") return;
+
+      console.error("[usePackages] fetch failed:", err.message);
+
+      // retry logic
+      if (retryCountRef.current < MAX_RETRY) {
+        retryCountRef.current += 1;
+        setTimeout(() => fetchPackages(), 800);
+        return;
+      }
+
       setError(err.message);
-      // Keep static packages already in state as fallback
+      setPackages([]); // safe fallback
     } finally {
       setLoading(false);
     }
-  }
+  }, [buildUrl]);
 
   useEffect(() => {
     fetchPackages();
-    return () => abortRef.current?.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [opts.category, opts.tourism_type, opts.popular, opts.search, opts.limit]);
 
-  return { packages, loading, error, refetch: fetchPackages };
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, [fetchPackages]);
+
+  return {
+    packages,
+    loading,
+    error,
+    refetch: fetchPackages,
+  };
 }
