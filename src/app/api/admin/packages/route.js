@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createSupabaseClient } from "../../../../lib/supabaseClient";
 import { logAdminAction } from "../../../../lib/auditLog";
+import { clearPackagesCache } from "../../../../lib/getPackages";
 
 export const dynamic = "force-dynamic";
 
@@ -155,7 +156,8 @@ export async function POST(req) {
     // Log action
     await logAdminAction("CREATE", "package", data.id, { created: data });
 
-    // Revalidate cache
+    // Clear in-memory cache + Revalidate Next.js page cache
+    clearPackagesCache();
     revalidatePath("/packages", "page");
     revalidatePath("/tour-packages", "page");
     revalidatePath("/destinations", "page");
@@ -255,7 +257,8 @@ export async function PUT(req) {
       after: data,
     });
 
-    // Revalidate cache
+    // Clear in-memory cache + Revalidate Next.js page cache
+    clearPackagesCache();
     revalidatePath("/packages", "page");
     revalidatePath("/tour-packages", "page");
     revalidatePath("/destinations", "page");
@@ -324,7 +327,8 @@ export async function DELETE(req) {
     // Log action
     await logAdminAction("DELETE", "package", id, { deleted: toDelete });
 
-    // Revalidate cache
+    // Clear in-memory cache + Revalidate Next.js page cache
+    clearPackagesCache();
     revalidatePath("/packages", "page");
     revalidatePath("/tour-packages", "page");
     revalidatePath("/destinations", "page");
