@@ -8,7 +8,7 @@ import { getPackages, getPackagesMtimeMs } from "./getPackages.js";
 // ── TTL cache — 15 seconds ───────────────────────────────────
 let _cache     = null;
 let _cacheTime = 0;
-const CACHE_TTL = 10_000; // 10 seconds — admin updates jaldi reflect honge
+const CACHE_TTL = 15_000;
 
 function isCacheValid() {
   return _cache && (Date.now() - _cacheTime) < CACHE_TTL;

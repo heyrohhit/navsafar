@@ -13,13 +13,18 @@ if (typeof window !== "undefined") {
 // ─────────────────────────────────────────────
 let _cache = null;
 let _cacheTime = 0;
-const CACHE_TTL = 10_000; // 10 seconds — admin updates jaldi reflect honge
+const CACHE_TTL = 15_000;
 
 // ─────────────────────────────────────────────
-// Supabase client — fresh instance per call (serverless safe)
+// Supabase client singleton (avoid re-init)
 // ─────────────────────────────────────────────
+let supabaseClient = null;
+
 function getSupabase() {
-  return createSupabaseClient(true);
+  if (!supabaseClient) {
+    supabaseClient = createSupabaseClient(true);
+  }
+  return supabaseClient;
 }
 
 // ─────────────────────────────────────────────

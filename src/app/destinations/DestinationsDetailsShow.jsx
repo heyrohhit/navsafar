@@ -153,7 +153,7 @@ function HeroMosaic({ allImages }) {
       <div className="flex flex-1">
         {slots.slice(0, 2).map((img, i) => (
           <div key={i} className="relative flex-1 overflow-hidden">
-            <img
+            <Image
               src={img.src} alt={img.city} fill
               priority={i === 0} sizes="50vw"
               className={`object-cover transition-opacity duration-[600ms] ${fading === i ? "opacity-0" : "opacity-100"}`}
@@ -164,7 +164,7 @@ function HeroMosaic({ allImages }) {
       <div className="flex flex-1">
         {slots.slice(2, 5).map((img, i) => (
           <div key={i} className="relative flex-1 overflow-hidden">
-            <img
+            <Image
               src={img.src} alt={img.city} fill sizes="33vw"
               className={`object-cover transition-opacity duration-[600ms] ${fading === i + 2 ? "opacity-0" : "opacity-100"}`}
             />
@@ -183,7 +183,7 @@ function LargeDestCard({ dest, tall = false }) {
     <Link href={dest.href}
       className={`group relative overflow-hidden rounded-2xl block ${tall ? "h-[420px]" : "h-[300px]"}`}>
       {dest.image && (
-        <img
+        <Image
           src={dest.image} alt={dest.city} fill sizes="(max-width:768px) 100vw, 50vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
         />
@@ -233,7 +233,7 @@ function CompactDestCard({ dest }) {
       className="group flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-[#0f6477]/40 bg-white hover:shadow-md transition-all duration-200">
       <div className="relative w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
         {dest.image && (
-          <img
+          <Image
             src={dest.image} alt={dest.city} fill sizes="56px"
             className="object-cover group-hover:scale-110 transition-transform duration-300"
           />
