@@ -9,8 +9,8 @@ import {
   ChevronDown, Compass, Layers, List,
 } from "lucide-react";
 
-// ─── Package Data — from API (live, admin-updated) ────────────────────────────
-import { usePackages } from "../hooks/usePackages";
+// ─── Package Data ──────────────────────────────────────────────────────────────
+import ALL_PACKAGES_RAW from "../../data/packagesData.json";
 
 // ✅ toSlug helper — city name → URL-safe slug
 function toSlug(city) {
@@ -24,8 +24,7 @@ function toSlug(city) {
 }
 
 // ─── Normalize JSON → component shape ────────────────────────────────────────
-function normalizePackage(pkg) {
-  return {
+const ALL_PACKAGES = ALL_PACKAGES_RAW.map((pkg) => ({
   id:           pkg.id,
   city:         pkg.city,
   country:      pkg.country,
@@ -36,8 +35,7 @@ function normalizePackage(pkg) {
   rating:       pkg.rating,
   popular:      pkg.popular,
   tourism_type: pkg.tourism_type || [],
-};
-}
+}));
 
 // ─── Regions (NO "All" entry) ─────────────────────────────────────────────────
 const REGIONS = [
@@ -696,12 +694,7 @@ export default function DestinationsSection() {
   const [activeRegion, setActiveRegion] = useState(REGIONS[0].id);
   const [openCountry, setOpenCountry]   = useState(null);
 
-  const { packages: rawPackages, loading: pkgLoading } = usePackages();
-  const ALL_PACKAGES = useMemo(
-    () => (rawPackages ?? []).map(normalizePackage),
-    [rawPackages]
-  );
-  const allGroups = useMemo(() => buildGroups(ALL_PACKAGES), [ALL_PACKAGES]);
+  const allGroups = useMemo(() => buildGroups(ALL_PACKAGES), []);
 
   const filtered = useMemo(
     () => allGroups.filter((g) => g.region === activeRegion),

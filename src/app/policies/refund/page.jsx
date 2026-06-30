@@ -2,38 +2,22 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Refund & Cancellation Policy | NavSafar Travels",
+  title: "Refund & Cancellation Policy | Navsafar Travels",
   description:
-    "NavSafar Travels' Refund & Cancellation Policy — transparent cancellation charges, refund timelines, non-refundable components, and your rights as a traveler.",
+    "Navsafar Travels' Refund & Cancellation Policy — transparent cancellation charges, refund timelines, non-refundable components, and your rights as a traveler.",
   keywords: [
-    "NavSafar Travels refund policy",
+    "Navsafar Travels refund policy",
     "travel cancellation policy India",
     "refund travel booking",
     "cancellation charges travel agency",
   ],
-  alternates: {
-    canonical: "https://navsafar.com/policies/refund",
-    languages: {
-      "x-default": "https://navsafar.com/policies/refund",
-      "en-IN": "https://navsafar.com/policies/refund",
-      "en": "https://navsafar.com/policies/refund",
-    },
-  },
   openGraph: {
-    title: "Refund & Cancellation Policy | NavSafar Travels",
-    description: "Clear, transparent cancellation charges and refund timelines from NavSafar Travels.",
-    url: "https://navsafar.com/policies/refund",
+    title: "Refund & Cancellation Policy | Navsafar Travels",
+    description: "Clear, transparent cancellation charges and refund timelines from Navsafar Travels.",
     type: "website",
-    siteName: "NavSafar Travels",
-    locale: "en_IN",
-    images: [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "NavSafar" }],
+    siteName: "Navsafar Travels",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Refund & Cancellation Policy | NavSafar Travels",
-    description: "Clear, transparent cancellation charges and refund timelines from NavSafar Travels.",
-    images: ["https://navsafar.com/assets/bg.jpg"],
-  },
+  alternates: { canonical: "https://www.navsafar.com/policies/refund" },
   robots: { index: true, follow: true },
 };
 
@@ -122,8 +106,8 @@ export default function RefundPolicyPage() {
             "@type": "WebPage",
             name: "Refund & Cancellation Policy — Navsafar Travels",
             description: "Refund and Cancellation Policy for Navsafar Travels including charges, timelines, and non-refundable items.",
-            url: "https://navsafar.com/policies/refund",
-            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://navsafar.com" },
+            url: "https://www.navsafar.com/policies/refund",
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
           }),
         }}
       />

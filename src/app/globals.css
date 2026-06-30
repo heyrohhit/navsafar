@@ -65,6 +65,7 @@
   /* Font Families */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display: 'Reey', cursive;
 }
 
 /* ==========================================
@@ -314,7 +315,7 @@
   font-display: swap;
 }
 
-.reey-fonts {
+.reey-font {
   font-family: 'Reey', cursive;
 }
 
@@ -354,49 +355,3 @@
     },
   },
 */
-/* ==========================================
-   PERFORMANCE OPTIMIZATIONS
-   ========================================== */
-
-/* ✅ content-visibility: auto — off-screen blog cards lazy render karega
-   Sirf blog grid cards par apply karo, hero/header par nahi */
-.cv-auto {
-  content-visibility: auto;
-  /* contain-intrinsic-size browser ko estimated height deta hai
-     taaki scroll position stable rahe */
-  contain-intrinsic-size: auto 320px;
-}
-
-/* Blog grid card specific — 3-col layout mein ~300px height estimate */
-.blog-card-lazy {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 300px;
-}
-
-/* Featured card — bada hai */
-.blog-featured-lazy {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 500px;
-}
-
-/* ✅ Font display swap — FOUT se bachne ke liye */
-@font-face {
-  font-display: swap;
-}
-
-/* ✅ Image lazy load transition */
-img[loading="lazy"] {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-img[loading="lazy"].loaded {
-  opacity: 1;
-}
-
-/* ✅ Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
-}

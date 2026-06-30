@@ -7,12 +7,9 @@
 // PackagesPageClient should be a separate file: src/app/packages/PackagesPageClient.jsx
 // The duplicate `export default function PackagesPage()` at the bottom has been removed.
 
-
-export const dynamic = "force-dynamic";
-
 import PackagesPageClient from "./PackagesPageClient";
 import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
-import { getPackagesAsync } from "../../lib/getPackages";
+import { getPackages } from "../../lib/getPackages";
 
 export const metadata = {
   title: "Tour Packages - Domestic & International | NavSafar",
@@ -29,11 +26,6 @@ export const metadata = {
   ],
   alternates: {
     canonical: "https://navsafar.com/packages",
-    languages: {
-      "x-default": "https://navsafar.com/packages",
-      "en-IN": "https://navsafar.com/packages",
-      "en": "https://navsafar.com/packages",
-    },
   },
   openGraph: {
     title: "Tour Packages - Domestic & International | NavSafar",
@@ -52,8 +44,8 @@ export const metadata = {
   },
 };
 
-export default async function PackagesPage() {
-  const packages = await getPackagesAsync();
+export default function PackagesPage() {
+  const packages = getPackages();
   return (
     <>
       <UniversalSchemaInjector

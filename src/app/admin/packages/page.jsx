@@ -630,24 +630,23 @@ export default function AdminPackages() {
                   <tr key={pkg.id} className="hover:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        {pkg.image && !pkg.image.startsWith("data:") ? (
+                        {pkg.image ? (
                           <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
-                            <img
+                            <Image
                               src={
                                 pkg.image.includes("drive.google")
                                   ? pkg.image.replace("/file/d/", "https://lh3.googleusercontent.com/d/")
                                   : pkg.image
                               }
-                              alt={pkg.title || "Package"}
+                              alt={pkg.title}
                               fill
                               className="object-cover"
                               unoptimized
-                              onError={(e) => { e.currentTarget.style.display = "none"; }}
                             />
                           </div>
                         ) : (
                           <div className="w-12 h-12 rounded-lg bg-slate-700 flex items-center justify-center text-slate-400 flex-shrink-0">
-                            <img src="/assets/logo.png" alt="Placeholder" width={20} height={20} className="text-slate-400" />
+                            <Image src="/assets/logo.png" alt="Placeholder" width={20} height={20} className="text-slate-400" />
                           </div>
                         )}
                         <div>

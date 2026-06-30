@@ -32,6 +32,9 @@ export const DOMAINS = [
   { host: "navsafarholidays.in",  label: "NavSafar Holidays", isPrimary: false, serveContent: true,  hreflang: "en-IN" },
   { host: "navsafartours.in",     label: "NavSafar Tours",    isPrimary: false, serveContent: true,  hreflang: "en-IN" },
   { host: "navsafartrip.in",      label: "NavSafar Trip",     isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+
+  // Example redirect-only domain
+  // { host: "oldnavsafar.com", label: "NavSafar", isPrimary: false, serveContent: false, hreflang: "en-IN" },
 ];
 
 
@@ -112,22 +115,21 @@ export function shouldRedirect(host) {
 
 /**
  * Build hreflang alternates
- * ✅ FIX: Only primary domain gets "x-default" + "en-IN".
- * Secondary domains are all canonical aliases — Google recommends
- * pointing all hreflangs to the canonical primary URL, not each
- * secondary domain, when all domains serve identical content.
  */
 export function buildHreflangAlternates(path = "") {
-  const normalizedPath = path && !path.startsWith("/") ? `/${path}` : path;
-  const canonicalUrl = `${PRIMARY_DOMAIN}${normalizedPath}`;
+  const alternates = {};
 
-  // Single canonical URL for all hreflang signals
-  // This is correct when multiple domains serve identical content
-  return {
-    "x-default": canonicalUrl,
-    "en-IN": canonicalUrl,
-    "en": canonicalUrl,
-  };
+  for (const domain of DOMAINS) {
+    const url = `https://${domain.host}${path}`;
+
+    if (domain.isPrimary) {
+      alternates["x-default"] = url;
+    }
+
+    alternates[domain.hreflang] = url;
+  }
+
+  return alternates;
 }
 
 /**

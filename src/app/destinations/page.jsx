@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 /**
  * FILE: src/app/destinations/page.jsx
  *
@@ -10,10 +8,10 @@ export const dynamic = "force-dynamic";
 
 import DestinationsDetailsShow from "./DestinationsDetailsShow";
 import UniversalSchemaInjector from "../components/seo/UniversalSchemaInjector";
-import { getPackagesAsync } from "../../lib/getPackages";
+import { getPackages } from "../../lib/getPackages";
 
-export default async function DestinationsPage() {
-  const packages = await getPackagesAsync();
+export default function DestinationsPage() {
+  const packages = getPackages();
   // Deduplicate by city for ItemList
   const seen = new Set();
   const destinations = packages.filter((p) => {

@@ -172,13 +172,14 @@ export default function HomePageClient() {
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative h-[70vh]"
+              className="relative"
             >
-              <img
-                src="/assets/kd.jpg"
+              <Image
+                src="/assets/bg.jpg"
                 alt="Happy travelers"
                 width={800}
-                className="rounded-2xl shadow-2xl center h-full"
+                height={400}
+                className="rounded-2xl shadow-2xl"
               />
               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl border border-neutral-200">
                 <div className="flex items-center gap-4">

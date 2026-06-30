@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePackages } from "../../hooks/usePackages";
 import PackageGridLayout from "../../components/packages/PackageGridLayout";
+import packagesData from "../../../data/packagesData.json";
 
 // ── FILTER FUNCTION ─────────────────────────────
 function getPackagesForCategory(slug, packages) {
@@ -31,7 +32,7 @@ export default function ExperienceClient({ slug }) {
     return () => clearTimeout(t);
   }, []);
 
-  const allPackages = packages ?? [];
+  const allPackages = packages?.length ? packages : packagesData;
 
   const filteredPackages = useMemo(() => {
     if (!slug) return [];

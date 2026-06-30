@@ -1,192 +1,81 @@
-// src/lib/seo.js
-// ─────────────────────────────────────────────────────────────
-// ✅ STATIC METADATA — Single source of truth for static pages
-// Used by pages that don't need dynamic data
-// ─────────────────────────────────────────────────────────────
-
+// libs/seo.js
 export const siteConfig = {
-  name: "NavSafar Travel Solutions",
-  brandName: "NavSafar",
+  name: "Navsafar Travel Solutions",
   url: "https://navsafar.com",
-  defaultImage: "https://navsafar.com/assets/bg.jpg",
 };
 
 export const seoData = {
   home: {
-    title: "Best Travel Agency in India | NavSafar",
+    title: "Best Travel Agency in India",
     description:
-      "NavSafar Travel Solutions — trusted travel agency in New Delhi. Customised domestic & international tour packages, flights, hotels, visa services for Indian travellers.",
+      "Navsafar Travel Solutions offers customized tour packages, corporate travel, MICE services, and complete domestic & international travel solutions.",
     path: "/",
-    keywords: [
-      "best travel agency india",
-      "tour packages india",
-      "domestic tours india",
-      "international tour packages",
-      "travel agency delhi",
-      "holiday packages india",
-    ],
   },
   destinations: {
-    title: "Top Destinations in India & Abroad | NavSafar Travel",
+    title: "Top Destinations in India & Abroad | Navsafar Travel",
     description:
-      "Explore the most popular domestic and international destinations with NavSafar Travel Solutions. Customised tours, hotels, and complete travel planning available.",
+      "Explore the most popular domestic and international destinations with Navsafar Travel Solutions. Customized tours, hotels, and complete travel planning available.",
     path: "/destinations",
-    keywords: [
-      "destinations india",
-      "top travel destinations",
-      "goa manali kerala rajasthan",
-      "international destinations",
-      "travel destinations 2026",
-    ],
   },
   tourPackages: {
-    title: "Tour Packages — Domestic & International | NavSafar",
+    title: "Tour Packages - Domestic & International | Navsafar",
     description:
-      "Discover our exclusive tour packages for domestic and international travel. Get fully customised itineraries and bookings with NavSafar Travel Solutions.",
+      "Discover our exclusive tour packages for domestic and international travel. Get fully customized itineraries and bookings with Navsafar Travel Solutions.",
     path: "/tour-packages",
-    keywords: [
-      "tour packages india",
-      "domestic tour packages",
-      "international tour packages",
-      "holiday packages 2026",
-      "customised tour packages",
-    ],
+  },
+  corporate: {
+    title: "Corporate Travel Management | Navsafar Travel",
+    description:
+      "Professional corporate travel management and business travel solutions by Navsafar Travel Solutions. Efficient travel planning for your business.",
+    path: "/corporate",
   },
   services: {
-    title: "Our Travel Services | NavSafar Travel Solutions",
+    title: "Our Travel Services | Navsafar Travel Solutions",
     description:
-      "Explore our travel services including holiday packages, corporate travel management, MICE services, hotel bookings, visa assistance and flights.",
-    path: "/pages/services",
-    keywords: [
-      "travel services india",
-      "corporate travel management",
-      "mice services delhi",
-      "visa assistance india",
-      "hotel booking india",
-    ],
+      "Explore our travel services including holiday packages, corporate travel management, MICE services, hotel bookings, and flights.",
+    path: "/services",
   },
   about: {
     title: "About Us | NavSafar Travel Solutions",
     description:
       "Learn more about NavSafar Travel Solutions — India-based travel agency in New Delhi offering domestic & international tour packages for Indian travellers.",
     path: "/pages/about-us",
-    keywords: [
-      "about navsafar",
-      "navsafar travel agency",
-      "travel agency new delhi",
-      "trusted travel agency india",
-    ],
   },
   contact: {
     title: "Contact Us | NavSafar Travel Solutions",
     description:
       "Get in touch with NavSafar Travel Solutions. Call +91-8882128640, email info@navsafartravels.com or visit our office in New Delhi for tour packages & travel enquiries.",
     path: "/pages/contact",
-    keywords: [
-      "contact navsafar",
-      "navsafar phone number",
-      "travel agency contact delhi",
-      "book tour package india",
-    ],
   },
   blog: {
-    title: "Travel Blog | NavSafar Travel",
+    title: "Travel Blog | Navsafar Travel",
     description:
-      "Read our travel blog for tips, destination guides, and travel inspiration from NavSafar Travel Solutions.",
+      "Read our travel blog for tips, destination guides, and travel inspiration from Navsafar Travel Solutions.",
     path: "/blog",
-    keywords: [
-      "travel blog india",
-      "travel tips india",
-      "destination guide",
-      "travel inspiration",
-    ],
-  },
-  booking: {
-    title: "Book Your Trip | NavSafar Travel",
-    description:
-      "Book your dream trip with NavSafar. Contact us for customised tour packages, flights, hotels, and complete travel solutions for Indian travellers.",
-    path: "/booking",
-    keywords: [
-      "book tour package",
-      "book travel india",
-      "online booking travel",
-    ],
-  },
-  search: {
-    title: "Search Tour Packages | NavSafar",
-    description:
-      "Search domestic and international tour packages on NavSafar. Find packages by destination, budget or travel style.",
-    path: "/search",
-    keywords: [
-      "search tour packages",
-      "find holiday package",
-      "travel package search india",
-    ],
   },
 };
 
-/**
- * Returns complete Next.js metadata object for a given page key.
- * Includes canonical, OG, Twitter, keywords — ready to export.
- *
- * @param {keyof typeof seoData} pageKey
- * @returns {import("next").Metadata}
- */
 export function getStaticMetadata(pageKey) {
   const page = seoData[pageKey];
   if (!page) return {};
 
-  const canonicalUrl = `${siteConfig.url}${page.path}`;
-  const fullTitle = `${page.title}`;
-
   return {
-    title: fullTitle,
+    title: page.title,
     description: page.description,
-    keywords: page.keywords ?? [],
-
     alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        "x-default": canonicalUrl,
-        "en-IN": canonicalUrl,
-        "en": canonicalUrl,
-      },
+      canonical: `${siteConfig.url}${page.path}`,
     },
-
     openGraph: {
-      title: fullTitle,
+      title: `${page.title} | ${siteConfig.name}`,
       description: page.description,
-      url: canonicalUrl,
+      url: `${siteConfig.url}${page.path}`,
       siteName: siteConfig.name,
       type: "website",
-      locale: "en_IN",
-      images: [
-        {
-          url: siteConfig.defaultImage,
-          width: 1200,
-          height: 630,
-          alt: `${siteConfig.brandName} — Travel Agency India`,
-        },
-      ],
     },
-
     twitter: {
       card: "summary_large_image",
-      title: fullTitle,
+      title: `${page.title} | ${siteConfig.name}`,
       description: page.description,
-      images: [siteConfig.defaultImage],
-    },
-
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-snippet": -1,
-        "max-image-preview": "large",
-        "max-video-preview": -1,
-      },
     },
   };
 }

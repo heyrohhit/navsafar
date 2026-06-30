@@ -54,7 +54,6 @@ export default function HeroSection() {
   const [mounted, setMounted] = useState(false);
   const slide = useMemo(() => slides[index], [index]);
 
-  // console.log("slide data is :",slide.image)
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -99,7 +98,7 @@ export default function HeroSection() {
         {!mounted ? (
           <div className="relative w-full h-[120vh] -z-10">
             <Image
-              src={slides[2].image}
+              src={slides[0].image}
               alt="NavSafar travel destination"
               fill
               priority={true}
@@ -121,10 +120,14 @@ export default function HeroSection() {
               className="relative w-full h-[120vh] -z-10"
               style={{ willChange: "opacity" }}
             >
-              <img
+              <Image
                 src={slide.image}
                 alt={`NavSafar travel — ${slide.accent}`}
-                style={{ objectFit: "cover",height: "100vh",width:"100vw" }}
+                fill
+                priority={index === 0}
+                quality={75}
+                sizes="100vw"
+                style={{ objectFit: "cover" }}
               />
             </motion.div>
           </AnimatePresence>
@@ -193,7 +196,7 @@ export default function HeroSection() {
         <div className="flex gap-2 justify-center pb-2">
           {slides.map((s, i) => (
             <button key={i} onClick={() => goTo(i)}
-              className={`h-1 rounded-full cursor-pointer border-0 p-0 transition-all duration-300 reey-fonts ${i === index ? "w-7" : "w-3"}`}
+              className={`h-1 rounded-full cursor-pointer border-0 p-0 transition-all duration-300 ${i === index ? "w-7" : "w-3"}`}
               style={{ background: i === index ? s.color : "rgba(255,255,255,0.3)" }}
               aria-label={`Go to slide ${i + 1}`} />
           ))}

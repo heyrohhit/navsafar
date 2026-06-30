@@ -1,16 +1,3 @@
-// src/app/api/visitors/route.js
-// ✅ FIXED: Reads from Supabase visitors table (not Google Sheets)
-import { NextResponse } from "next/server";
-import { createSupabaseClient } from "../../../lib/supabaseClient";
-
-export const dynamic = "force-dynamic";
-
-function isAuthorized(req) {
-  const auth  = req.headers.get("Authorization") ?? "";
-  const token = process.env.ADMIN_SECRET_TOKEN;
-  return Boolean(token && auth === `Bearer ${token}`);
-}
-
 const SHEET_ID = process.env.SHEET_ID;
 const SHEET_GID = process.env.SHEET_GID;
 

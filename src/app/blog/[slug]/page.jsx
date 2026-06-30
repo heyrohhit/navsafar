@@ -1,23 +1,20 @@
-export const dynamic = "force-dynamic";
-
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getBlogBySlug, getBlogsAsync, getRelatedBlogs } from "../../../lib/getBlogs";
+import { getBlogBySlug, getBlogs, getRelatedBlogs } from "../../../lib/getBlogs";
 import { parseFaqText } from "../../../lib/parseFaqText";
 
 const SITE_URL = "https://navsafar.com";
 
 // ── Static params for SSG ─────────────────────────────────────────────
 export async function generateStaticParams() {
-  const blogs = await getBlogsAsync();
-  return blogs.map((blog) => ({ slug: blog.slug }));
+  return getBlogs().map((blog) => ({ slug: blog.slug }));
 }
 
 // ── Metadata ──────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
+  const blog = getBlogBySlug(slug);
   if (!blog) return { title: "Not Found" };
 
   return {
@@ -26,11 +23,6 @@ export async function generateMetadata({ params }) {
     keywords: blog.tags ?? [],
     alternates: {
       canonical: `${SITE_URL}/blog/${slug}`,
-      languages: {
-        "x-default": `${SITE_URL}/blog/${slug}`,
-        "en-IN": `${SITE_URL}/blog/${slug}`,
-        "en": `${SITE_URL}/blog/${slug}`,
-      },
     },
     openGraph: {
       title: `${blog.title} — NavSafar Travel Blog`,
@@ -56,7 +48,7 @@ export async function generateMetadata({ params }) {
 
 export async function generateJsonLd({ params }) {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
+  const blog = getBlogBySlug(slug);
   if (!blog || blog.status === "draft") return null;
 
   return [buildBlogJsonLd(blog), buildFaqJsonLd(blog)];
@@ -881,7 +873,7 @@ function NewsletterCTA() {
             placeholder="Your email address"
             className="min-w-[260px] bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-white/25 text-sm px-5 py-3 rounded-xl outline-none focus:border-[#0f6477]"
           />
-          <button className="bg-[#0f6477] hover:bg-[#1a7d93] text-white h-[50px] text-[11px] font-black tracking-widest uppercase px-6 rounded-xl transition-colors">
+          <button className="bg-[#0f6477] hover:bg-[#1a7d93] text-white text-[11px] font-black tracking-widest uppercase px-6 rounded-xl transition-colors">
             Subscribe
           </button>
         </form>
@@ -893,10 +885,10 @@ function NewsletterCTA() {
 // ── Main Page ─────────────────────────────────────────────────────────
 export default async function BlogDetailPage({ params }) {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
+  const blog = getBlogBySlug(slug);
   if (!blog || blog.status === "draft") notFound();
 
-  const related = await getRelatedBlogs(blog.slug, blog.category, 3);
+  const related = getRelatedBlogs(blog.slug, blog.category, 3);
   const faqs = getBlogFaqs(blog);
 
   return (
@@ -921,11 +913,11 @@ export default async function BlogDetailPage({ params }) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#060e10] via-[#060e10]/55 to-[#060e10]/20" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#060e10]/75 via-[#060e10]/25 to-transparent" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-32 md:pt-40 text-white">
-          <nav className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase mb-8 text-white">
-            <Link href="/" className="hover:text-[#4db8cc] transition-colors text-white">Home</Link>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-32 md:pt-40">
+          <nav className="flex items-center gap-2 text-[11px] font-semibold tracking-widest uppercase mb-8 text-white/45">
+            <Link href="/" className="hover:text-[#4db8cc] transition-colors">Home</Link>
             <span>›</span>
-            <Link href="/blog" className="hover:text-[#4db8cc] transition-colors text-white">Blog</Link>
+            <Link href="/blog" className="hover:text-[#4db8cc] transition-colors">Blog</Link>
             <span>›</span>
             <span className="text-[#4db8cc]">{blog.category}</span>
           </nav>
@@ -954,7 +946,7 @@ export default async function BlogDetailPage({ params }) {
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-3">
                 <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-[#0f6477]/60">
-                  <img
+                  <Image
                     src={blog.author?.avatar || "/assets/logo.jpeg"}
                     alt={blog.author?.name || "NavSafar Travels"}
                     fill
@@ -1034,7 +1026,7 @@ export default async function BlogDetailPage({ params }) {
             </p>
             <div className="flex items-center gap-4 mb-3">
               <div className="relative w-14 h-14 rounded-full overflow-hidden ring-2 ring-[#0f6477]/50 flex-shrink-0">
-                <img
+                <Image
                   src={blog.author?.avatar || "/assets/logo.jpeg"}
                   alt={blog.author?.name || "NavSafar Travels"}
                   fill

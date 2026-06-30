@@ -1,120 +1,165 @@
 // lib/aiContent.js
 // ─────────────────────────────────────────────────────────────────
-//  AI Content Generator for NavSafar (Production Ready)
-//  - Text API: Groq (Llama 3)
-//  - Image API: Pexels
-//  - Caching: Next.js unstable_cache (Vercel CDN Ready)
+//  100% FREE — No credit card needed
+//  AI Content  : Groq API (free) — Llama 3 model
+//  Images      : Pexels API (free) — 200 req/hour
+//  Caching     : /tmp/travel/ — Vercel compatible ✅
+// ─────────────────────────────────────────────────────────────────
+//  .env.local:
+//    GROQ_API_KEY=gsk_...
+//    PEXELS_API_KEY=...
 // ─────────────────────────────────────────────────────────────────
 
-import { unstable_cache, revalidateTag } from "next/cache"; // revalidateTag add kiya gaya hai
+import fs from "fs";
+import path from "path";
 
-// ══════════════════════════════════════════════════════════════
-//  1. IMAGE FETCHING FUNCTION (PEXELS API)
-// ══════════════════════════════════════════════════════════════
+// ✅ FIX 1: /tmp use karo — Vercel pe sirf yahi writable hai
+const CACHE_DIR = path.join("/tmp", "travel");
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-/**
- * Ye function Pexels API se high-quality landscape images fetch karta hai.
- * @param {string} keyword - Destination ka naam (e.g., "Manali", "Goa")
- * @param {number} count - Kitni images chahiye (default 4)
- * @returns {Array} - Images ka array jisme url, alt text aur credits hain
- */
+// ══════════════════════════════════════════
+//  CACHE HELPERS
+// ══════════════════════════════════════════
+
+function ensureCacheDir() {
+  // ✅ FIX 2: try/catch wrap karo — agar /tmp bhi fail ho to crash na ho
+  try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
+  } catch (err) {
+    console.warn("[aiContent] Cache dir create failed:", err.message);
+  }
+}
+
+function cacheKey(keyword) {
+  return keyword
+    .replace(/\s+/g, "_")
+    .replace(/[^a-zA-Z0-9_]/g, "")
+    .toLowerCase();
+}
+
+function readCache(keyword) {
+  // ✅ FIX 3: Pure try/catch — koi bhi fs error = null return karo, crash nahi
+  try {
+    ensureCacheDir();
+    const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
+    if (!fs.existsSync(file)) return null;
+    const data = JSON.parse(fs.readFileSync(file, "utf-8"));
+    return Date.now() - (data._cachedAt || 0) < CACHE_TTL_MS ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(keyword, data) {
+  // ✅ FIX 4: Cache write fail ho to silently skip — page toh serve hoga
+  try {
+    ensureCacheDir();
+    const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
+    fs.writeFileSync(
+      file,
+      JSON.stringify({ ...data, _cachedAt: Date.now() }, null, 2)
+    );
+  } catch (err) {
+    console.warn("[aiContent] Cache write failed (non-fatal):", err.message);
+  }
+}
+
+export function deleteCache(keyword) {
+  try {
+    const file = path.join(CACHE_DIR, `${cacheKey(keyword)}.json`);
+    if (fs.existsSync(file)) fs.unlinkSync(file);
+  } catch (err) {
+    console.warn("[aiContent] Cache delete failed:", err.message);
+  }
+}
+
+// ══════════════════════════════════════════
+//  PEXELS IMAGE FETCH (FREE)
+// ══════════════════════════════════════════
+
 async function fetchImages(keyword, count = 4) {
   const key = process.env.PEXELS_API_KEY;
 
-  // Agar API key nahi hai, toh turant placeholder images return kar do
-  if (!key) {
-    console.warn("[aiContent] PEXELS_API_KEY missing — using placeholders");
-    return getPlaceholderImages(keyword, count);
-  }
-
-  try {
-    // Pexels API call: "keyword + travel" search karte hain taaki travel related photos aayein
-    const res = await fetch(
-      `https://api.pexels.com/v1/search?query=${encodeURIComponent(
-        keyword + " travel destination"
-      )}&per_page=${count}&orientation=landscape`,
-      {
-        headers: { Authorization: key },
-        signal: AbortSignal.timeout(8000), // 8 seconds timeout taaki Vercel hang na ho
+  if (key) {
+    try {
+      const res = await fetch(
+        `https://api.pexels.com/v1/search?query=${encodeURIComponent(
+          keyword + " travel"
+        )}&per_page=${count}&orientation=landscape`,
+        {
+          headers: { Authorization: key },
+          // ✅ FIX 5: Timeout add karo — slow API pe hang na ho
+          signal: AbortSignal.timeout(8000),
+        }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const imgs = (data.photos || []).map((p) => ({
+          url: p.src?.large2x || p.src?.large,
+          thumb: p.src?.medium,
+          alt: p.alt || keyword,
+          credit: p.photographer || "Pexels",
+          creditLink: p.photographer_url || "https://www.pexels.com",
+        }));
+        if (imgs.length > 0) return imgs;
       }
-    );
-
-    if (res.ok) {
-      const data = await res.json();
-      
-      // API se aane wale data ko apne frontend format mein map (convert) kar rahe hain
-      const imgs = (data.photos || []).map((p) => ({
-        url: p.src?.large2x || p.src?.large,     // High-res image
-        thumb: p.src?.medium,                    // Low-res thumbnail
-        alt: p.alt || `${keyword} travel tour`,  // SEO alt text
-        credit: p.photographer || "Pexels",
-        creditLink: p.photographer_url || "https://www.pexels.com",
-      }));
-      
-      if (imgs.length > 0) return imgs;
+    } catch (err) {
+      console.warn("[aiContent] Pexels fetch failed:", err.message);
     }
-  } catch (err) {
-    console.warn("[aiContent] Pexels API request failed:", err.message);
+  } else {
+    console.warn("[aiContent] PEXELS_API_KEY not set — using placeholder images");
   }
 
-  // Agar API fail ho jaye kisi bhi wajah se, toh site break nahi honi chahiye
-  return getPlaceholderImages(keyword, count);
-}
-
-/**
- * Fallback Function: Agar Pexels fail ho jaye toh ye dummy images dega
- */
-function getPlaceholderImages(keyword, count) {
+  // Placeholder fallback
   return Array.from({ length: count }, (_, i) => ({
     url: `https://picsum.photos/seed/${encodeURIComponent(keyword)}_${i}/1280/720`,
     thumb: `https://picsum.photos/seed/${encodeURIComponent(keyword)}_${i}/400/300`,
-    alt: `Beautiful view of ${keyword}`,
+    alt: `${keyword} travel`,
     credit: "Lorem Picsum",
     creditLink: "https://picsum.photos",
   }));
 }
 
+// ══════════════════════════════════════════
+//  GROQ AI CONTENT (FREE)
+// ══════════════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════
-//  2. AI TEXT GENERATION FUNCTION (GROQ API - LLAMA 3)
-// ══════════════════════════════════════════════════════════════
-
-/**
- * Ye function Groq API ko prompt bhej kar ek structured SEO article likhwata hai.
- * Output hamesha JSON format mein hoga taaki React/Next.js components easily render kar sakein.
- * @param {string} keyword - Destination ka naam
- */
 async function generateAIContent(keyword) {
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    console.warn("[aiContent] GROQ_API_KEY missing — using static fallback");
+    console.warn("[aiContent] GROQ_API_KEY not set — using static fallback");
     return staticFallback(keyword);
   }
 
-  // 🔥 PROMPT UPGRADE: Ab AI ek proper "Article" likhega with bullet points & FAQs
-  const prompt = `You are an expert travel blogger and SEO content writer for NavSafar (an Indian travel agency).
-Write a rich, engaging, and highly structured travel article for the destination: "${keyword}".
+  const prompt = `You are a professional travel content writer for NavSafar, an Indian travel company.
 
-IMPORTANT: Return ONLY a valid JSON object. Do not include markdown blocks, explanations, or extra text.
-Follow this exact JSON schema:
+Generate rich, engaging, SEO-optimized travel content for the destination: "${keyword}"
+
+IMPORTANT: Return ONLY a valid JSON object. No markdown, no backticks, no extra text before or after JSON.
+
 {
-  "title": "Catchy SEO optimized title for a ${keyword} trip",
-  "intro": "2-3 engaging paragraphs introducing ${keyword}, its culture, vibes, and why it is a must-visit.",
-  "keyHighlights": [
-    "Write 4 to 6 short bullet points highlighting the best experiences, top places, or NavSafar perks for ${keyword}"
+  "intro": "3-4 sentence engaging introduction about ${keyword}. Mention geography, culture, and why travellers love it.",
+  "why": [
+    "Reason 1 with specific detail about NavSafar service for ${keyword}",
+    "Reason 2 with specific detail",
+    "Reason 3 with specific detail",
+    "Reason 4 with specific detail",
+    "Reason 5 with specific detail",
+    "Reason 6 with specific detail"
   ],
-  "detailedGuide": "A comprehensive 3-4 paragraph guide covering the best time to visit, local food to try, how to reach, and practical travel tips.",
-  "quickFacts": {
-    "bestTimeToVisit": "E.g., October to March",
-    "budgetRange": "E.g., ₹15,000 – ₹35,000 per person",
-    "idealDuration": "E.g., 4–6 Days"
-  },
-  "faqs": [
-    { "q": "What is the best time to visit ${keyword}?", "a": "Provide a detailed answer." },
-    { "q": "Is ${keyword} a good destination for families?", "a": "Provide practical advice." },
-    { "q": "How much does a trip to ${keyword} cost?", "a": "Give a realistic INR estimate and mention NavSafar packages." },
-    { "q": "What are the top 3 places to visit in ${keyword}?", "a": "Name the places and briefly describe them." }
+  "guide": "4-5 sentences covering best time to visit, top attractions, local food specialties, and practical travel tips for ${keyword}.",
+  "highlights": ["Top Attraction 1", "Top Attraction 2", "Top Attraction 3", "Top Attraction 4"],
+  "bestTimeToVisit": "Month range like October to March",
+  "budgetRange": "Indian rupee range like ₹12,000 – ₹40,000 per person",
+  "duration": "Like 4–6 Days",
+  "faq": [
+    { "q": "Best time to visit ${keyword}?", "a": "Detailed seasonal answer with weather info." },
+    { "q": "How much does a ${keyword} trip cost from India?", "a": "Specific budget breakdown mentioning transport, hotel, food." },
+    { "q": "Is ${keyword} suitable for family and kids?", "a": "Practical family travel tips and safety info." },
+    { "q": "Top 3 must-visit places in ${keyword}?", "a": "Name and briefly describe 3 specific real attractions." }
   ]
 }`;
 
@@ -125,125 +170,104 @@ Follow this exact JSON schema:
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      signal: AbortSignal.timeout(9000), // 9s timeout (Vercel ke 10s limit se bachne ke liye)
+      // ✅ FIX 6: Timeout add karo — Groq slow ho to Vercel 10s limit se pehle fallback lo
+      signal: AbortSignal.timeout(9000),
       body: JSON.stringify({
-        model: "llama3-8b-8192", // Fast & capable model
-        max_tokens: 2000,
-        temperature: 0.7, // 0.7 means creative but factual
+        model: "llama3-8b-8192",
+        max_tokens: 1500,
+        temperature: 0.7,
         messages: [
           {
             role: "system",
-            content: "You are a travel content JSON generator. Output strictly valid JSON without any markdown formatting like ```json.",
+            content:
+              "You are a travel content expert. Always respond with valid JSON only. No markdown, no explanation, just raw JSON.",
           },
           { role: "user", content: prompt },
         ],
       }),
     });
 
-    if (!res.ok) throw new Error(`Groq API Status: ${res.status}`);
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("[aiContent] Groq API error:", res.status, errText);
+      return staticFallback(keyword);
+    }
 
     const data = await res.json();
-    const rawContent = data.choices?.[0]?.message?.content || "";
-    
-    // Cleanup: AI kabhi-kabhi ```json aur ``` laga deta hai, hum usko hata rahe hain
-    const cleanedContent = rawContent.replace(/```json|```/g, "").trim();
-    
-    return JSON.parse(cleanedContent); // String ko wapas JSON object bana rahe hain
-
+    const raw = data.choices?.[0]?.message?.content || "";
+    const cleaned = raw.replace(/```json|```/g, "").trim();
+    return JSON.parse(cleaned);
   } catch (err) {
-    console.error("[aiContent] Groq generation failed:", err.message);
-    return staticFallback(keyword); // Error aane par site nahi tutegi, static content dikhega
+    console.error("[aiContent] Groq error:", err.message);
+    return staticFallback(keyword);
   }
 }
 
+// ══════════════════════════════════════════
+//  STATIC FALLBACK (no API keys / error)
+// ══════════════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════
-//  3. STATIC FALLBACK (SAFETY NET)
-// ══════════════════════════════════════════════════════════════
-
-/**
- * Agar dono API (Groq/Pexels) fail ho jayein, toh ye function ek ready-made article dega.
- * Iska structure wahi hai jo AI generate karta hai.
- */
 function staticFallback(keyword) {
   return {
-    title: `Explore the Beauty of ${keyword} with NavSafar`,
-    intro: `${keyword} is one of the most stunning destinations, offering a perfect blend of natural beauty, rich culture, and thrilling adventures. Whether you are looking for a peaceful retreat or an action-packed holiday, ${keyword} promises an unforgettable experience. NavSafar crafts fully customized packages to ensure your journey is smooth and memorable.`,
-    keyHighlights: [
-      "Fully customized itineraries tailored to your preferences",
-      "Handpicked hotels and resorts with premium amenities",
-      "Experienced local guides for an authentic travel experience",
-      "24/7 dedicated customer support during your trip",
-      "Transparent pricing with zero hidden charges"
+    intro: `${keyword} is one of India's most beloved travel destinations, offering a perfect mix of culture, natural beauty, and unforgettable experiences. NavSafar crafts fully customised ${keyword} packages with handpicked stays, smooth transfers, and expert local guides. Whether you're planning a romantic getaway, a family vacation, or a solo adventure, we have the ideal itinerary for you. Book now and get the best deals on your ${keyword} trip.`,
+    why: [
+      "Best-price guarantee — no hidden charges ever",
+      "Fully customised itineraries built around your preferences",
+      "24/7 travel support from our dedicated team",
+      "Handpicked hotels with verified guest reviews",
+      "Experienced local guides for authentic experiences",
+      "Easy cancellation and flexible rescheduling policy",
     ],
-    detailedGuide: `Planning a trip to ${keyword} is exciting. The destination boasts incredible local cuisine, vibrant markets, and breathtaking sights. We recommend booking your stays and flights in advance, especially during the peak tourist season. Don't forget to pack according to the weather and keep local emergency contacts handy. NavSafar's travel experts are always ready to assist you with insider tips and best route planning.`,
-    quickFacts: {
-      bestTimeToVisit: "Varies by season (Contact us for details)",
-      budgetRange: "₹10,000 – ₹40,000 per person",
-      idealDuration: "4–7 Days"
-    },
-    faqs: [
-      { q: `Why should I book my ${keyword} trip with NavSafar?`, a: `We offer end-to-end planning, from flights to hotels and sightseeing, all customized to your budget.` },
-      { q: `Is ${keyword} safe for solo travelers?`, a: `Yes, it is generally safe. We provide reliable transport and verified stays for extra security.` },
-      { q: `Can I customize the itinerary?`, a: `Absolutely! All NavSafar packages are 100% flexible based on your travel style.` },
+    guide: `The best time to visit ${keyword} is typically between October and March when the weather is most pleasant. Plan ahead to catch local festivals and book popular stays early. NavSafar's travel experts can suggest the best routes, hidden gems, and local eateries to make your trip truly memorable. Whether you prefer adventure, relaxation, or cultural exploration, ${keyword} has something for everyone.`,
+    highlights: [
+      "Scenic Landscapes",
+      "Local Cuisine",
+      "Cultural Heritage",
+      "Adventure Activities",
+    ],
+    bestTimeToVisit: "October to March",
+    budgetRange: "₹9,999 – ₹35,000 per person",
+    duration: "5–7 Days",
+    faq: [
+      {
+        q: `Best time to visit ${keyword}?`,
+        a: `October to March is ideal with pleasant weather. Monsoons offer lush greenery but may limit outdoor activities.`,
+      },
+      {
+        q: `How much does a ${keyword} trip cost from India?`,
+        a: `A standard package starts from ₹9,999/person. Costs vary by hotel category, travel mode, and trip duration.`,
+      },
+      {
+        q: `Is ${keyword} suitable for family and kids?`,
+        a: `Yes, ${keyword} is very family-friendly. NavSafar ensures all stays and activities are safe and kid-appropriate.`,
+      },
+      {
+        q: `Top 3 must-visit places in ${keyword}?`,
+        a: `Our travel experts share a personalised list of top spots, local markets, and hidden gems when you book with us.`,
+      },
     ],
   };
 }
 
+// ══════════════════════════════════════════
+//  MAIN EXPORT
+// ══════════════════════════════════════════
 
-// ══════════════════════════════════════════════════════════════
-//  4. MAIN EXPORT WITH NEXT.JS CACHING
-// ══════════════════════════════════════════════════════════════
+export async function generateContent(keyword) {
+  // 1. Cache check
+  const cached = readCache(keyword);
+  if (cached) return cached;
 
-/**
- * Ye internal helper function dono API (Text aur Image) ko ek sath (parallel) call karta hai.
- * Promise.all use karne se time aadha lagta hai.
- */
-const fetchContentData = async (keyword) => {
-  const [articleData, images] = await Promise.all([
+  // 2. Fetch AI content + images in parallel
+  const [aiContent, images] = await Promise.all([
     generateAIContent(keyword),
     fetchImages(keyword, 4),
   ]);
 
-  return { ...articleData, images };
-};
+  const result = { ...aiContent, images };
 
-/**
- * MAIN EXPORT FUNCTION: Jo components mein import hoga.
- * Next.js 'unstable_cache' ka use karke ye API responses ko Vercel Edge par save kar leta hai.
- * @param {string} keyword - Destination ka naam
- */
-export const generateContent = async (keyword) => {
-  // Cache key ko safe format mein convert kar rahe hain (e.g., "New Delhi" -> "new-delhi")
-  const safeKey = keyword.toLowerCase().replace(/[^a-z0-9]/g, "-");
-  
-  const getCachedData = unstable_cache(
-    async () => fetchContentData(keyword),  // Data fetch karne wala function
-    [`ai-content-${safeKey}`],              // Unique cache key
-    {
-      revalidate: 86400,                    // 86400 seconds = 24 hours (24 ghante baad cache khud refresh hoga)
-      tags: [`ai-content-${safeKey}`],      // Future mein On-Demand Revalidation ke liye tag
-    }
-  );
+  // 3. Cache karo (fail hone pe bhi page serve hoga)
+  writeCache(keyword, result);
 
-  return getCachedData();
-};
-
-
-// ══════════════════════════════════════════════════════════════
-//  5. CACHE MANAGEMENT (NEWLY ADDED)
-// ══════════════════════════════════════════════════════════════
-
-/**
- * Ye function specific keyword ka cache clear karta hai (On-Demand Revalidation).
- * Ise aap kisi admin API route ya Server Action se call kar sakte hain.
- * @param {string} keyword - Destination ka naam jiska cache delete karna hai
- */
-export const deleteCache = (keyword) => {
-  const safeKey = keyword.toLowerCase().replace(/[^a-z0-9]/g, "-");
-  
-  // Tag ke basis pe cache ko clear kar dega
-  revalidateTag(`ai-content-${safeKey}`);
-  
-  console.log(`[aiContent] Cache cleared for tag: ai-content-${safeKey}`);
-};
+  return result;
+}

@@ -118,15 +118,15 @@ const PackageGridLayout = ({ packages = [], btns = [] }) => {
 
                     {/* Image */}
                     <div className={`relative ${aspectClass} overflow-hidden`}>
-                      <img
-                        src={
-                          pkg.image 
-                        }
-                        alt={pkg.title || "Tour Package"}
-                        className="object-cover transition-transform duration-700 h-full w-screen"
+                      <Image
+                        src={pkg.image || "/assets/placeholder.jpg"}
+                        alt={pkg.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        loading="lazy"
+                        quality={80}
+                        className="object-cover transition-transform duration-700"
                         style={{ transform: isHovered ? "scale(1.08)" : "scale(1)" }}
-                        onError={(e) => { e.currentTarget.src = "/assets/bg.jpg"; }}
-                        unoptimized={pkg.image?.startsWith("https://") && !pkg.image?.includes("unsplash.com") && !pkg.image?.includes("pexels.com") && !pkg.image?.includes("picsum.photos") && !pkg.image?.includes("supabase.co") ? true : undefined}
                       />
 
                       <div

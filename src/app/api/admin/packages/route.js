@@ -1,18 +1,23 @@
-// src/app/api/admin/packages/route-UPDATED.js
+// src/app/api/admin/packages/route.js
 // ─────────────────────────────────────────────────────────────────────────────
-// 🚀 PRODUCTION READY — Full Supabase Integration
+// PROTECTED CRUD — requires Authorization: Bearer <ADMIN_SECRET_TOKEN>
+// GET    → read all packages (admin view, no filters)
+// POST   → create new package
+// PUT    → update existing package (id required in body)
+// DELETE → delete package (?id=xxx query param)
 // ─────────────────────────────────────────────────────────────────────────────
-
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
-import { createSupabaseClient } from "../../../../lib/supabaseClient";
-import { logAdminAction } from "../../../../lib/auditLog";
+import fs   from "fs";
+import path from "path";
+import { packages as staticPackages } from "../../../models/objAll/packages";
 
-export const dynamic = "force-dynamic";
 
-// ── Authorization Check ────────────────────────────────────────────────────
+
+const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
+
+// ── Auth helper ────────────────────────────────────────────────────
 function isAuthorized(req) {
-  const auth = req.headers.get("Authorization") ?? "";
+  const auth  = req.headers.get("Authorization") ?? "";
   const token = process.env.ADMIN_SECRET_TOKEN;
   return Boolean(token && auth === `Bearer ${token}`);
 }
@@ -24,7 +29,39 @@ function unauthorizedResponse() {
   );
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+// ── File helpers ────────────────────────────────────────────────────
+function readPackages() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw    = fs.readFileSync(DATA_FILE, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) {
+    console.error("[readPackages]", e.message);
+  }
+  // First run — seed from static model
+  return [...staticPackages];
+}
+
+function writePackages(data) {
+  const dir = path.dirname(DATA_FILE);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+}
+
+// ── ID generator ────────────────────────────────────────────────────
+function generateId(city = "") {
+  const slug = city
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "") || "pkg";
+  return `${slug}-${Date.now()}`;
+}
+
+// ── Array normaliser ────────────────────────────────────────────────
 function toArray(val, fallback = []) {
   if (Array.isArray(val)) return val.filter(Boolean);
   if (typeof val === "string" && val.trim())
@@ -32,67 +69,15 @@ function toArray(val, fallback = []) {
   return fallback;
 }
 
-// ── GET all packages ──────────────────────────────────────────────────────
+// ── GET ─────────────────────────────────────────────────────────────
 export async function GET(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
-  try {
-    const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "50");
-    const offset = (page - 1) * limit;
-    const popular = searchParams.get("popular"); // filter by popular
-    const search = searchParams.get("search"); // search by title/city
-
-    const supabase = createSupabaseClient(true);
-
-    let query = supabase.from("packages").select("*", { count: "exact" });
-
-    // Apply filters
-    if (popular === "true") {
-      query = query.eq("popular", true);
-    }
-
-    if (search) {
-      const q = search.toLowerCase();
-      query = query.or(
-        `title.ilike.%${q}%,city.ilike.%${q}%,country.ilike.%${q}%`
-      );
-    }
-
-    // Pagination
-    const { data, error, count } = await query
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
-
-    if (error) {
-      console.error("[GET /api/admin/packages]", error);
-      return NextResponse.json(
-        { success: false, message: "Failed to fetch packages" },
-        { status: 500 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data,
-      pagination: {
-        page,
-        limit,
-        total: count,
-        pages: Math.ceil(count / limit),
-      },
-    });
-  } catch (err) {
-    console.error("[GET /api/admin/packages]", err);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch packages" },
-      { status: 500 }
-    );
-  }
+  const packages = readPackages();
+  return NextResponse.json({ success: true, data: packages, total: packages.length });
 }
 
-// ── POST create package ────────────────────────────────────────────────────
+// ── POST (Create) ───────────────────────────────────────────────────
 export async function POST(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
@@ -106,76 +91,48 @@ export async function POST(req) {
       );
     }
 
-    const supabase = createSupabaseClient(true);
+    const packages = readPackages();
 
-    // Generate ID from title and timestamp
-    const slug = body.city
-      ?.toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "") || "pkg";
-    const id = `${slug}-${Date.now()}`;
+    // Generate unique id
+    let id = body.id?.trim() || generateId(body.city);
+    if (packages.some((p) => p.id === id)) id = generateId(body.city);
 
     const newPkg = {
       id,
-      city: body.city?.trim() || "",
-      country: body.country?.trim() || "",
-      title: body.title.trim(),
-      tagline: body.tagline?.trim() || "",
-      description: body.description?.trim() || "",
-      image: body.image?.trim() || "",
-      duration: body.duration?.trim() || "",
-      rating: parseFloat(body.rating) || 0,
-      best_time: body.bestTime?.trim() || "",
-      popular: body.popular === true || body.popular === "true",
-      tourism_type: toArray(body.tourism_type),
+      city:               body.city?.trim()           || "",
+      country:            body.country?.trim()         || "",
+      tourism_type:       toArray(body.tourism_type),
       famous_attractions: toArray(body.famous_attractions),
-      category: toArray(body.category),
-      highlights: toArray(body.highlights),
-      activities: toArray(body.activities),
-      itinerary: Array.isArray(body.itinerary) ? body.itinerary : [],
-      price: body.price || null,
+      category:           toArray(body.category),
+      image:              body.image?.trim()           || "",
+      title:              body.title.trim(),
+      tagline:            body.tagline?.trim()         || "",
+      description:        body.description?.trim()     || "",
+      duration:           body.duration?.trim()        || "",
+      popular:            body.popular === true || body.popular === "true",
+      rating:             parseFloat(body.rating)      || 0,
+      bestTime:           body.bestTime?.trim()        || "",
+      highlights:         toArray(body.highlights),
+      activities:         toArray(body.activities),
+      itinerary:          Array.isArray(body.itinerary) ? body.itinerary : [],
+      createdAt:          new Date().toISOString(),
+      updatedAt:          new Date().toISOString(),
     };
 
-    const { data, error } = await supabase
-      .from("packages")
-      .insert([newPkg])
-      .select()
-      .single();
-
-    if (error) {
-      console.error("[POST /api/admin/packages]", error);
-      return NextResponse.json(
-        { success: false, message: "Failed to create package" },
-        { status: 500 }
-      );
-    }
-
-    // Log action
-    await logAdminAction("CREATE", "package", data.id, { created: data });
-
-    // Revalidate cache
-    revalidatePath("/packages", "page");
-    revalidatePath("/tour-packages", "page");
-    revalidatePath("/destinations", "page");
-    revalidatePath("/experiences", "page");
-    revalidatePath("/", "page");
+    packages.unshift(newPkg);
+    writePackages(packages);
 
     return NextResponse.json(
-      { success: true, data, message: "Package created." },
+      { success: true, data: newPkg, message: "Package created successfully." },
       { status: 201 }
     );
   } catch (err) {
     console.error("[POST /api/admin/packages]", err);
-    return NextResponse.json(
-      { success: false, message: err.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
 
-// ── PUT update package ─────────────────────────────────────────────────────
+// ── PUT (Update) ────────────────────────────────────────────────────
 export async function PUT(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
@@ -184,100 +141,51 @@ export async function PUT(req) {
 
     if (!body.id) {
       return NextResponse.json(
-        { success: false, message: "Field 'id' is required." },
+        { success: false, message: "Field 'id' is required for update." },
         { status: 400 }
       );
     }
 
-    const supabase = createSupabaseClient(true);
+    const packages = readPackages();
+    const idx      = packages.findIndex((p) => p.id === body.id);
 
-    // Build update object
-    const updates = {};
-
-    if (body.city !== undefined) updates.city = body.city?.trim() || "";
-    if (body.country !== undefined) updates.country = body.country?.trim() || "";
-    if (body.title !== undefined) updates.title = body.title.trim();
-    if (body.tagline !== undefined) updates.tagline = body.tagline?.trim() || "";
-    if (body.description !== undefined)
-      updates.description = body.description?.trim() || "";
-    if (body.image !== undefined) updates.image = body.image?.trim() || "";
-    if (body.duration !== undefined) updates.duration = body.duration?.trim() || "";
-    if (body.rating !== undefined) updates.rating = parseFloat(body.rating) || 0;
-    if (body.bestTime !== undefined)
-      updates.best_time = body.bestTime?.trim() || "";
-    if (body.popular !== undefined)
-      updates.popular = body.popular === true || body.popular === "true";
-    if (body.tourism_type !== undefined)
-      updates.tourism_type = toArray(body.tourism_type);
-    if (body.famous_attractions !== undefined)
-      updates.famous_attractions = toArray(body.famous_attractions);
-    if (body.category !== undefined) updates.category = toArray(body.category);
-    if (body.highlights !== undefined) updates.highlights = toArray(body.highlights);
-    if (body.activities !== undefined) updates.activities = toArray(body.activities);
-    if (body.itinerary !== undefined)
-      updates.itinerary = Array.isArray(body.itinerary) ? body.itinerary : [];
-    if (body.price !== undefined) updates.price = body.price || null;
-
-    // Get original for audit trail
-    const { data: original, error: fetchError } = await supabase
-      .from("packages")
-      .select("*")
-      .eq("id", body.id)
-      .single();
-
-    if (fetchError) {
+    if (idx === -1) {
       return NextResponse.json(
-        { success: false, message: "Package not found." },
+        { success: false, message: `Package with id '${body.id}' not found.` },
         { status: 404 }
       );
     }
 
-    updates.updated_at = new Date().toISOString();
+    const orig    = packages[idx];
+    const updated = {
+      ...orig,
+      ...body,
+      // Protected fields
+      id:                 orig.id,
+      createdAt:          orig.createdAt,
+      // Normalise arrays — use body value if provided, else keep original
+      tourism_type:       body.tourism_type       !== undefined ? toArray(body.tourism_type,       orig.tourism_type)       : orig.tourism_type,
+      famous_attractions: body.famous_attractions !== undefined ? toArray(body.famous_attractions, orig.famous_attractions) : orig.famous_attractions,
+      category:           body.category           !== undefined ? toArray(body.category,           orig.category)           : orig.category,
+      highlights:         body.highlights         !== undefined ? toArray(body.highlights,         orig.highlights)         : orig.highlights,
+      activities:         body.activities         !== undefined ? toArray(body.activities,         orig.activities)         : orig.activities,
+      itinerary:          Array.isArray(body.itinerary) ? body.itinerary : orig.itinerary,
+      popular:            body.popular === true || body.popular === "true",
+      rating:             body.rating !== undefined ? (parseFloat(body.rating) || orig.rating) : orig.rating,
+      updatedAt:          new Date().toISOString(),
+    };
 
-    const { data, error } = await supabase
-      .from("packages")
-      .update(updates)
-      .eq("id", body.id)
-      .select()
-      .single();
+    packages[idx] = updated;
+    writePackages(packages);
 
-    if (error) {
-      console.error("[PUT /api/admin/packages]", error);
-      return NextResponse.json(
-        { success: false, message: "Failed to update package" },
-        { status: 500 }
-      );
-    }
-
-    // Log action
-    await logAdminAction("UPDATE", "package", body.id, {
-      before: original,
-      after: data,
-    });
-
-    // Revalidate cache
-    revalidatePath("/packages", "page");
-    revalidatePath("/tour-packages", "page");
-    revalidatePath("/destinations", "page");
-    revalidatePath("/experiences", "page");
-    revalidatePath(`/destinations/${data.city?.toLowerCase().replace(/\s+/g, "-")}`, "page");
-    revalidatePath("/", "page");
-
-    return NextResponse.json({
-      success: true,
-      data,
-      message: "Package updated.",
-    });
+    return NextResponse.json({ success: true, data: updated, message: "Package updated successfully." });
   } catch (err) {
     console.error("[PUT /api/admin/packages]", err);
-    return NextResponse.json(
-      { success: false, message: err.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
 
-// ── DELETE package ────────────────────────────────────────────────────────
+// ── DELETE ──────────────────────────────────────────────────────────
 export async function DELETE(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
@@ -292,54 +200,21 @@ export async function DELETE(req) {
       );
     }
 
-    const supabase = createSupabaseClient(true);
+    const packages = readPackages();
+    const filtered = packages.filter((p) => p.id !== id);
 
-    // Get package before deletion for audit
-    const { data: toDelete, error: fetchError } = await supabase
-      .from("packages")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (fetchError) {
+    if (filtered.length === packages.length) {
       return NextResponse.json(
-        { success: false, message: "Package not found." },
+        { success: false, message: `Package with id '${id}' not found.` },
         { status: 404 }
       );
     }
 
-    const { error } = await supabase
-      .from("packages")
-      .delete()
-      .eq("id", id);
+    writePackages(filtered);
+    return NextResponse.json({ success: true, message: "Package deleted successfully." });
 
-    if (error) {
-      console.error("[DELETE /api/admin/packages]", error);
-      return NextResponse.json(
-        { success: false, message: "Failed to delete package" },
-        { status: 500 }
-      );
-    }
-
-    // Log action
-    await logAdminAction("DELETE", "package", id, { deleted: toDelete });
-
-    // Revalidate cache
-    revalidatePath("/packages", "page");
-    revalidatePath("/tour-packages", "page");
-    revalidatePath("/destinations", "page");
-    revalidatePath("/experiences", "page");
-    revalidatePath("/", "page");
-
-    return NextResponse.json({
-      success: true,
-      message: "Package deleted successfully.",
-    });
   } catch (err) {
     console.error("[DELETE /api/admin/packages]", err);
-    return NextResponse.json(
-      { success: false, message: err.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }

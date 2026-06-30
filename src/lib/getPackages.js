@@ -1,223 +1,113 @@
-// src/lib/getPackages.js
-// ✅ SUPABASE ONLY — server-safe, cache-safe, production hardened
+// src/app/lib/getPackages.js
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVER-SIDE ONLY — used in Server Components & generateStaticParams().
+// Reads from packagesData.json first; falls back to static packages.js.
+// Never import this file in "use client" components.
+// ─────────────────────────────────────────────────────────────────────────────
+import fs   from "fs";
+import path from "path";
+import { packages as staticPackages } from "../app/models/objAll/packages";
 
-import { createSupabaseClient } from "./supabaseClient.js";
+const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
 
-// 🚨 Hard safety: prevent client-side import leakage
-if (typeof window !== "undefined") {
-  throw new Error("getPackages.js is server-only. Do not import in client components.");
-}
+// Cache for packages data - helps with performance.
+// The mtime check keeps admin JSON edits visible without a server restart.
+let packagesCache = null;
+let packagesMtimeMs = 0;
 
-// ─────────────────────────────────────────────
-// CACHE (server global but safe for SSR usage)
-// ─────────────────────────────────────────────
-let _cache = null;
-let _cacheTime = 0;
-const CACHE_TTL = 15_000;
-
-// ─────────────────────────────────────────────
-// Supabase client singleton (avoid re-init)
-// ─────────────────────────────────────────────
-let supabaseClient = null;
-
-function getSupabase() {
-  if (!supabaseClient) {
-    supabaseClient = createSupabaseClient(true);
+function hasPackagesChanged() {
+  try {
+    return fs.statSync(DATA_FILE).mtimeMs !== packagesMtimeMs;
+  } catch {
+    return false;
   }
-  return supabaseClient;
 }
 
-// ─────────────────────────────────────────────
-// CACHE CHECK
-// ─────────────────────────────────────────────
-function isCacheValid() {
-  return _cache && Date.now() - _cacheTime < CACHE_TTL;
-}
-
-// ─────────────────────────────────────────────
-// IMAGE SANITIZER (safe for Next/Image)
-// ─────────────────────────────────────────────
-const FALLBACK_IMAGE = "/assets/bg.jpg";
-
-function sanitizeImageUrl(url) {
-  if (!url || typeof url !== "string") return FALLBACK_IMAGE;
-
-  // support protocol-relative URLs
-  if (url.startsWith("//")) return "https:" + url;
-
-  // block invalid or unsafe formats
-  if (
-    url.startsWith("data:") ||
-    (!url.startsWith("http://") &&
-      !url.startsWith("https://") &&
-      !url.startsWith("/"))
-  ) {
-    return FALLBACK_IMAGE;
-  }
-
-  return url;
-}
-
-function sanitizePackage(pkg) {
-  if (!pkg) return pkg;
-  return {
-    ...pkg,
-    image: sanitizeImageUrl(pkg.image),
-  };
-}
-
-// ─────────────────────────────────────────────
-// SUPABASE FETCH
-// ─────────────────────────────────────────────
-async function fetchFromSupabase() {
-  const supabase = getSupabase();
-
-  const { data, error } = await supabase
-    .from("packages")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-
-  return Array.isArray(data) ? data : [];
-}
-
-// ─────────────────────────────────────────────
-// PUBLIC API (ASYNC)
-// ─────────────────────────────────────────────
-export async function getPackagesAsync() {
-  if (isCacheValid()) return _cache;
+/**
+ * Returns all packages — from JSON store if populated, else static fallback.
+ * Uses in-memory cache for better performance.
+ * @returns {Array}
+ */
+export function getPackages() {
+  if (packagesCache && !hasPackagesChanged()) return packagesCache;
 
   try {
-    const data = await fetchFromSupabase();
-
-    _cache = data.map(sanitizePackage);
-    _cacheTime = Date.now();
+    if (fs.existsSync(DATA_FILE)) {
+      const raw    = fs.readFileSync(DATA_FILE, "utf-8");
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        packagesCache = parsed;
+        packagesMtimeMs = fs.statSync(DATA_FILE).mtimeMs;
+        return parsed;
+      }
+    }
   } catch (err) {
-    console.error("[getPackages] Supabase error:", err.message);
-
-    // ❗ Don't silently hide error — still safe fallback
-    _cache = [];
-    _cache._error = err.message;
+    console.error("[getPackages] read error:", err.message);
   }
-
-  return _cache;
-}
-
-// ─────────────────────────────────────────────
-// SYNC ACCESS (ONLY SAFE AFTER CACHE WARM)
-// ─────────────────────────────────────────────
-export function getPackages() {
-  return _cache ?? [];
-}
-
-// ─────────────────────────────────────────────
-// CACHE UTILITIES
-// ─────────────────────────────────────────────
-export function clearPackagesCache() {
-  _cache = null;
-  _cacheTime = 0;
+  packagesCache = staticPackages;
+  packagesMtimeMs = fs.existsSync(DATA_FILE) ? fs.statSync(DATA_FILE).mtimeMs : 0;
+  return staticPackages;
 }
 
 export function getPackagesMtimeMs() {
-  return _cacheTime;
+  return packagesMtimeMs;
 }
 
-export async function warmPackagesCache() {
-  if (!isCacheValid()) {
-    await getPackagesAsync();
-  }
-  return _cache ?? [];
+/**
+ * Clear the cache (useful for revalidation)
+ */
+export function clearPackagesCache() {
+  packagesCache = null;
+  packagesMtimeMs = 0;
 }
 
-// ─────────────────────────────────────────────
-// SINGLE ITEM
-// ─────────────────────────────────────────────
+/**
+ * Find a single package by id.
+ * @param {string} id
+ * @returns {Object|null}
+ */
 export function getPackageById(id) {
-  if (!_cache) return null;
-  return _cache.find((p) => p.id === id) ?? null;
+  return getPackages().find((p) => p.id === id) ?? null;
 }
 
-// ─────────────────────────────────────────────
-// SHARED FILTER LOGIC (DRY FIX)
-// ─────────────────────────────────────────────
-function applyFilters(data, opts = {}) {
-  const {
-    category,
-    tourism_type,
-    popular,
-    search,
-    limit,
-  } = opts;
+/**
+ * Filter packages with optional criteria.
+ * @param {{ category?: string, tourism_type?: string, popular?: boolean, search?: string, limit?: number }} opts
+ * @returns {Array}
+ */
+export function filterPackages({ category, tourism_type, popular, search, limit } = {}) {
+  let data = getPackages();
 
-  let result = data;
-
-  if (category && category !== "all") {
-    result = result.filter((p) =>
-      Array.isArray(p.category)
-        ? p.category.includes(category)
-        : p.category === category
+  if (category && category !== "all")
+    data = data.filter((p) =>
+      Array.isArray(p.category) ? p.category.includes(category) : p.category === category
     );
-  }
 
-  if (tourism_type && tourism_type !== "all") {
-    result = result.filter((p) =>
+  if (tourism_type && tourism_type !== "all")
+    data = data.filter((p) =>
       Array.isArray(p.tourism_type)
-        ? p.tourism_type.some(
-            (t) => t.toLowerCase() === tourism_type.toLowerCase()
-          )
+        ? p.tourism_type.some((t) => t.toLowerCase() === tourism_type.toLowerCase())
         : false
     );
-  }
 
-  if (popular === true) {
-    result = result.filter(
-      (p) => p.popular === true || p.popular === "true"
-    );
-  }
+  if (popular === true)
+    data = data.filter((p) => p.popular === true || p.popular === "true");
 
   if (search) {
     const q = search.toLowerCase();
-
-    result = result.filter((p) => {
+    data = data.filter((p) => {
       const blob = [
-        p.city,
-        p.country,
-        p.title,
-        p.tagline,
-        ...(p.tourism_type ?? []),
-        ...(p.category ?? []),
-        ...(p.famous_attractions ?? []),
-        ...(p.highlights ?? []),
-      ]
-        .join(" ")
-        .toLowerCase();
-
+        p.city, p.country, p.title, p.tagline,
+        ...(p.tourism_type        ?? []),
+        ...(p.category            ?? []),
+        ...(p.famous_attractions  ?? []),
+        ...(p.highlights          ?? []),
+      ].join(" ").toLowerCase();
       return blob.includes(q);
     });
   }
 
-  if (limit) {
-    result = result.slice(0, Number(limit));
-  }
+  if (limit) data = data.slice(0, Number(limit));
 
-  return result;
-}
-
-// ─────────────────────────────────────────────
-// SYNC FILTER (CACHE BASED)
-// ─────────────────────────────────────────────
-export function filterPackages(opts = {}) {
-  if (!_cache) {
-    console.warn("[getPackages] Cache not warmed. Call warmPackagesCache().");
-  }
-  return applyFilters(getPackages(), opts);
-}
-
-// ─────────────────────────────────────────────
-// ASYNC FILTER (FRESH DATA)
-// ─────────────────────────────────────────────
-export async function filterPackagesAsync(opts = {}) {
-  const data = await getPackagesAsync();
-  return applyFilters(data, opts);
+  return data;
 }

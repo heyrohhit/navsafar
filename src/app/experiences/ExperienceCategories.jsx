@@ -89,7 +89,7 @@ function SliderCard({ item, cardW, cardH }) {
         {/* Images */}
         {item.images.map((src, i) => (
           <div key={src} style={{ position: "absolute", inset: 0, opacity: i === imgIdx ? 1 : 0, transition: "opacity 1.3s ease" }}>
-            <img src={src} alt={item.label} sizes={`${cardW}px`} className="object-cover h-full w-full"
+            <Image src={src} alt={item.label} fill sizes={`${cardW}px`} className="object-cover"
               style={{ transform: hovered && i === imgIdx ? "scale(1.04)" : "scale(1)", transition: "transform 8s ease" }} />
           </div>
         ))}

@@ -27,16 +27,8 @@ function SearchResultsInner() {
 
       setLoading(true);
       try {
-        const from       = searchParams.get("from") || "";
-        const date       = searchParams.get("date") || "";
-        const travellers = searchParams.get("travellers") || "";
-        const params = new URLSearchParams({ q: query, limit: "20" });
-        if (typeFilter) params.set("type", typeFilter);
-        if (from)       params.set("from", from);
-        if (date)       params.set("date", date);
-        if (travellers) params.set("travellers", travellers);
-
-        const res  = await fetch(`/api/search?${params.toString()}`);
+        const url = `/api/search?q=${encodeURIComponent(query)}&limit=20${typeFilter ? `&type=${typeFilter}` : ""}`;
+        const res = await fetch(url);
         const json = await res.json();
         if (json.success) {
           setResults(json.data);
@@ -49,7 +41,7 @@ function SearchResultsInner() {
     }
 
     fetchResults();
-  }, [query, typeFilter, searchParams]);
+  }, [query, typeFilter]);
 
   const activeTab = typeFilter === "all" ? "all" : typeFilter;
   const totalResults = results ? (results.packages?.length || 0) + (results.destinations?.length || 0) : 0;

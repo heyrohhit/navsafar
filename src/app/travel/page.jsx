@@ -15,25 +15,10 @@ export const metadata = {
   title: "Travel Packages | Best Tour & Holiday Deals India - NavSafar",
   description:
     "Explore 100+ handpicked travel packages — hill stations, beaches, religious tours, adventure, international trips. Best price guaranteed. Book with NavSafar trusted by 50,000+ Indians.",
-  keywords: [
-    "travel packages india",
-    "best tour packages india",
-    "holiday packages india",
-    "cheap travel deals india",
-    "domestic tours india",
-    "international tours india",
-    "hill station packages",
-    "beach holiday packages",
-    "religious tours india",
-    "adventure travel india",
-  ],
+  keywords:
+    "travel packages india, best tour packages, holiday packages india, cheap travel deals, domestic international tours",
   alternates: {
     canonical: "https://navsafar.com/travel",
-    languages: {
-      "x-default": "https://navsafar.com/travel",
-      "en-IN": "https://navsafar.com/travel",
-      "en": "https://navsafar.com/travel",
-    },
   },
   openGraph: {
     title: "Travel Packages | Best Tour & Holiday Deals - NavSafar",
@@ -116,7 +101,7 @@ export default async function TravelPage() {
   destinations.forEach((d, i) => { indexMap[d.name] = i; });
 
   return (
-    <main className="min-h-screen bg-[#f7f4ef] pt-[8vh] pb-20">
+    <main className="min-h-screen bg-[#f7f4ef] pt-24 pb-20">
 
       {/* ─── HERO ─── */}
       <section className="relative overflow-hidden px-6 md:px-16 pb-20 pt-10">
@@ -165,14 +150,14 @@ export default async function TravelPage() {
 
       {/* ─── STATS BAR ─── */}
       <section className="mx-6 md:mx-16 mb-16">
-        <div className="bg-[#0f6471] text-white rounded-2xl px-8 py-6 grid grid-cols-2 sm:grid-cols-3 gap-6 shadow-xl text-white">
+        <div className="bg-[#0f6471] text-white rounded-2xl px-8 py-6 grid grid-cols-2 sm:grid-cols-3 gap-6 shadow-xl">
           {[
             { number: `${destinations.length}+`, label: "Destinations" },
             { number: "50K+",  label: "Happy Travellers" },
             { number: "4.9★",  label: "Average Rating" },
           ].map((s) => (
             <div key={s.label} className="text-center">
-              <p className="text-3xl font-black tracking-tight text-white">{s.number}</p>
+              <p className="text-3xl font-black tracking-tight">{s.number}</p>
               <p className="text-sm text-[#a8d8db] mt-1 font-medium">{s.label}</p>
             </div>
           ))}
@@ -339,7 +324,7 @@ export default async function TravelPage() {
             <span className="inline-block bg-[#14a098]/20 text-[#14a098] text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-full mb-5">
               Limited Time Deals
             </span>
-            <h2 className="text-4xl md:text-5xl font-black leading-tight mb-4 text-white">
+            <h2 className="text-4xl md:text-5xl font-black leading-tight mb-4">
               Your Dream Trip is{" "}
               <span className="text-[#14a098]">One Click Away</span>
             </h2>

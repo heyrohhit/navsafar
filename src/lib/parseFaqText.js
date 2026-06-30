@@ -14,7 +14,7 @@ export function parseFaqText(value) {
   }
 
   function startQuestion(question) {
-    if (current) faq.push(current); 
+    if (current) faq.push(current);
     current = { q: question.trim(), a: "" };
   }
 
