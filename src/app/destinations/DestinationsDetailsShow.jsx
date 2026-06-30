@@ -358,7 +358,7 @@ export default function DestinationsClient() {
   const showGrouped = activeRegion === "All" && !search.trim();
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 pt-[10vh]">
+    <div className="min-h-screen bg-gray-50 text-gray-800 pt-[7vh]">
 
       {/* ═══ HERO ═══ */}
       <section className="relative h-screen min-h-[600px] overflow-hidden">

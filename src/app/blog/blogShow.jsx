@@ -214,7 +214,7 @@ export default function BlogPage() {
           />
         </div>
 
-        <div className="relative z-10 text-center px-4">
+        <div className="relative z-10 text-center px-4 mt-8">
           <span className="inline-flex items-center gap-2 text-[10px] font-black tracking-[4px] uppercase text-[#4db8cc] border border-[#4db8cc]/30 px-4 py-2 rounded-full mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#0f6477] animate-pulse" />
             Travel Stories

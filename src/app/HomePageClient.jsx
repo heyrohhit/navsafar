@@ -175,13 +175,13 @@ export default function HomePageClient() {
               className="relative"
             >
               <Image
-                src="/assets/bg.jpg"
+                src="/assets/kd.jpg"
                 alt="Happy travelers"
                 width={800}
-                height={400}
+                height={700}
                 className="rounded-2xl shadow-2xl"
               />
-              <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-xl shadow-xl border border-neutral-200">
+              <div className="absolute -bottom-6 -left-6 bg-white p-2 rounded-xl shadow-xl border border-neutral-200">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <CheckCircle className="text-green-600" size={24} />

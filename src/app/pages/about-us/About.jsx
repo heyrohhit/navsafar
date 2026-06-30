@@ -208,7 +208,7 @@ const AboutUs = () => {
 
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
           <div className="text-5xl mb-6">🗺️</div>
-          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight text-white">
             Ready to Start Your{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-green-300">
               Journey?
