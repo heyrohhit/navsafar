@@ -7,9 +7,16 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Facebook, Twitter, Instagram, Youtube, Linkedin,
   Mail, Phone, MapPin, Send, Heart, ArrowUp, Shield,
 } from "lucide-react";
+
+import {
+  FaFacebook,
+  FaTwitter,
+  FaInstagram,
+  FaYoutube,
+  FaLinkedin,
+} from "react-icons/fa";
 import { BUSINESS } from "../../../lib/localBusinessConfig";
 
 const Footer = () => {
@@ -52,11 +59,11 @@ const Footer = () => {
 
   // ── Social links pulled from single source of truth ───────
   const socialLinks = [
-    { icon: Facebook,  href: BUSINESS.socials.facebook,  label: "Facebook",  color: "hover:bg-blue-600"  },
-    { icon: Twitter,   href: BUSINESS.socials.twitter,   label: "Twitter/X", color: "hover:bg-sky-500"   },
-    { icon: Instagram, href: BUSINESS.socials.instagram, label: "Instagram", color: "hover:bg-pink-600"  },
-    { icon: Youtube,   href: BUSINESS.socials.youtube,   label: "YouTube",   color: "hover:bg-red-600"   },
-    { icon: Linkedin,  href: BUSINESS.socials.linkedin,  label: "LinkedIn",  color: "hover:bg-blue-700"  },
+    { icon: FaFacebook,  href: BUSINESS.socials.facebook,  label: "Facebook",  color: "hover:bg-blue-600"  },
+    { icon: FaTwitter,   href: BUSINESS.socials.twitter,   label: "Twitter/X", color: "hover:bg-sky-500"   },
+    { icon: FaInstagram, href: BUSINESS.socials.instagram, label: "Instagram", color: "hover:bg-pink-600"  },
+    { icon: FaYoutube,   href: BUSINESS.socials.youtube,   label: "YouTube",   color: "hover:bg-red-600"   },
+    { icon: FaLinkedin,  href: BUSINESS.socials.linkedin,  label: "LinkedIn",  color: "hover:bg-blue-700"  },
   ];
 
   const paymentMethods = ["Visa", "Mastercard", "UPI", "Net Banking", "NEFT"];
