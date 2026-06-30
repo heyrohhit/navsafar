@@ -3,11 +3,6 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Youtube,
-  Linkedin,
   Mail,
   Phone,
   MapPin,
@@ -20,6 +15,13 @@ import {
   CheckCircle
 } from "lucide-react"
 
+import {
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+  FaLinkedin,
+  FaYoutube,
+} from "react-icons/fa";
 const Footer = () => {
   const [email, setEmail] = useState("")
   const [isSubscribed, setIsSubscribed] = useState(false)
@@ -68,11 +70,11 @@ const Footer = () => {
   }
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook", color: "hover:bg-blue-600" },
-    { icon: Twitter, href: "#", label: "Twitter", color: "hover:bg-sky-500" },
-    { icon: Instagram, href: "#", label: "Instagram", color: "hover:bg-pink-600" },
-    { icon: Youtube, href: "#", label: "Youtube", color: "hover:bg-red-600" },
-    { icon: Linkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" }
+    { icon: FaFacebook, href: "#", label: "Facebook", color: "hover:bg-blue-600" },
+    { icon: FaTwitter, href: "#", label: "Twitter", color: "hover:bg-sky-500" },
+    { icon: FaInstagram, href: "#", label: "Instagram", color: "hover:bg-pink-600" },
+    { icon: FaYoutube, href: "#", label: "Youtube", color: "hover:bg-red-600" },
+    { icon: FaLinkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" }
   ]
 
   const paymentMethods = ["Visa", "Mastercard", "PayPal", "UPI", "NetBanking"]
