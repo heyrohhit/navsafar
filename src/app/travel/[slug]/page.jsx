@@ -24,7 +24,7 @@ function getTravelFaqs(content, keyword) {
     },
     {
       q: `Is ${keyword} suitable for families and couples?`,
-      a: "Yes. ${keyword} can be planned for families, couples, solo travellers and groups with child-friendly stays, romantic experiences, private transfers and flexible sightseeing.",
+      a: `Yes. ${keyword} can be planned for families, couples, solo travellers and groups with child-friendly stays, romantic experiences, private transfers and flexible sightseeing.`,
     },
   ];
 }
@@ -96,15 +96,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export async function generateJsonLd({ params }) {
-  const { slug } = await params;
-  const keyword = formatSlug(slug);
-  const content = await generateContent(keyword);
-  const faqs = getTravelFaqs(content, keyword);
-
-  return getStructuredData(keyword, { ...content, faq: faqs });
-}
-
 /* ── Page (Server Component) ── */
 export default async function Page({ params }) {
   const { slug } = await params;
@@ -116,8 +107,23 @@ export default async function Page({ params }) {
   const content = await generateContent(keyword);
   const faqs = getTravelFaqs(content, keyword);
 
+  // ── SEO/AEO/GEO/AIO: structured data (FAQPage + TouristAttraction+Offer) ──
+  // Visible FAQ (content.faq) ke saath match karta hai. Pehle `generateJsonLd`
+  // export tha jise Next.js kabhi call nahi karta — isliye ye schema kabhi
+  // emit hi nahi hota tha. Ab page body mein render ho raha hai.
+  const jsonLd = getStructuredData(keyword, { ...content, faq: content.faq || faqs });
+
   return (
     <main className="bg-[#f7f4ef] text-gray-900 font-sans min-h-screen">
+
+      {/* ─── Structured Data ─── */}
+      {jsonLd.map((schema, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      ))}
 
       {/* ─── HERO ─── */}
       <section className="relative w-full h-72 sm:h-[480px] overflow-hidden shadow-xl">

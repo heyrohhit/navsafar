@@ -1,19 +1,31 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// Reduced from 2800ms to 1200ms for faster perceived load
-const TOTAL_DURATION = 1200;
-const HERO_IMAGES = ["/assets/bg.jpg"];
+// ✅ Max cap sirf 450ms — actual dismiss hero image decode hote hi ho jaata hai
+// (jo bhi pehle ho). Pehle 1200ms tha jo artificial delay + high bounce deta tha.
+const TOTAL_DURATION = 450;
+const HERO_IMAGE = "/assets/bg.jpg";
 
 function easeOutCubic(t) {
   return 1 - Math.pow(1 - t, 3);
 }
 
-function preloadImages(urls) {
-  urls.forEach((src) => {
+// Hero LCP image ready hote hi resolve — taaki loader content ke ready hone par
+// hi hate, artificial wait par nahi.
+function decodeHeroImage() {
+  try {
     const img = new window.Image();
-    img.src = src;
-  });
+    img.src = HERO_IMAGE;
+    if (typeof img.decode === "function") {
+      return img.decode().catch(() => {});
+    }
+    return new Promise((resolve) => {
+      img.onload = resolve;
+      img.onerror = resolve;
+    });
+  } catch {
+    return Promise.resolve();
+  }
 }
 
 export default function LoadingScreen({ onComplete }) {
@@ -39,15 +51,17 @@ export default function LoadingScreen({ onComplete }) {
 
       setTimeout(() => {
         setVisible(false);
-        document.body.style.overflow = "";
       }, 650);
 
     }, 300);
   }, [onComplete]);
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    preloadImages(HERO_IMAGES);
+    // ✅ Scroll lock HATA diya — pehle body overflow:hidden hota tha jisse
+    // user loader ke doran scroll/interact nahi kar paata tha (bounce cause).
+
+    // Hero image decode hote hi loader dismiss karo (max cap se pehle bhi).
+    decodeHeroImage().then(() => handleComplete());
 
     const tick = (timestamp) => {
       if (!startRef.current) startRef.current = timestamp;
@@ -64,7 +78,6 @@ export default function LoadingScreen({ onComplete }) {
     rafRef.current = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(rafRef.current);
-      document.body.style.overflow = "";
     };
   }, [handleComplete]);
 

@@ -4,6 +4,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { getPackages } from "../../../lib/getPackages";
+import UniversalSchemaInjector from "../../components/seo/UniversalSchemaInjector";
+
+const SITE_URL = "https://navsafar.com";
 
 // ── Helpers ───────────────────────────────────────────────────────
 function toSlug(city) {
@@ -133,55 +136,18 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// ── JSON-LD Structured Data ──────────────────────────────────────
-export async function generateJsonLd({ params }) {
-  const { slug } = await params;
-  const packages = getPackages();
-  const cityPackages = packages.filter((p) => toSlug(p.city) === slug);
-  if (cityPackages.length === 0) return null;
-
-  const dest = cityPackages.reduce((best, p) =>
-    (p.itinerary?.length ?? 0) > (best.itinerary?.length ?? 0) ? p : best, cityPackages[0]);
-  const faqs = generateDestinationFaqs(dest, cityPackages);
-
-  return [
-    {
-      "@context": "https://schema.org",
-      "@type": "TouristDestination",
-      name: dest.city,
-      description: dest.description,
-      address: {
-        "@type": "PostalAddress",
-        addressCountry: dest.country,
-      },
-      areaServed: dest.country,
-      touristType: dest.tourism_type || ["Custom Tour"],
-      additionalProperty: [
-        { "@type": "PropertyValue", name: "Best Time to Visit", value: dest.bestTime },
-        { "@type": "PropertyValue", name: "Rating", value: dest.rating },
-        { "@type": "PropertyValue", name: "Popular Activities", value: (dest.activities || []).join(", ") },
-      ],
-      hasOfferCatalog: {
-        "@type": "OfferCatalog",
-        name: `${dest.city} Tour Packages`,
-        itemListElement: cityPackages.slice(0, 5).map((pkg) => ({
-          "@type": "Offer",
-          name: pkg.title,
-          price: pkg.price || "Call for pricing",
-          availability: "https://schema.org/InStock",
-        })),
-      },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faqs.map((faq) => ({
-        "@type": "Question",
-        name: faq.q,
-        acceptedAnswer: { "@type": "Answer", text: faq.a },
-      })),
-    },
-  ];
+// ── FAQPage JSON-LD (AEO) — visible FAQ ke saath exactly match karta hai ──
+function buildFaqJsonLd(faqs) {
+  if (!faqs?.length) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
+  };
 }
 
 // ── PAGE ─────────────────────────────────────────────────────────
@@ -204,8 +170,25 @@ export default async function DestinationPage({ params }) { // ✅ async + await
       .reduce((acc, p) => { if (!acc[p.city]) acc[p.city] = p; return acc; }, {})
   ).slice(0, 4);
 
+  // ── AEO/SEO: FAQ + structured data (visible FAQ ke saath match) ──
+  const faqs = generateDestinationFaqs(dest, cityPackages);
+  const faqJsonLd = buildFaqJsonLd(faqs);
+
   return (
     <div className="min-h-screen bg-white">
+      {/* ── SEO/AEO/GEO: TouristDestination + OfferCatalog structured data ── */}
+      <UniversalSchemaInjector
+        type="touristDestination"
+        destination={dest}
+        packages={cityPackages}
+      />
+      {/* ── AEO: FAQPage structured data (Google/AI Overviews) ── */}
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
       {/* ── Hero ── */}
       <div className="relative h-[70vh] min-h-[400px] overflow-hidden">
         {dest.image && (
@@ -323,6 +306,9 @@ export default async function DestinationPage({ params }) { // ✅ async + await
                 ))}
               </div>
             </div>
+
+            {/* ── FAQ (AEO — matches FAQPage schema above) ── */}
+            <FAQSection faqs={faqs} />
           </div>
 
           {/* ── Right sidebar ── */}
