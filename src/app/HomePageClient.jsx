@@ -24,7 +24,7 @@ const defaultStats = {
 };
 
 const trustBadges = [
-  { icon: Shield, title: "IATO Certified",  description: "Indian Association of Tour Operators" },
+  // { icon: Shield, title: "IATO Certified",  description: "Indian Association of Tour Operators" },
   { icon: Award,  title: "Govt. Approved",  description: "Ministry of Tourism, India" },
   { icon: Users,  title: "Expert Guides",   description: "Certified local experts" },
   { icon: Clock,  title: "24/7 Support",    description: "Always here for you" },
