@@ -3,7 +3,7 @@
 // ✅ SINGLE SOURCE OF TRUTH — PRODUCTION READY
 // ─────────────────────────────────────────────────────────────
 
-export const PRIMARY_DOMAIN = "https://navsafar.com";
+export const PRIMARY_DOMAIN = "https://www.navsafar.com";
 
 /**
  * @typedef {Object} DomainEntry
