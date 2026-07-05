@@ -44,8 +44,8 @@ export const metadata = {
   },
 };
 
-export default function PackagesPage() {
-  const packages = getPackages();
+export default async function PackagesPage() {
+  const packages = await getPackages();
   return (
     <>
       <UniversalSchemaInjector

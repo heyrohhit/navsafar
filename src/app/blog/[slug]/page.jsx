@@ -1,20 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getBlogBySlug, getBlogs, getRelatedBlogs } from "../../../lib/getBlogs";
+import { getBlogBySlug, getRelatedBlogs } from "../../../lib/getBlogs";
 import { parseFaqText } from "../../../lib/parseFaqText";
 
 const SITE_URL = "https://navsafar.com";
 
-// ── Static params for SSG ─────────────────────────────────────────────
-export async function generateStaticParams() {
-  return getBlogs().map((blog) => ({ slug: blog.slug }));
-}
-
 // ── Metadata ──────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const blog = getBlogBySlug(slug);
+  const blog = await getBlogBySlug(slug);
   if (!blog) return { title: "Not Found" };
 
   return {
@@ -48,7 +43,7 @@ export async function generateMetadata({ params }) {
 
 export async function generateJsonLd({ params }) {
   const { slug } = await params;
-  const blog = getBlogBySlug(slug);
+  const blog = await getBlogBySlug(slug);
   if (!blog || blog.status === "draft") return null;
 
   return [buildBlogJsonLd(blog), buildFaqJsonLd(blog)];
@@ -885,10 +880,10 @@ function NewsletterCTA() {
 // ── Main Page ─────────────────────────────────────────────────────────
 export default async function BlogDetailPage({ params }) {
   const { slug } = await params;
-  const blog = getBlogBySlug(slug);
+  const blog = await getBlogBySlug(slug);
   if (!blog || blog.status === "draft") notFound();
 
-  const related = getRelatedBlogs(blog.slug, blog.category, 3);
+  const related = await getRelatedBlogs(blog.slug, blog.category, 3);
   const faqs = getBlogFaqs(blog);
 
   return (

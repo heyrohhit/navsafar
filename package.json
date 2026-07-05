@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:testimonials": "node scripts/seed-testimonials.js"
+    "seed:testimonials": "node scripts/seed-testimonials.js",
+    "seed:supabase": "node scripts/seed-supabase.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",

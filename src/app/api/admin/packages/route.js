@@ -5,15 +5,18 @@
 // POST   → create new package
 // PUT    → update existing package (id required in body)
 // DELETE → delete package (?id=xxx query param)
+//
+// Storage: Supabase `packages` table. Full package object lives in `data` jsonb;
+// id/city/country/popular are mirrored to columns for querying/ordering.
 // ─────────────────────────────────────────────────────────────────────────────
 import { NextResponse } from "next/server";
-import fs   from "fs";
-import path from "path";
-import { packages as staticPackages } from "../../../models/objAll/packages";
+import { createSupabaseClient } from "../../../../lib/supabaseClient";
 
+export const dynamic = "force-dynamic";
 
-
-const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
+function db() {
+  return createSupabaseClient(true); // service role — bypass RLS
+}
 
 // ── Auth helper ────────────────────────────────────────────────────
 function isAuthorized(req) {
@@ -29,33 +32,12 @@ function unauthorizedResponse() {
   );
 }
 
-// ── File helpers ────────────────────────────────────────────────────
-function readPackages() {
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw    = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {
-    console.error("[readPackages]", e.message);
-  }
-  // First run — seed from static model
-  return [...staticPackages];
-}
-
-function writePackages(data) {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
-}
-
 // ── ID generator ────────────────────────────────────────────────────
 function generateId(city = "") {
   const slug = city
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9-]/g, "") || "pkg";
   return `${slug}-${Date.now()}`;
@@ -69,12 +51,35 @@ function toArray(val, fallback = []) {
   return fallback;
 }
 
+// ── Row builder (queryable cols + full object in data) ──────────────
+function toRow(pkg) {
+  return {
+    id:         pkg.id,
+    city:       pkg.city || null,
+    country:    pkg.country || null,
+    popular:    pkg.popular === true || pkg.popular === "true",
+    data:       pkg,
+    updated_at: pkg.updatedAt || new Date().toISOString(),
+  };
+}
+
 // ── GET ─────────────────────────────────────────────────────────────
 export async function GET(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
-  const packages = readPackages();
-  return NextResponse.json({ success: true, data: packages, total: packages.length });
+  try {
+    const { data, error } = await db()
+      .from("packages")
+      .select("data")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+
+    const packages = (data ?? []).map((r) => r.data).filter(Boolean);
+    return NextResponse.json({ success: true, data: packages, total: packages.length });
+  } catch (err) {
+    console.error("[GET /api/admin/packages]", err);
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+  }
 }
 
 // ── POST (Create) ───────────────────────────────────────────────────
@@ -91,11 +96,11 @@ export async function POST(req) {
       );
     }
 
-    const packages = readPackages();
-
-    // Generate unique id
+    const now = new Date().toISOString();
     let id = body.id?.trim() || generateId(body.city);
-    if (packages.some((p) => p.id === id)) id = generateId(body.city);
+    // Ensure unique id
+    const { data: existing } = await db().from("packages").select("id").eq("id", id).limit(1);
+    if (existing?.length) id = generateId(body.city);
 
     const newPkg = {
       id,
@@ -115,12 +120,12 @@ export async function POST(req) {
       highlights:         toArray(body.highlights),
       activities:         toArray(body.activities),
       itinerary:          Array.isArray(body.itinerary) ? body.itinerary : [],
-      createdAt:          new Date().toISOString(),
-      updatedAt:          new Date().toISOString(),
+      createdAt:          now,
+      updatedAt:          now,
     };
 
-    packages.unshift(newPkg);
-    writePackages(packages);
+    const { error } = await db().from("packages").insert({ ...toRow(newPkg), created_at: now });
+    if (error) throw error;
 
     return NextResponse.json(
       { success: true, data: newPkg, message: "Package created successfully." },
@@ -146,17 +151,17 @@ export async function PUT(req) {
       );
     }
 
-    const packages = readPackages();
-    const idx      = packages.findIndex((p) => p.id === body.id);
-
-    if (idx === -1) {
+    const { data: rows, error: readErr } = await db()
+      .from("packages").select("data").eq("id", body.id).limit(1);
+    if (readErr) throw readErr;
+    if (!rows?.length) {
       return NextResponse.json(
         { success: false, message: `Package with id '${body.id}' not found.` },
         { status: 404 }
       );
     }
 
-    const orig    = packages[idx];
+    const orig    = rows[0].data;
     const updated = {
       ...orig,
       ...body,
@@ -175,8 +180,8 @@ export async function PUT(req) {
       updatedAt:          new Date().toISOString(),
     };
 
-    packages[idx] = updated;
-    writePackages(packages);
+    const { error } = await db().from("packages").update(toRow(updated)).eq("id", body.id);
+    if (error) throw error;
 
     return NextResponse.json({ success: true, data: updated, message: "Package updated successfully." });
   } catch (err) {
@@ -200,19 +205,17 @@ export async function DELETE(req) {
       );
     }
 
-    const packages = readPackages();
-    const filtered = packages.filter((p) => p.id !== id);
+    const { data, error } = await db().from("packages").delete().eq("id", id).select("id");
+    if (error) throw error;
 
-    if (filtered.length === packages.length) {
+    if (!data?.length) {
       return NextResponse.json(
         { success: false, message: `Package with id '${id}' not found.` },
         { status: 404 }
       );
     }
 
-    writePackages(filtered);
     return NextResponse.json({ success: true, message: "Package deleted successfully." });
-
   } catch (err) {
     console.error("[DELETE /api/admin/packages]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });

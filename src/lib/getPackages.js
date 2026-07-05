@@ -1,82 +1,52 @@
-// src/app/lib/getPackages.js
+// src/lib/getPackages.js
 // ─────────────────────────────────────────────────────────────────────────────
-// SERVER-SIDE ONLY — used in Server Components & generateStaticParams().
-// Reads from packagesData.json first; falls back to static packages.js.
+// SERVER-SIDE ONLY — Supabase-backed packages store.
+// Reads from the `packages` table (public read RLS). Falls back to the static
+// packages model if Supabase is unreachable/empty so the site never breaks.
+// All functions are ASYNC — callers must `await`.
 // Never import this file in "use client" components.
 // ─────────────────────────────────────────────────────────────────────────────
-import fs   from "fs";
-import path from "path";
+import { supabase } from "./supabaseClient";
 import { packages as staticPackages } from "../app/models/objAll/packages";
 
-const DATA_FILE = path.join(process.cwd(), "src", "data", "packagesData.json");
-
-// Cache for packages data - helps with performance.
-// The mtime check keeps admin JSON edits visible without a server restart.
-let packagesCache = null;
-let packagesMtimeMs = 0;
-
-function hasPackagesChanged() {
-  try {
-    return fs.statSync(DATA_FILE).mtimeMs !== packagesMtimeMs;
-  } catch {
-    return false;
-  }
-}
-
 /**
- * Returns all packages — from JSON store if populated, else static fallback.
- * Uses in-memory cache for better performance.
- * @returns {Array}
+ * Returns all packages — from Supabase if populated, else static fallback.
+ * @returns {Promise<Array>}
  */
-export function getPackages() {
-  if (packagesCache && !hasPackagesChanged()) return packagesCache;
-
+export async function getPackages() {
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw    = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        packagesCache = parsed;
-        packagesMtimeMs = fs.statSync(DATA_FILE).mtimeMs;
-        return parsed;
-      }
+    const { data, error } = await supabase
+      .from("packages")
+      .select("data")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    if (Array.isArray(data) && data.length > 0) {
+      return data.map((row) => row.data).filter(Boolean);
     }
   } catch (err) {
-    console.error("[getPackages] read error:", err.message);
+    console.error("[getPackages] Supabase read error:", err.message);
   }
-  packagesCache = staticPackages;
-  packagesMtimeMs = fs.existsSync(DATA_FILE) ? fs.statSync(DATA_FILE).mtimeMs : 0;
   return staticPackages;
-}
-
-export function getPackagesMtimeMs() {
-  return packagesMtimeMs;
-}
-
-/**
- * Clear the cache (useful for revalidation)
- */
-export function clearPackagesCache() {
-  packagesCache = null;
-  packagesMtimeMs = 0;
 }
 
 /**
  * Find a single package by id.
  * @param {string} id
- * @returns {Object|null}
+ * @returns {Promise<Object|null>}
  */
-export function getPackageById(id) {
-  return getPackages().find((p) => p.id === id) ?? null;
+export async function getPackageById(id) {
+  const all = await getPackages();
+  return all.find((p) => p.id === id) ?? null;
 }
 
 /**
  * Filter packages with optional criteria.
  * @param {{ category?: string, tourism_type?: string, popular?: boolean, search?: string, limit?: number }} opts
- * @returns {Array}
+ * @returns {Promise<Array>}
  */
-export function filterPackages({ category, tourism_type, popular, search, limit } = {}) {
-  let data = getPackages();
+export async function filterPackages({ category, tourism_type, popular, search, limit } = {}) {
+  let data = await getPackages();
 
   if (category && category !== "all")
     data = data.filter((p) =>

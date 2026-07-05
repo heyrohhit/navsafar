@@ -22,8 +22,8 @@ export const metadata = {
 
 // Metadata server component se export hoti hai, client component se NAHI.
 // isliye page.jsx server component raha aur interactive logic alag file mein gaya.
-export default function TourPackagesPage() {
-  const packages = getPackages();
+export default async function TourPackagesPage() {
+  const packages = await getPackages();
   return (
     <>
       <UniversalSchemaInjector

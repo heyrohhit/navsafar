@@ -12,10 +12,9 @@ function toSlug(value) {
     .replace(/[^a-z0-9-]/g, "");
 }
 
-export default function sitemap() {
+export default async function sitemap() {
   const keywords = generateKeywords();
-  const blogs = getBlogs();
-  const packages = getPackages();
+  const [blogs, packages] = await Promise.all([getBlogs(), getPackages()]);
   const now = new Date();
 
   const staticPages = [

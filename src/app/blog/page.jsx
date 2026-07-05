@@ -236,12 +236,15 @@ function BlogCard({ blog }) {
 
 export default async function BlogPage({ searchParams }) {
   const { category = "All" } = await searchParams;
-  const blogs = filterBlogs({ category });
-  const categories = getBlogCategories();
-  const featuredBlogs = category === "All" ? getFeaturedBlogs(1) : [];
+  const [blogs, categories, allBlogs] = await Promise.all([
+    filterBlogs({ category }),
+    getBlogCategories(),
+    getBlogs(),
+  ]);
+  const featuredBlogs = category === "All" ? await getFeaturedBlogs(1) : [];
   const gridBlogs =
     category === "All"
-      ? getBlogs().filter((blog) => !featuredBlogs.some((featured) => featured.id === blog.id))
+      ? allBlogs.filter((blog) => !featuredBlogs.some((featured) => featured.id === blog.id))
       : blogs;
 
   const pageTitle = category === "All" ? "Travel Stories" : `${category} Stories`;

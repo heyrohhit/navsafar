@@ -1,28 +1,12 @@
 // src/lib/getBlogs.js
-// Server-side blog store.
-// Reads src/data/blogsData.json first, falls back to the static model,
-// and automatically adds package blogs from src/data/packagesData.json.
-import fs from "fs";
-import path from "path";
-import { blogs as staticBlogs, blogCategories as staticBlogCategories } from "../app/models/objAll/blog.js";
+// Server-side blog store — Supabase-backed.
+// Reads from the `blogs` table (public read RLS), falls back to the static
+// model, and automatically adds package blogs derived from the packages store.
+// All exported functions are ASYNC — callers must `await`.
+import { supabase } from "./supabaseClient";
+import { blogs as staticBlogs } from "../app/models/objAll/blog.js";
 import { parseFaqText } from "./parseFaqText";
-import { getPackages, getPackagesMtimeMs } from "./getPackages";
-
-const DATA_FILE = path.join(process.cwd(), "src", "data", "blogsData.json");
-
-let blogsCache = null;
-let blogCategoriesCache = null;
-let blogsMtimeMs = 0;
-let categoriesMtimeMs = 0;
-let packageBlogsMtimeMs = 0;
-
-function hasJsonChanged(mtimeMs) {
-  try {
-    return fs.statSync(DATA_FILE).mtimeMs !== mtimeMs;
-  } catch {
-    return false;
-  }
-}
+import { getPackages } from "./getPackages";
 
 function toSlug(value) {
   return String(value || "")
@@ -252,17 +236,21 @@ function generatePackageFaq(pkg) {
   ];
 }
 
-function readStoredBlogs() {
+// ── Storage (Supabase) ───────────────────────────────────────────────────────
+async function readStoredBlogs() {
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    const { data, error } = await supabase
+      .from("blogs")
+      .select("data")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    if (Array.isArray(data) && data.length > 0) {
+      return data.map((row) => row.data).filter(Boolean);
     }
   } catch (err) {
-    console.error("[getBlogs] read error:", err.message);
+    console.error("[getBlogs] Supabase read error:", err.message);
   }
-
   return staticBlogs;
 }
 
@@ -275,70 +263,36 @@ function mergeBlogs(storedBlogs, packageBlogs) {
   ];
 }
 
-function loadBlogs() {
-  const storedBlogs = readStoredBlogs();
-  const packageBlogs = getPackages().map(buildPackageBlog);
-  const currentBlogsMtimeMs = fs.existsSync(DATA_FILE) ? fs.statSync(DATA_FILE).mtimeMs : 0;
-  const currentPackageBlogsMtimeMs = getPackagesMtimeMs();
-
-  blogsCache = mergeBlogs(storedBlogs, packageBlogs);
-  blogsMtimeMs = currentBlogsMtimeMs;
-  packageBlogsMtimeMs = currentPackageBlogsMtimeMs;
-
-  return blogsCache;
+export async function getBlogs() {
+  const [storedBlogs, packages] = await Promise.all([readStoredBlogs(), getPackages()]);
+  const packageBlogs = packages.map(buildPackageBlog);
+  return mergeBlogs(storedBlogs, packageBlogs);
 }
 
-export function getBlogs() {
-  const currentBlogsMtimeMs = fs.existsSync(DATA_FILE) ? fs.statSync(DATA_FILE).mtimeMs : 0;
-  const currentPackageBlogsMtimeMs = getPackagesMtimeMs();
-
-  if (
-    blogsCache &&
-    currentBlogsMtimeMs === blogsMtimeMs &&
-    currentPackageBlogsMtimeMs === packageBlogsMtimeMs &&
-    !hasJsonChanged(blogsMtimeMs)
-  ) {
-    return blogsCache;
-  }
-
-  return loadBlogs();
+export async function getBlogCategories() {
+  const blogs = await getBlogs();
+  return ["All", ...new Set(blogs.map((blog) => blog.category).filter(Boolean))];
 }
 
-export function getBlogCategories() {
-  const currentBlogsMtimeMs = fs.existsSync(DATA_FILE) ? fs.statSync(DATA_FILE).mtimeMs : 0;
-  const currentPackageBlogsMtimeMs = getPackagesMtimeMs();
-
-  if (
-    blogCategoriesCache &&
-    currentBlogsMtimeMs === categoriesMtimeMs &&
-    currentPackageBlogsMtimeMs === packageBlogsMtimeMs
-  ) {
-    return blogCategoriesCache;
-  }
-
-  const categories = ["All", ...new Set(getBlogs().map((blog) => blog.category).filter(Boolean))];
-  blogCategoriesCache = categories;
-  categoriesMtimeMs = currentBlogsMtimeMs;
-  packageBlogsMtimeMs = currentPackageBlogsMtimeMs;
-  return categories;
+export async function getBlogBySlug(slug) {
+  const blogs = await getBlogs();
+  return blogs.find((blog) => blog.slug === slug) ?? null;
 }
 
-export function getBlogBySlug(slug) {
-  return getBlogs().find((blog) => blog.slug === slug) ?? null;
+export async function getFeaturedBlogs(limit = 1) {
+  const blogs = await getBlogs();
+  return blogs.filter((blog) => blog.featured === true).slice(0, limit);
 }
 
-export function getFeaturedBlogs(limit = 1) {
-  return getBlogs().filter((blog) => blog.featured === true).slice(0, limit);
-}
-
-export function getRecentBlogs(limit = 6) {
-  return [...getBlogs()]
+export async function getRecentBlogs(limit = 6) {
+  const blogs = await getBlogs();
+  return [...blogs]
     .sort((a, b) => new Date(b.publishedAt || 0) - new Date(a.publishedAt || 0))
     .slice(0, limit);
 }
 
-export function filterBlogs({ category = "All", search, limit } = {}) {
-  let data = getBlogs();
+export async function filterBlogs({ category = "All", search, limit } = {}) {
+  let data = await getBlogs();
 
   if (category && category !== "All") {
     data = data.filter((blog) => blog.category === category);
@@ -370,16 +324,9 @@ export function filterBlogs({ category = "All", search, limit } = {}) {
   return data;
 }
 
-export function getRelatedBlogs(currentSlug, category, limit = 3) {
-  return getBlogs()
+export async function getRelatedBlogs(currentSlug, category, limit = 3) {
+  const blogs = await getBlogs();
+  return blogs
     .filter((blog) => blog.slug !== currentSlug && blog.category === category)
     .slice(0, limit);
-}
-
-export function clearBlogsCache() {
-  blogsCache = null;
-  blogCategoriesCache = null;
-  blogsMtimeMs = 0;
-  categoriesMtimeMs = 0;
-  packageBlogsMtimeMs = 0;
 }

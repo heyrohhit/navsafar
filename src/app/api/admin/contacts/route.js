@@ -4,10 +4,18 @@
 // GET    → PROTECTED (admin reads all contacts)
 // PUT    → PROTECTED (admin updates status / priority)
 // DELETE → PROTECTED (admin deletes a contact)
+//
+// Storage: Supabase `contacts` table (service-role via getContacts helpers).
 // ─────────────────────────────────────────────────────────────────────────────
 import { NextResponse } from "next/server";
-import { readContacts, writeContacts } from "../../../../lib/getContacts";
+import {
+  readContacts,
+  insertContact,
+  updateContact,
+  deleteContact,
+} from "../../../../lib/getContacts";
 
+export const dynamic = "force-dynamic";
 
 // ── Auth helper ────────────────────────────────────────────────────
 function isAuthorized(req) {
@@ -41,8 +49,6 @@ export async function POST(req) {
       );
     }
 
-    const contacts = readContacts();
-
     const item = {
       id:              `contact-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       name:            body.name.trim(),
@@ -57,8 +63,7 @@ export async function POST(req) {
       date:            new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
     };
 
-    contacts.unshift(item);
-    writeContacts(contacts);
+    await insertContact(item);
 
     return NextResponse.json(
       { success: true, message: "Thank you! We will contact you shortly." },
@@ -74,8 +79,13 @@ export async function POST(req) {
 export async function GET(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
-  const contacts = readContacts();
-  return NextResponse.json({ success: true, data: contacts, total: contacts.length });
+  try {
+    const contacts = await readContacts();
+    return NextResponse.json({ success: true, data: contacts, total: contacts.length });
+  } catch (err) {
+    console.error("[GET /api/admin/contacts]", err);
+    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+  }
 }
 
 // ── PUT (Protected — update status / priority) ──────────────────────
@@ -83,28 +93,19 @@ export async function PUT(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
   try {
-    const body     = await req.json();
-    const contacts = readContacts();
-    const idx      = contacts.findIndex((c) => c.id === body.id);
-
-    if (idx === -1) {
-      return NextResponse.json(
-        { success: false, message: "Contact not found." },
-        { status: 404 }
-      );
+    const body = await req.json();
+    if (!body.id) {
+      return NextResponse.json({ success: false, message: "Field 'id' is required." }, { status: 400 });
     }
 
-    // Allow updating: status, priority, or any other non-id field
-    contacts[idx] = {
-      ...contacts[idx],
-      ...body,
-      id:        contacts[idx].id,        // protect id
-      createdAt: contacts[idx].createdAt, // protect creation time
-    };
+    const { id, ...patch } = body;
+    const updated = await updateContact(id, patch);
 
-    writeContacts(contacts);
-    return NextResponse.json({ success: true, data: contacts[idx], message: "Contact updated." });
+    if (!updated) {
+      return NextResponse.json({ success: false, message: "Contact not found." }, { status: 404 });
+    }
 
+    return NextResponse.json({ success: true, data: updated, message: "Contact updated." });
   } catch (err) {
     console.error("[PUT /api/admin/contacts]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
@@ -126,19 +127,12 @@ export async function DELETE(req) {
       );
     }
 
-    const contacts = readContacts();
-    const filtered = contacts.filter((c) => c.id !== id);
-
-    if (filtered.length === contacts.length) {
-      return NextResponse.json(
-        { success: false, message: "Contact not found." },
-        { status: 404 }
-      );
+    const removed = await deleteContact(id);
+    if (!removed) {
+      return NextResponse.json({ success: false, message: "Contact not found." }, { status: 404 });
     }
 
-    writeContacts(filtered);
     return NextResponse.json({ success: true, message: "Contact deleted successfully." });
-
   } catch (err) {
     console.error("[DELETE /api/admin/contacts]", err);
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });

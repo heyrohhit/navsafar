@@ -23,7 +23,7 @@ export async function GET(request) {
 
     // ── Single package by id ──────────────────────────────────────────────
     if (id) {
-      const all  = filterPackages({});
+      const all  = await filterPackages({});
       const item = all.find((p) => p.id === id);
 
       if (!item) {
@@ -37,7 +37,7 @@ export async function GET(request) {
     }
 
     // ── Filtered packages ─────────────────────────────────────────────────
-    const data = filterPackages({
+    const data = await filterPackages({
       category,
       tourism_type,
       popular,

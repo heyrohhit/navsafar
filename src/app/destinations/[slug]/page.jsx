@@ -87,17 +87,10 @@ function FAQSection({ faqs }) {
   );
 }
 
-// ── generateStaticParams ──────────────────────────────────────────
-export async function generateStaticParams() {
-  const packages = getPackages();
-  const cities   = [...new Set(packages.map((p) => p.city))];
-  return cities.map((city) => ({ slug: toSlug(city) }));
-}
-
 // ── generateMetadata ─────────────────────────────────────────────
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const packages = getPackages();
+  const packages = await getPackages();
   const dest = packages.find((p) => toSlug(p.city) === slug);
   if (!dest) return { title: "Destination Not Found" };
 
@@ -153,7 +146,7 @@ function buildFaqJsonLd(faqs) {
 // ── PAGE ─────────────────────────────────────────────────────────
 export default async function DestinationPage({ params }) { // ✅ async + await params
   const { slug } = await params;
-  const packages = getPackages();
+  const packages = await getPackages();
 
   const cityPackages = packages.filter((p) => toSlug(p.city) === slug);
   if (cityPackages.length === 0) notFound();

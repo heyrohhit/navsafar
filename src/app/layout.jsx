@@ -16,6 +16,13 @@ import {
   buildHreflangAlternates,
 } from "../lib/domainConfig.js";
 
+/* ── DYNAMIC RENDERING ───────────────────────────────
+ * Poori website dynamic — har request pe fresh server render (koi build-time
+ * static caching nahi). Admin se koi content change turant live dikhta hai.
+ */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 /* ── FONTS ───────────────────────────────────────── */
 const geistSans = Geist({
   variable: "--font-geist-sans",

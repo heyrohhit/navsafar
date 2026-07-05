@@ -1,12 +1,17 @@
 // src/app/api/admin/blogs/route.js
-// Protected CRUD for blog data stored in src/data/blogsData.json.
+// Protected CRUD for blog data stored in Supabase `blogs` table.
+// Full blog object lives in `data` jsonb; slug/category/status/featured/
+// published_at mirrored to columns.
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { createSupabaseClient } from "../../../../lib/supabaseClient";
 import { blogs as staticBlogs } from "../../../models/objAll/blog";
 import { parseFaqText } from "../../../../lib/parseFaqText";
 
-const DATA_FILE = path.join(process.cwd(), "src", "data", "blogsData.json");
+export const dynamic = "force-dynamic";
+
+function db() {
+  return createSupabaseClient(true); // service role — bypass RLS
+}
 
 function isAuthorized(req) {
   const auth = req.headers.get("Authorization") ?? "";
@@ -21,23 +26,32 @@ function unauthorizedResponse() {
   );
 }
 
-function readBlogs() {
+// ── Storage helpers (Supabase) ──────────────────────────────────────
+async function readBlogs() {
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
+    const { data, error } = await db()
+      .from("blogs")
+      .select("data")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    if (Array.isArray(data) && data.length > 0) return data.map((r) => r.data).filter(Boolean);
   } catch (err) {
     console.error("[readBlogs]", err.message);
   }
   return [...staticBlogs];
 }
 
-function writeBlogs(data) {
-  const dir = path.dirname(DATA_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(DATA_FILE, `${JSON.stringify(data, null, 2)}\n`, "utf-8");
+function toRow(blog) {
+  return {
+    id:           blog.id,
+    slug:         blog.slug,
+    category:     blog.category || null,
+    status:       blog.status || "published",
+    featured:     blog.featured === true,
+    published_at: blog.publishedAt || null,
+    data:         blog,
+    updated_at:   blog.updatedAt || new Date().toISOString(),
+  };
 }
 
 function toArray(value, fallback = []) {
@@ -215,7 +229,7 @@ export async function GET(req) {
   if (!isAuthorized(req)) return unauthorizedResponse();
 
   try {
-    const blogs = readBlogs();
+    const blogs = await readBlogs();
     return NextResponse.json(
       { success: true, data: blogs, total: blogs.length },
       {
@@ -242,7 +256,7 @@ export async function POST(req) {
       return NextResponse.json({ success: false, message: "Field 'excerpt' or structured intro is required." }, { status: 400 });
     }
 
-    const blogs = readBlogs();
+    const blogs = await readBlogs();
     const existingIds = new Set(blogs.map((blog) => blog.id));
     const proposedSlug = slugify(body.slug?.trim() || generateSlug(body.title, existingIds));
     if (blogs.some((blog) => blog.slug === proposedSlug && blog.id !== body.id)) {
@@ -253,8 +267,8 @@ export async function POST(req) {
     }
 
     const newBlog = normalizeBlog(body, existingIds);
-    blogs.unshift(newBlog);
-    writeBlogs(blogs);
+    const { error } = await db().from("blogs").insert({ ...toRow(newBlog), created_at: newBlog.createdAt });
+    if (error) throw error;
 
     return NextResponse.json(
       { success: true, data: newBlog, message: "Blog created successfully." },
@@ -275,14 +289,14 @@ export async function PUT(req) {
       return NextResponse.json({ success: false, message: "Field 'id' is required for update." }, { status: 400 });
     }
 
-    const blogs = readBlogs();
-    const idx = blogs.findIndex((blog) => blog.id === body.id);
-    if (idx === -1) {
+    const blogs = await readBlogs();
+    const original = blogs.find((blog) => blog.id === body.id);
+    if (!original) {
       return NextResponse.json({ success: false, message: `Blog with id '${body.id}' not found.` }, { status: 404 });
     }
 
     const existingIds = new Set(blogs.filter((blog) => blog.id !== body.id).map((blog) => blog.id));
-    const proposedSlug = slugify(body.slug?.trim() || body.title || generateSlug(blogs[idx].title, existingIds));
+    const proposedSlug = slugify(body.slug?.trim() || body.title || generateSlug(original.title, existingIds));
     if (blogs.some((blog) => blog.slug === proposedSlug && blog.id !== body.id)) {
       return NextResponse.json(
         { success: false, message: "Another blog already uses this slug." },
@@ -290,9 +304,9 @@ export async function PUT(req) {
       );
     }
 
-    const updated = normalizeBlog({ ...body, id: body.id }, existingIds, blogs[idx]);
-    blogs[idx] = updated;
-    writeBlogs(blogs);
+    const updated = normalizeBlog({ ...body, id: body.id }, existingIds, original);
+    const { error } = await db().from("blogs").update(toRow(updated)).eq("id", body.id);
+    if (error) throw error;
 
     return NextResponse.json({ success: true, data: updated, message: "Blog updated successfully." });
   } catch (err) {
@@ -311,13 +325,12 @@ export async function DELETE(req) {
       return NextResponse.json({ success: false, message: "Query param 'id' is required." }, { status: 400 });
     }
 
-    const blogs = readBlogs();
-    const filtered = blogs.filter((blog) => blog.id !== id);
-    if (filtered.length === blogs.length) {
+    const { data, error } = await db().from("blogs").delete().eq("id", id).select("id");
+    if (error) throw error;
+    if (!data?.length) {
       return NextResponse.json({ success: false, message: `Blog with id '${id}' not found.` }, { status: 404 });
     }
 
-    writeBlogs(filtered);
     return NextResponse.json({ success: true, message: "Blog deleted successfully." });
   } catch (err) {
     console.error("[DELETE /api/admin/blogs]", err);
