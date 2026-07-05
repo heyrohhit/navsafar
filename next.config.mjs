@@ -71,6 +71,8 @@ const nextConfig = {
     return [
       { source: "/:path+/", destination: "/:path+", permanent: true },
       { source: "/home", destination: "/", permanent: true },
+      // Duplicate content: /tour-packages was a near-identical copy of /packages.
+      { source: "/tour-packages", destination: "/packages", permanent: true },
     ];
   },
 };

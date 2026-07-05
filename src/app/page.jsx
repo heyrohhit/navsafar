@@ -7,6 +7,11 @@ import Herosections from "./components/hero/HeroSections";
 // whileInView animations aise hi kaam karte hain.
 import HomePageClient from "./HomePageClient";
 
+// Self-referential canonical (the layout no longer sets a site-wide default).
+export const metadata = {
+  alternates: { canonical: "https://navsafar.com" },
+};
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">

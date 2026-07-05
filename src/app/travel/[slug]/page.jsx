@@ -1,10 +1,22 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { generateKeywords, getPageDescription, getPageTitle, getStructuredData } from "../../../lib/seoKeywords";
+import {
+  ALL_DESTINATIONS,
+  destinationSlug,
+  resolveDestination,
+  getPageDescription,
+  getPageTitle,
+  getStructuredData,
+} from "../../../lib/seoKeywords";
 import { generateContent } from "../../../lib/aiContent";
 
 const SITE_URL = "https://navsafar.com";
+
+// On-demand ISR: each destination page renders + caches on first visit (a daily
+// refresh), so we don't hammer the Groq/Pexels APIs by pre-building ~180 pages.
+export const revalidate = 86400;
+export const dynamicParams = true;
 
 /* ── Helpers ── */
 function formatSlug(slug) {
@@ -99,10 +111,15 @@ export async function generateMetadata({ params }) {
 /* ── Page (Server Component) ── */
 export default async function Page({ params }) {
   const { slug } = await params;
-  const keyword = formatSlug(slug);
-  const keywords = generateKeywords();
+  const keyword = resolveDestination(formatSlug(slug));
 
-  if (!keywords.includes(keyword)) return notFound();
+  // Unknown destination → 404.
+  if (!keyword) return notFound();
+
+  // Legacy doorway URL (e.g. /travel/goa-tour-package) → 301 to the canonical
+  // one-page-per-destination URL (/travel/goa).
+  const canonicalSlug = destinationSlug(keyword);
+  if (slug !== canonicalSlug) redirect(`/travel/${canonicalSlug}`);
 
   const content = await generateContent(keyword);
   const faqs = getTravelFaqs(content, keyword);
@@ -333,11 +350,11 @@ export default async function Page({ params }) {
             <h2 className="text-3xl font-black text-[#0d2e31]">Related Destinations</h2>
           </div>
           <div className="flex flex-wrap gap-3">
-            {keywords.slice(0, 6).map((k, i) => (
+            {ALL_DESTINATIONS.filter((d) => d !== keyword).slice(0, 6).map((k, i) => (
               <Link
                 key={i}
-                href={`/travel/${k.replace(/\s+/g, "-")}`}
-                className="group flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-[#0d2e31] rounded-full font-semibold text-sm hover:bg-[#0f6471] hover:text-white hover:border-[#0f6471] transition-all duration-300 shadow-sm"
+                href={`/travel/${destinationSlug(k)}`}
+                className="group flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-[#0d2e31] rounded-full font-semibold text-sm capitalize hover:bg-[#0f6471] hover:text-white hover:border-[#0f6471] transition-all duration-300 shadow-sm"
               >
                 <svg className="w-3.5 h-3.5 text-[#14a098] group-hover:text-white/70 transition-colors" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

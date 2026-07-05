@@ -14,27 +14,29 @@ export const PRIMARY_DOMAIN = "https://navsafar.com";
  * @property {boolean} serveContent
  */
 
+/**
+ * SEO note: Only the primary domain serves content. Every other owned domain is
+ * a 301-redirect catcher (serveContent:false) so Google sees ONE canonical site
+ * instead of 11 duplicates. Redirect is enforced by shouldRedirect() + src/proxy.js.
+ */
 /** @type {DomainEntry[]} */
 export const DOMAINS = [
-  // ── Primary ────────────────────────────────────────────────
+  // ── Primary (the ONLY content-serving domain) ──────────────
   { host: "navsafar.com",         label: "NavSafar",          isPrimary: true,  serveContent: true,  hreflang: "en-IN" },
 
-  // ── .com variants ─────────────────────────────────────────
-  { host: "navsafartravels.com",  label: "NavSafar Travels",  isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafarholidays.com", label: "NavSafar Holidays", isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafartours.com",    label: "NavSafar Tours",    isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafartrip.com",     label: "NavSafar Trip",     isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafarpackages.com", label: "NavSafar Packages", isPrimary: false, serveContent: true,  hreflang: "en-IN" },
+  // ── .com variants → 301 to primary ────────────────────────
+  { host: "navsafartravels.com",  label: "NavSafar Travels",  isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafarholidays.com", label: "NavSafar Holidays", isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafartours.com",    label: "NavSafar Tours",    isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafartrip.com",     label: "NavSafar Trip",     isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafarpackages.com", label: "NavSafar Packages", isPrimary: false, serveContent: false, hreflang: "en-IN" },
 
-  // ── .in variants ──────────────────────────────────────────
-  { host: "navsafar.in",          label: "NavSafar India",    isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafartravels.in",   label: "NavSafar Travels",  isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafarholidays.in",  label: "NavSafar Holidays", isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafartours.in",     label: "NavSafar Tours",    isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-  { host: "navsafartrip.in",      label: "NavSafar Trip",     isPrimary: false, serveContent: true,  hreflang: "en-IN" },
-
-  // Example redirect-only domain
-  // { host: "oldnavsafar.com", label: "NavSafar", isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  // ── .in variants → 301 to primary ─────────────────────────
+  { host: "navsafar.in",          label: "NavSafar India",    isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafartravels.in",   label: "NavSafar Travels",  isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafarholidays.in",  label: "NavSafar Holidays", isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafartours.in",     label: "NavSafar Tours",    isPrimary: false, serveContent: false, hreflang: "en-IN" },
+  { host: "navsafartrip.in",      label: "NavSafar Trip",     isPrimary: false, serveContent: false, hreflang: "en-IN" },
 ];
 
 

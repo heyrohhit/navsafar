@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import { headers } from "next/headers";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
@@ -10,18 +9,15 @@ import ClientLoaderWrapper from "./components/loading/ClientLoaderWrapper";
 import SiteShell from "./components/SiteShell";
 import GlobalSEO from "./components/seo/GlobalSEO";
 
-import {
-  PRIMARY_DOMAIN,
-  getDomainEntry,
-  buildHreflangAlternates,
-} from "../lib/domainConfig.js";
+import { PRIMARY_DOMAIN } from "../lib/domainConfig.js";
 
-/* ── DYNAMIC RENDERING ───────────────────────────────
- * Poori website dynamic — har request pe fresh server render (koi build-time
- * static caching nahi). Admin se koi content change turant live dikhta hai.
+/* ── RENDERING ───────────────────────────────────────
+ * ISR: pages are cached and re-generated at most once an hour (fast + good for
+ * crawl budget/ranking). Admin content edits trigger revalidatePath() in the
+ * admin API routes, so changes still go live instantly — no full redeploy.
+ * (No headers()/force-dynamic here, otherwise every route would opt out of ISR.)
  */
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 3600;
 
 /* ── FONTS ───────────────────────────────────────── */
 const geistSans = Geist({
@@ -77,26 +73,14 @@ function getDailyKeywords() {
 /* ─────────────────────────────────────────────────────────────
    METADATA
 ───────────────────────────────────────────────────────────── */
-export async function generateMetadata() {
-  const headersList = await headers();
-
-  const domain = headersList.get("x-domain") ?? "navsafar.com";
-  const pathname = headersList.get("x-pathname") ?? "/";
-
-  const domainEntry = getDomainEntry(domain);
-
-  const siteName = domainEntry?.label ?? "NavSafar";
-
+export function generateMetadata() {
+  const siteName = "NavSafar";
   const keywords = getDailyKeywords();
 
-  // ── Dynamic canonical/OG URL for the CURRENT page ──────────────
-  // Without this, every page that doesn't set its own `canonical`
-  // would incorrectly inherit the homepage URL (duplicate-canonical
-  // issue). Pages with their own `alternates.canonical` / `openGraph.url`
-  // still take precedence over this default.
-  const currentUrl =
-    pathname === "/" ? PRIMARY_DOMAIN : `${PRIMARY_DOMAIN}${pathname}`;
-
+  // NOTE: no site-wide `alternates.canonical` here. Each page sets its own
+  // self-referential canonical; a single default would wrongly point every
+  // page at the homepage URL. Single-domain consolidation (see proxy.js) also
+  // makes the old cross-domain hreflang cluster unnecessary — removed.
   return {
     metadataBase: new URL(PRIMARY_DOMAIN),
 
@@ -119,11 +103,6 @@ export async function generateMetadata() {
       ...keywords,
     ],
 
-    alternates: {
-      canonical: currentUrl,
-      languages: buildHreflangAlternates(pathname === "/" ? "" : pathname),
-    },
-
     authors: [{ name: "NavSafar Team" }],
 
     creator: "NavSafar",
@@ -132,7 +111,7 @@ export async function generateMetadata() {
       title: `${siteName} - Explore World's Best Destinations`,
       description:
         "Book domestic & international tour packages with NavSafar.",
-      url: currentUrl,
+      url: PRIMARY_DOMAIN,
       siteName,
       type: "website",
       locale: "en_IN",
@@ -253,7 +232,12 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
 
-        {/* Dynamic shell */}
+        {/* Dynamic shell. The Suspense boundary is required so client pages that
+            read useSearchParams (login/signup/search) can prerender. Note: it also
+            streams an early shell, so page-level notFound()/redirect() render as
+            soft-404s (HTTP 200 + auto noindex). Real 301 redirects that matter for
+            SEO (domain consolidation, /tour-packages, legacy /travel keyword URLs)
+            are handled in middleware/next.config, before rendering. */}
         <Suspense fallback={null}>
           <SpeedInsights/>
           <Analytics/>

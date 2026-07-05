@@ -3,6 +3,7 @@
 // Full blog object lives in `data` jsonb; slug/category/status/featured/
 // published_at mirrored to columns.
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createSupabaseClient } from "../../../../lib/supabaseClient";
 import { blogs as staticBlogs } from "../../../models/objAll/blog";
 import { parseFaqText } from "../../../../lib/parseFaqText";
@@ -11,6 +12,16 @@ export const dynamic = "force-dynamic";
 
 function db() {
   return createSupabaseClient(true); // service role — bypass RLS
+}
+
+// Push admin blog edits live immediately by revalidating the ISR-cached blog
+// pages + sitemap. Individual /blog/[slug] pages refresh via revalidatePath too.
+function revalidateBlogs(slug) {
+  const paths = ["/blog", "/sitemap.xml"];
+  if (slug) paths.push(`/blog/${slug}`);
+  for (const p of paths) {
+    try { revalidatePath(p); } catch {}
+  }
 }
 
 function isAuthorized(req) {
@@ -270,6 +281,7 @@ export async function POST(req) {
     const { error } = await db().from("blogs").insert({ ...toRow(newBlog), created_at: newBlog.createdAt });
     if (error) throw error;
 
+    revalidateBlogs(newBlog.slug);
     return NextResponse.json(
       { success: true, data: newBlog, message: "Blog created successfully." },
       { status: 201 }
@@ -308,6 +320,8 @@ export async function PUT(req) {
     const { error } = await db().from("blogs").update(toRow(updated)).eq("id", body.id);
     if (error) throw error;
 
+    revalidateBlogs(updated.slug);
+    if (original.slug && original.slug !== updated.slug) revalidateBlogs(original.slug);
     return NextResponse.json({ success: true, data: updated, message: "Blog updated successfully." });
   } catch (err) {
     console.error("[PUT /api/admin/blogs]", err);
@@ -325,12 +339,13 @@ export async function DELETE(req) {
       return NextResponse.json({ success: false, message: "Query param 'id' is required." }, { status: 400 });
     }
 
-    const { data, error } = await db().from("blogs").delete().eq("id", id).select("id");
+    const { data, error } = await db().from("blogs").delete().eq("id", id).select("id, slug");
     if (error) throw error;
     if (!data?.length) {
       return NextResponse.json({ success: false, message: `Blog with id '${id}' not found.` }, { status: 404 });
     }
 
+    revalidateBlogs(data[0]?.slug);
     return NextResponse.json({ success: true, message: "Blog deleted successfully." });
   } catch (err) {
     console.error("[DELETE /api/admin/blogs]", err);

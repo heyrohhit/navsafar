@@ -10,12 +10,22 @@
 // id/city/country/popular are mirrored to columns for querying/ordering.
 // ─────────────────────────────────────────────────────────────────────────────
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createSupabaseClient } from "../../../../lib/supabaseClient";
 
 export const dynamic = "force-dynamic";
 
 function db() {
   return createSupabaseClient(true); // service role — bypass RLS
+}
+
+// Push admin edits live immediately by revalidating the ISR-cached public pages
+// that render package data (list pages + derived blog + sitemap). Detail pages
+// (/destinations/[slug], /travel/[slug]) refresh on their own daily TTL.
+function revalidatePublic() {
+  for (const p of ["/", "/packages", "/destinations", "/travel", "/blog", "/sitemap.xml"]) {
+    try { revalidatePath(p); } catch {}
+  }
 }
 
 // ── Auth helper ────────────────────────────────────────────────────
@@ -127,6 +137,7 @@ export async function POST(req) {
     const { error } = await db().from("packages").insert({ ...toRow(newPkg), created_at: now });
     if (error) throw error;
 
+    revalidatePublic();
     return NextResponse.json(
       { success: true, data: newPkg, message: "Package created successfully." },
       { status: 201 }
@@ -183,6 +194,7 @@ export async function PUT(req) {
     const { error } = await db().from("packages").update(toRow(updated)).eq("id", body.id);
     if (error) throw error;
 
+    revalidatePublic();
     return NextResponse.json({ success: true, data: updated, message: "Package updated successfully." });
   } catch (err) {
     console.error("[PUT /api/admin/packages]", err);
@@ -215,6 +227,7 @@ export async function DELETE(req) {
       );
     }
 
+    revalidatePublic();
     return NextResponse.json({ success: true, message: "Package deleted successfully." });
   } catch (err) {
     console.error("[DELETE /api/admin/packages]", err);

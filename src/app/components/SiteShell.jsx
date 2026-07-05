@@ -13,34 +13,35 @@ const VisitorTracker = dynamic(() => import("./tracking/VisitorTracker"), {
   ssr: false,
 });
 
-// ✅ Inner component uses the hook — wrapped in Suspense below
-function ShellContent({ children }) {
-  const path    = usePathname();
-  const isAdmin = path?.startsWith("/admin");
+// Chrome (header/footer/tracking) uses usePathname to hide itself on /admin.
+// CRITICAL: this component must NOT wrap `children`. usePathname makes it bail to
+// client-side rendering during static/ISR prerender; if `children` were nested
+// inside, the page would bail too and its notFound()/redirect() would degrade to
+// a soft-404 / client redirect (HTTP 200) instead of a real 404/301. Keeping the
+// chrome and the page as siblings isolates the bail to the chrome only.
+function Chrome({ slot }) {
+  const path = usePathname();
+  if (path?.startsWith("/admin")) return null;
 
-  return (
-    <>
-      {!isAdmin && <VisitorTracker />}
-
-      {isAdmin ? (
-        children
-      ) : (
-        <>
-          <Header />
-          <WhatsAppFloat />
-          {children}
-          <Footer />
-        </>
-      )}
-    </>
-  );
+  if (slot === "top")    return (<><VisitorTracker /><Header /><WhatsAppFloat /></>);
+  if (slot === "bottom") return <Footer />;
+  return null;
 }
 
-// ✅ Suspense boundary prevents blocking prerender
 export default function SiteShell({ children }) {
   return (
-    <Suspense fallback={null}>
-      <ShellContent>{children}</ShellContent>
-    </Suspense>
+    <>
+      {/* Chrome bails to CSR (usePathname) inside its own Suspense … */}
+      <Suspense fallback={null}>
+        <Chrome slot="top" />
+      </Suspense>
+
+      {/* … but the page renders server-side, so 404/301 status codes work. */}
+      {children}
+
+      <Suspense fallback={null}>
+        <Chrome slot="bottom" />
+      </Suspense>
+    </>
   );
 }

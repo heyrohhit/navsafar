@@ -1,5 +1,5 @@
-import { generateKeywords } from "../lib/seoKeywords";
-import { PRIMARY_DOMAIN, DOMAINS } from "../lib/domainConfig";
+import { ALL_DESTINATIONS, destinationSlug } from "../lib/seoKeywords";
+import { PRIMARY_DOMAIN } from "../lib/domainConfig";
 import { getBlogs } from "../lib/getBlogs";
 import { getPackages } from "../lib/getPackages";
 
@@ -13,48 +13,35 @@ function toSlug(value) {
 }
 
 export default async function sitemap() {
-  const keywords = generateKeywords();
   const [blogs, packages] = await Promise.all([getBlogs(), getPackages()]);
   const now = new Date();
 
+  // Only real, indexable pages on the ONE canonical domain (navsafar.com).
+  // No alternate domains (they 301 here), no /tour-packages (301 → /packages),
+  // no keyword-combo /travel URLs (collapsed to one page per destination).
   const staticPages = [
-    {
-      url: PRIMARY_DOMAIN,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 1,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/travel`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/packages`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/destinations`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    {
-      url: `${PRIMARY_DOMAIN}/blog`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-  ];
+    { url: PRIMARY_DOMAIN,                       changeFrequency: "daily",   priority: 1.0 },
+    { url: `${PRIMARY_DOMAIN}/packages`,         changeFrequency: "weekly",  priority: 0.9 },
+    { url: `${PRIMARY_DOMAIN}/destinations`,     changeFrequency: "weekly",  priority: 0.85 },
+    { url: `${PRIMARY_DOMAIN}/travel`,           changeFrequency: "weekly",  priority: 0.85 },
+    { url: `${PRIMARY_DOMAIN}/blog`,             changeFrequency: "daily",   priority: 0.85 },
+    { url: `${PRIMARY_DOMAIN}/experiences`,      changeFrequency: "weekly",  priority: 0.7 },
+    { url: `${PRIMARY_DOMAIN}/booking`,          changeFrequency: "monthly", priority: 0.7 },
+    { url: `${PRIMARY_DOMAIN}/pages/about-us`,   changeFrequency: "monthly", priority: 0.6 },
+    { url: `${PRIMARY_DOMAIN}/pages/contact`,    changeFrequency: "monthly", priority: 0.6 },
+    { url: `${PRIMARY_DOMAIN}/pages/services`,   changeFrequency: "monthly", priority: 0.6 },
+    { url: `${PRIMARY_DOMAIN}/policies`,         changeFrequency: "yearly",  priority: 0.3 },
+    { url: `${PRIMARY_DOMAIN}/policies/privacy`, changeFrequency: "yearly",  priority: 0.3 },
+    { url: `${PRIMARY_DOMAIN}/policies/terms`,   changeFrequency: "yearly",  priority: 0.3 },
+    { url: `${PRIMARY_DOMAIN}/policies/refund`,  changeFrequency: "yearly",  priority: 0.3 },
+  ].map((p) => ({ ...p, lastModified: now }));
 
-  const travelPages = keywords.map((keyword) => ({
-    url: `${PRIMARY_DOMAIN}/travel/${keyword.replace(/\s+/g, "-")}`,
+  // One rich page per destination (~180) — replaces the ~2,000 keyword-combo URLs.
+  const travelPages = ALL_DESTINATIONS.map((dest) => ({
+    url: `${PRIMARY_DOMAIN}/travel/${destinationSlug(dest)}`,
     lastModified: now,
-    changeFrequency: "daily",
-    priority: 0.8,
+    changeFrequency: "weekly",
+    priority: 0.7,
   }));
 
   const destinationPages = [...new Set(packages.map((pkg) => pkg.city))]
@@ -63,7 +50,7 @@ export default async function sitemap() {
       url: `${PRIMARY_DOMAIN}/destinations/${toSlug(city)}`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.78,
+      priority: 0.75,
     }));
 
   const blogPages = blogs
@@ -72,15 +59,8 @@ export default async function sitemap() {
       url: `${PRIMARY_DOMAIN}/blog/${blog.slug}`,
       lastModified: blog.updatedAt || blog.publishedAt || now,
       changeFrequency: "weekly",
-      priority: 0.75,
+      priority: 0.65,
     }));
 
-  const alternateDomains = DOMAINS.map((domain) => ({
-    url: `https://${domain.host}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
-
-  return [...staticPages, ...travelPages, ...destinationPages, ...blogPages, ...alternateDomains];
+  return [...staticPages, ...travelPages, ...destinationPages, ...blogPages];
 }

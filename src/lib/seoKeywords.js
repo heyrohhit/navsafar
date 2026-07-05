@@ -128,6 +128,56 @@ export const ALL_DESTINATIONS = [
 ];
 
 // ══════════════════════════════════════════
+//  DESTINATION SLUGS (canonical /travel URLs)
+// ══════════════════════════════════════════
+// One rich page per destination lives at /travel/{slug} (e.g. /travel/goa,
+// /travel/leh-ladakh). The old /travel/{destination}-{intent} doorway URLs
+// 301-redirect to these via the intent-suffix stripping below.
+
+/** destination name → canonical slug ("leh ladakh" → "leh-ladakh") */
+export function destinationSlug(name) {
+  return String(name || "").trim().toLowerCase().replace(/\s+/g, "-");
+}
+
+/** Set of valid canonical destination slugs */
+export const DESTINATION_SLUGS = new Set(ALL_DESTINATIONS.map(destinationSlug));
+
+/** All intent suffixes that used to be appended to destinations (for legacy redirects) */
+export const INTENT_SUFFIXES = [
+  "tour package",
+  "holiday package",
+  "travel package",
+  "honeymoon package",
+  "family package",
+  "trip cost",
+  "travel guide",
+  "best time to visit",
+  "places to visit",
+  "things to do",
+  "travel tips",
+  "budget trip",
+];
+
+/**
+ * Resolve any /travel slug to a canonical destination name.
+ * - Exact destination ("goa")                 → "goa"
+ * - Legacy combo ("goa tour package")         → "goa"  (caller should 301)
+ * - Unknown                                   → null
+ */
+export function resolveDestination(rawKeyword) {
+  const keyword = String(rawKeyword || "").trim().toLowerCase();
+  if (ALL_DESTINATIONS.includes(keyword)) return keyword;
+
+  for (const intent of INTENT_SUFFIXES) {
+    if (keyword.endsWith(` ${intent}`)) {
+      const dest = keyword.slice(0, -intent.length).trim();
+      if (ALL_DESTINATIONS.includes(dest)) return dest;
+    }
+  }
+  return null;
+}
+
+// ══════════════════════════════════════════
 //  INTENT KEYWORDS
 // ══════════════════════════════════════════
 
@@ -200,7 +250,7 @@ export function getUniqueDestinations() {
             .split(" ")
             .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
             .join(" "),
-          slug: `${dest}-tour-package`.replace(/\s+/g, "-"),
+          slug: destinationSlug(dest), // canonical /travel/{dest} — one page per destination
           category: cat.label,
           emoji: cat.emoji,
         });

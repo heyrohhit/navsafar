@@ -8,6 +8,8 @@ export const metadata = {
   alternates: {
     canonical: "https://navsafar.com/search",
   },
+  // On-site search results are low-value/duplicate-prone — keep them out of the index.
+  robots: { index: false, follow: true },
 };
 
 // Metadata server component se export hoti hai, client component se NAHI.
