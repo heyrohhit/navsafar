@@ -82,9 +82,7 @@ export default function HeroSection() {
     >
       <style>{`
         .reey-font {
-          font-family: Georgia, serif;
-          font-style: italic;
-          font-weight: 900;
+          font-family: 'Reey', cursive;
           line-height: 1.2;
           display: block;
         }

@@ -4,6 +4,7 @@ import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import {
   Users, Award, MapPin, Star, Shield, Clock, CheckCircle, Mail, Phone, ChevronRight,
+  Wallet, SlidersHorizontal, Handshake, Headset, Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -30,12 +31,12 @@ const trustBadges = [
 ];
 
 const whyChooseUs = [
-  { icon: "💰", title: "Best Price Guarantee",    description: "We match any competitor's price. Get the best deal." },
-  { icon: "🎯", title: "Customizable Itineraries", description: "Personalize your trip according to your preferences." },
-  { icon: "🤝", title: "No Hidden Costs",          description: "Transparent pricing. What you see is what you pay." },
-  { icon: "📞", title: "Dedicated Support",        description: "Your personal travel expert available 24/7." },
-  { icon: "🛡️", title: "Safe & Secure",            description: "Fully licensed operator with insurance options." },
-  { icon: "⭐", title: "Premium Experiences",      description: "Handpicked hotels, verified guides, exclusive tours." },
+  { icon: Wallet,           title: "Best Price Guarantee",    description: "We match any competitor's price. Get the best deal." },
+  { icon: SlidersHorizontal, title: "Customizable Itineraries", description: "Personalize your trip according to your preferences." },
+  { icon: Handshake,        title: "No Hidden Costs",          description: "Transparent pricing. What you see is what you pay." },
+  { icon: Headset,          title: "Dedicated Support",        description: "Your personal travel expert available 24/7." },
+  { icon: Shield,           title: "Safe & Secure",            description: "Fully licensed operator with insurance options." },
+  { icon: Sparkles,         title: "Premium Experiences",      description: "Handpicked hotels, verified guides, exclusive tours." },
 ];
 
 function SectionFallback() {
@@ -154,11 +155,14 @@ export default function HomePageClient() {
                 With over a decade of experience, we've crafted unforgettable journeys
                 for travelers across the globe. Here's why thousands choose us:
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {whyChooseUs.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center text-xl">
-                      {item.icon}
+                  <div
+                    key={idx}
+                    className="flex items-start gap-4 rounded-2xl border border-neutral-200 bg-white p-4 transition-all hover:border-primary-300 hover:shadow-md"
+                  >
+                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center">
+                      <item.icon size={22} />
                     </div>
                     <div>
                       <h4 className="font-bold text-neutral-900 mb-1">{item.title}</h4>
@@ -181,7 +185,7 @@ export default function HomePageClient() {
                 height={700}
                 className="rounded-2xl shadow-2xl"
               />
-              <div className="absolute -bottom-6 -left-6 bg-white p-2 rounded-xl shadow-xl border border-neutral-200">
+              <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl border border-neutral-200">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <CheckCircle className="text-green-600" size={24} />

@@ -5,7 +5,7 @@
 // Bing Copilot, Claude) use dedicated crawler user-agents. We explicitly
 // allow them so NavSafar content can be discovered & cited in AI answers
 // for Indian users, while keeping admin/api routes private.
-const BASE_URL = "https://navsafar.com";
+const BASE_URL = "https://www.navsafar.com";
 
 const DISALLOWED = ["/admin", "/admin/", "/api/"];
 

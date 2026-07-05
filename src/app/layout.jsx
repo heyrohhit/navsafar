@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/next"
@@ -19,17 +19,23 @@ import { PRIMARY_DOMAIN } from "../lib/domainConfig.js";
  */
 export const revalidate = 3600;
 
-/* ── FONTS ───────────────────────────────────────── */
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+/* ── FONTS ───────────────────────────────────────────
+ * Self-hosted via next/font (no render-blocking, font-display:swap, preloaded,
+ * zero layout shift → good for LCP/SEO). These feed --font-sans / --font-heading
+ * in globals.css. Body = Inter (highly readable), Headings = Plus Jakarta Sans
+ * (distinct, premium). Display = 'Reey' (loaded via @font-face in globals.css).
+ */
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
   preload: true,
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
   display: "swap",
   preload: true,
 });
@@ -229,7 +235,7 @@ export default function RootLayout({ children }) {
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${jakarta.variable} antialiased`}
       >
 
         {/* Dynamic shell. The Suspense boundary is required so client pages that

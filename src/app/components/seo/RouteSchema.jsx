@@ -15,7 +15,6 @@
 
 import { usePathname } from "next/navigation";
 import { SITE_URL } from "../../../lib/localBusinessConfig.js";
-import { getFaqsForPath } from "../../../lib/aeoFaqData.js";
 
 /* ── Friendly labels for known route segments (breadcrumbs) ── */
 const LABEL_MAP = {
@@ -79,20 +78,9 @@ function buildBreadcrumbJsonLd(pathname) {
   };
 }
 
-function buildFaqJsonLd(pathname) {
-  const faqs = getFaqsForPath(pathname);
-  if (!faqs || faqs.length === 0) return null;
-
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: { "@type": "Answer", text: faq.a },
-    })),
-  };
-}
+// NOTE: FAQPage JSON-LD is no longer built here — it now lives in
+// FaqAccordion.jsx, which renders the visible FAQ and its matching
+// structured data from the SAME daily-rotated set (single source of truth).
 
 function buildWebPageJsonLd(pathname) {
   const url = `${SITE_URL}${pathname === "/" ? "" : pathname}`;
@@ -116,7 +104,6 @@ export default function RouteSchema() {
   const pathname = usePathname() || "/";
 
   const breadcrumbJsonLd = buildBreadcrumbJsonLd(pathname);
-  const faqJsonLd = buildFaqJsonLd(pathname);
   const webPageJsonLd = buildWebPageJsonLd(pathname);
 
   return (
@@ -125,12 +112,6 @@ export default function RouteSchema() {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-        />
-      )}
-      {faqJsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
         />
       )}
       <script

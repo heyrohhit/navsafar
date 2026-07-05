@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import Header      from "./header/header";
 import Footer      from "./common/Footer";
+import FaqAccordion from "./common/FaqAccordion";
 import WhatsAppFloat from "./sections/WhatsAppFloat";
 
 // ✅ VisitorTracker lazy load — FCP pe load nahi padega
@@ -24,7 +25,7 @@ function Chrome({ slot }) {
   if (path?.startsWith("/admin")) return null;
 
   if (slot === "top")    return (<><VisitorTracker /><Header /><WhatsAppFloat /></>);
-  if (slot === "bottom") return <Footer />;
+  if (slot === "bottom") return (<><FaqAccordion /><Footer /></>);
   return null;
 }
 

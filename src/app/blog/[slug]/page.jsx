@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getBlogBySlug, getRelatedBlogs } from "../../../lib/getBlogs";
 import { parseFaqText } from "../../../lib/parseFaqText";
 
-const SITE_URL = "https://navsafar.com";
+const SITE_URL = "https://www.navsafar.com";
 
 // ── Metadata ──────────────────────────────────────────────────────────
 export async function generateMetadata({ params }) {

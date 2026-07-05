@@ -7,12 +7,12 @@ export const metadata = {
   description:
     "Explore our travel services - Domestic tours, International tours, Religious tours, Adventure tours, Family packages, Custom tours.",
   alternates: {
-    canonical: "https://navsafar.com/services",
+    canonical: "https://www.navsafar.com/services",
   },
   openGraph: {
     title: "Travel Services | Domestic & International Tours - NavSafar",
     description: "Explore our comprehensive travel services.",
-    url: "https://navsafar.com/services",
+    url: "https://www.navsafar.com/services",
     type: "website",
   },
 };

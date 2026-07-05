@@ -9,7 +9,7 @@ import HomePageClient from "./HomePageClient";
 
 // Self-referential canonical (the layout no longer sets a site-wide default).
 export const metadata = {
-  alternates: { canonical: "https://navsafar.com" },
+  alternates: { canonical: "https://www.navsafar.com" },
 };
 
 export default function HomePage() {

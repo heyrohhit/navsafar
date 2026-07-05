@@ -2,7 +2,7 @@
 // ─────────────────────────────────────────────────────────────────
 // 🤖 DYNAMIC llms.txt — AIO (AI Index Optimization)
 //
-// This file is served at:  https://navsafar.com/llms.txt
+// This file is served at:  https://www.navsafar.com/llms.txt
 //
 // It is auto-discovered by AI answer engines (ChatGPT, Perplexity,
 // Google AI Overviews, Gemini, Claude, Bing Copilot etc.) and tells

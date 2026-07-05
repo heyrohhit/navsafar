@@ -7,7 +7,7 @@ import {
   getFeaturedBlogs,
 } from "../../lib/getBlogs";
 
-const SITE_URL = "https://navsafar.com";
+const SITE_URL = "https://www.navsafar.com";
 
 function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("en-IN", {

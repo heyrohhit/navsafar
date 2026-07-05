@@ -18,22 +18,22 @@ export const metadata = {
   keywords:
     "travel packages india, best tour packages, holiday packages india, cheap travel deals, domestic international tours",
   alternates: {
-    canonical: "https://navsafar.com/travel",
+    canonical: "https://www.navsafar.com/travel",
   },
   openGraph: {
     title: "Travel Packages | Best Tour & Holiday Deals - NavSafar",
     description:
       "100+ handpicked holidays, tours & adventures with unbeatable deals.",
     type: "website",
-    url: "https://navsafar.com/travel",
+    url: "https://www.navsafar.com/travel",
     locale: "en_IN",
-    images: [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "Travel Packages - NavSafar" }],
+    images: [{ url: "https://www.navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "Travel Packages - NavSafar" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Travel Packages | Best Tour & Holiday Deals - NavSafar",
     description: "100+ handpicked holidays, tours & adventures with unbeatable deals.",
-    images: ["https://navsafar.com/assets/bg.jpg"],
+    images: ["https://www.navsafar.com/assets/bg.jpg"],
   },
 };
 

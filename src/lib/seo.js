@@ -1,7 +1,7 @@
 // libs/seo.js
 export const siteConfig = {
   name: "Navsafar Travel Solutions",
-  url: "https://navsafar.com",
+  url: "https://www.navsafar.com",
 };
 
 export const seoData = {

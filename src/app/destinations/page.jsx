@@ -25,7 +25,7 @@ export default async function DestinationsPage() {
       <UniversalSchemaInjector
         type="itemList"
         items={destinations}
-        pageUrl="https://navsafar.com/destinations"
+        pageUrl="https://www.navsafar.com/destinations"
         listName="Travel Destinations — NavSafar"
       />
       <DestinationsDetailsShow />

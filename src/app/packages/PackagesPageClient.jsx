@@ -38,6 +38,17 @@ function typeStyle(t) {
   return TYPE_META[t] ?? { accent: "#6b7280", bg: "#f9fafb", border: "#e5e7eb" };
 }
 
+// city name → URL-safe slug (matches destinations/[slug] route)
+function toSlug(city) {
+  return (city ?? "")
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
 function openWhatsApp(pkg) {
   const msg = [
     `✈️ *Package Enquiry — NavSafar*`,
@@ -140,7 +151,7 @@ function PackageCard({ pkg, accent }) {
 
         <div className="flex gap-2">
           <Link
-            href={`/packages/${pkg.id}`}
+            href={`/destinations/${toSlug(pkg.city)}`}
             className="flex-1 text-center text-[10px] font-black tracking-widest uppercase py-2.5 rounded-xl transition-all duration-300"
             style={{
               background: hovered ? accent : `${accent}10`,
@@ -172,11 +183,13 @@ function PackagesInner() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
   const type = searchParams.get("type");
+  const country = searchParams.get("country");
 
   const { packages, loading } = usePackages();
 
   const isCat = category && category in CATEGORY_META;
   const isType = type && type in TYPE_META;
+  const isCountry = !!country;
 
   const meta = isCat
     ? {
@@ -186,6 +199,8 @@ function PackagesInner() {
       }
     : isType
     ? { label: type, emoji: TYPE_META[type].emoji, accent: TYPE_META[type].accent }
+    : isCountry
+    ? { label: country, emoji: "🌍", accent: "#0f6477" }
     : { label: "All Packages", emoji: "🌍", accent: "#0f6477" };
 
   const filtered = useMemo(() => {
@@ -194,8 +209,12 @@ function PackagesInner() {
       return packages.filter((p) => (p.category ?? []).includes(category));
     if (isType)
       return packages.filter((p) => (p.tourism_type ?? []).includes(type));
+    if (isCountry)
+      return packages.filter(
+        (p) => (p.country ?? "").toLowerCase() === country.toLowerCase()
+      );
     return packages;
-  }, [packages, isCat, isType, category, type]);
+  }, [packages, isCat, isType, isCountry, category, type, country]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -214,7 +233,7 @@ function PackagesInner() {
             <Link href="/packages" className="hover:text-gray-600">
               Packages
             </Link>
-            {(isCat || isType) && (
+            {(isCat || isType || isCountry) && (
               <>
                 <span>/</span>
                 <span style={{ color: meta.accent }} className="font-bold">

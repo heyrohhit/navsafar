@@ -17,7 +17,7 @@ export const metadata = {
     type: "website",
     siteName: "Navsafar Travels",
   },
-  alternates: { canonical: "https://navsafar.com/policies/refund" },
+  alternates: { canonical: "https://www.navsafar.com/policies/refund" },
   robots: { index: true, follow: true },
 };
 
@@ -106,8 +106,8 @@ export default function RefundPolicyPage() {
             "@type": "WebPage",
             name: "Refund & Cancellation Policy — Navsafar Travels",
             description: "Refund and Cancellation Policy for Navsafar Travels including charges, timelines, and non-refundable items.",
-            url: "https://navsafar.com/policies/refund",
-            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://navsafar.com" },
+            url: "https://www.navsafar.com/policies/refund",
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
           }),
         }}
       />

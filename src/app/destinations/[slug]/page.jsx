@@ -6,7 +6,7 @@ import Image from "next/image";
 import { getPackages } from "../../../lib/getPackages";
 import UniversalSchemaInjector from "../../components/seo/UniversalSchemaInjector";
 
-const SITE_URL = "https://navsafar.com";
+const SITE_URL = "https://www.navsafar.com";
 
 // ── Helpers ───────────────────────────────────────────────────────
 function toSlug(city) {
@@ -108,12 +108,12 @@ export async function generateMetadata({ params }) {
       `${dest.city} places to visit`,
     ],
     alternates: {
-      canonical: `https://navsafar.com/destinations/${slug}`,
+      canonical: `https://www.navsafar.com/destinations/${slug}`,
     },
     openGraph: {
       title: `${dest.city} | NavSafar`,
       description,
-      url: `https://navsafar.com/destinations/${slug}`,
+      url: `https://www.navsafar.com/destinations/${slug}`,
       images: dest.image ? [{ url: dest.image, alt: dest.city }] : [],
     },
     twitter: {

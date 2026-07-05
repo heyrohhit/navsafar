@@ -6,7 +6,7 @@ import { resolveDestination, destinationSlug } from "./lib/seoKeywords";
 import { updateSession } from "./lib/supabase/middleware";
 
 // The one canonical host we serve content on. Everything else 301s here.
-const PRIMARY_HOST = new URL(PRIMARY_DOMAIN).host; // "navsafar.com"
+const PRIMARY_HOST = new URL(PRIMARY_DOMAIN).host; // "www.navsafar.com"
 
 // Legacy /travel/{destination}-{intent} doorway URLs (e.g. /travel/goa-tour-package)
 // → real 301 to the canonical one-page-per-destination URL (/travel/goa). Done in
@@ -80,7 +80,7 @@ export async function proxy(req) {
   }
 
   // 🚫 Production domain control — canonical host consolidation.
-  // Any host that isn't exactly navsafar.com (secondary domains, www.*, unknown)
+  // Any host that isn't exactly www.navsafar.com (apex, secondary domains, unknown)
   // 301-redirects to the SAME path on the primary domain. Path + query preserved
   // so deep links keep their SEO value instead of dumping everyone on the homepage.
   const rawHost = hostHeader.toLowerCase().replace(/:\d+$/, "");

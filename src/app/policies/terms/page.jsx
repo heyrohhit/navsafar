@@ -17,7 +17,7 @@ export const metadata = {
     type: "website",
     siteName: "Navsafar Travels",
   },
-  alternates: { canonical: "https://navsafar.com/policies/terms" },
+  alternates: { canonical: "https://www.navsafar.com/policies/terms" },
   robots: { index: true, follow: true },
 };
 
@@ -114,8 +114,8 @@ export default function TermsPage() {
             "@type": "WebPage",
             name: "Terms of Service — Navsafar Travels",
             description: "Terms & Conditions for Navsafar Travels covering bookings, liability, and legal agreements.",
-            url: "https://navsafar.com/policies/terms",
-            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://navsafar.com" },
+            url: "https://www.navsafar.com/policies/terms",
+            publisher: { "@type": "Organization", name: "Navsafar Travels Private Limited", url: "https://www.navsafar.com" },
           }),
         }}
       />

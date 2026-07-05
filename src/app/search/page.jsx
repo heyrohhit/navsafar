@@ -6,7 +6,7 @@ export const metadata = {
   title: "Search | NavSafar Travel",
   description: "Search tour packages, destinations, and travel experiences at NavSafar.",
   alternates: {
-    canonical: "https://navsafar.com/search",
+    canonical: "https://www.navsafar.com/search",
   },
   // On-site search results are low-value/duplicate-prone — keep them out of the index.
   robots: { index: false, follow: true },

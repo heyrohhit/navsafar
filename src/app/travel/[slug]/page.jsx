@@ -11,7 +11,7 @@ import {
 } from "../../../lib/seoKeywords";
 import { generateContent } from "../../../lib/aiContent";
 
-const SITE_URL = "https://navsafar.com";
+const SITE_URL = "https://www.navsafar.com";
 
 // On-demand ISR: each destination page renders + caches on first visit (a daily
 // refresh), so we don't hammer the Groq/Pexels APIs by pre-building ~180 pages.

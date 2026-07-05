@@ -25,22 +25,22 @@ export const metadata = {
     "adventure packages india",
   ],
   alternates: {
-    canonical: "https://navsafar.com/packages",
+    canonical: "https://www.navsafar.com/packages",
   },
   openGraph: {
     title: "Tour Packages - Domestic & International | NavSafar",
     description:
       "Explore 50+ domestic and international tour packages with best prices.",
-    url: "https://navsafar.com/packages",
+    url: "https://www.navsafar.com/packages",
     type: "website",
     locale: "en_IN",
-    images: [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "Tour Packages - NavSafar" }],
+    images: [{ url: "https://www.navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "Tour Packages - NavSafar" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Tour Packages - Domestic & International | NavSafar",
     description: "Explore 50+ domestic and international tour packages with best prices.",
-    images: ["https://navsafar.com/assets/bg.jpg"],
+    images: ["https://www.navsafar.com/assets/bg.jpg"],
   },
 };
 
@@ -51,7 +51,7 @@ export default async function PackagesPage() {
       <UniversalSchemaInjector
         type="itemList"
         items={packages}
-        pageUrl="https://navsafar.com/packages"
+        pageUrl="https://www.navsafar.com/packages"
         listName="Tour Packages — NavSafar"
       />
       <PackagesPageClient />

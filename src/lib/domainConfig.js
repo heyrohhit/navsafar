@@ -22,7 +22,7 @@ export const PRIMARY_DOMAIN = "https://www.navsafar.com";
 /** @type {DomainEntry[]} */
 export const DOMAINS = [
   // ── Primary (the ONLY content-serving domain) ──────────────
-  { host: "navsafar.com",         label: "NavSafar",          isPrimary: true,  serveContent: true,  hreflang: "en-IN" },
+  { host: "www.navsafar.com",     label: "NavSafar",          isPrimary: true,  serveContent: true,  hreflang: "en-IN" },
 
   // ── .com variants → 301 to primary ────────────────────────
   { host: "navsafartravels.com",  label: "NavSafar Travels",  isPrimary: false, serveContent: false, hreflang: "en-IN" },

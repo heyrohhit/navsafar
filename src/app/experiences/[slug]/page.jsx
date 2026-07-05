@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
   const description =
     catPackages[0]?.description ||
     `Explore ${label} travel experiences with NavSafar. Customised packages for Indian travellers with best prices in INR.`;
-  const canonicalUrl = `https://navsafar.com/experiences/${slug}`;
+  const canonicalUrl = `https://www.navsafar.com/experiences/${slug}`;
 
   return {
     title,
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
       locale: "en_IN",
       images: catPackages[0]?.image
         ? [{ url: catPackages[0].image, width: 1200, height: 630, alt: title }]
-        : [{ url: "https://navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "NavSafar" }],
+        : [{ url: "https://www.navsafar.com/assets/bg.jpg", width: 1200, height: 630, alt: "NavSafar" }],
     },
     twitter: {
       card: "summary_large_image",

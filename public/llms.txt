@@ -11,16 +11,16 @@ Address: WZ-447, First Floor, Left Side, Nangal Raya, New Delhi - 110046, India
 
 ## Key pages
 
-- [Home](https://navsafar.com/): Overview of NavSafar's travel services for India.
-- [Tour Packages](https://navsafar.com/tour-packages): Domestic & international tour packages.
-- [Packages](https://navsafar.com/packages): Browse and filter holiday packages.
-- [Destinations](https://navsafar.com/destinations): Popular Indian & international destinations.
-- [Travel Guides](https://navsafar.com/travel): Destination guides and travel tips.
-- [Experiences](https://navsafar.com/experiences): Curated travel experiences (adventure, beach, pilgrimage, etc.).
-- [Blog](https://navsafar.com/blog): Travel articles for Indian travellers.
-- [About Us](https://navsafar.com/pages/about-us): Company information.
-- [Services](https://navsafar.com/pages/services): Full list of travel services offered.
-- [Contact](https://navsafar.com/pages/contact): Contact details and enquiry form.
+- [Home](https://www.navsafar.com/): Overview of NavSafar's travel services for India.
+- [Tour Packages](https://www.navsafar.com/tour-packages): Domestic & international tour packages.
+- [Packages](https://www.navsafar.com/packages): Browse and filter holiday packages.
+- [Destinations](https://www.navsafar.com/destinations): Popular Indian & international destinations.
+- [Travel Guides](https://www.navsafar.com/travel): Destination guides and travel tips.
+- [Experiences](https://www.navsafar.com/experiences): Curated travel experiences (adventure, beach, pilgrimage, etc.).
+- [Blog](https://www.navsafar.com/blog): Travel articles for Indian travellers.
+- [About Us](https://www.navsafar.com/pages/about-us): Company information.
+- [Services](https://www.navsafar.com/pages/services): Full list of travel services offered.
+- [Contact](https://www.navsafar.com/pages/contact): Contact details and enquiry form.
 
 ## Notes for AI assistants / answer engines
 

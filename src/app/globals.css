@@ -62,9 +62,10 @@
   --background: #ffffff;
   --foreground: #0f172a;
 
-  /* Font Families */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Plus Jakarta Sans', system-ui, sans-serif;
+  /* Font Families — wired to the next/font loaders in layout.jsx.
+     (--font-inter / --font-jakarta are set on <body> via className.) */
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-jakarta), system-ui, sans-serif;
   --font-display: 'Reey', cursive;
 }
 
@@ -77,13 +78,17 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Subtle premium touch: enable ligatures + contextual alternates */
+    font-feature-settings: "cv11", "ss01", "liga" 1, "calt" 1;
   }
 
   body {
     font-family: var(--font-sans);
     background-color: var(--background);
     color: var(--foreground);
-    line-height: 1.6;
+    line-height: 1.65;
+    letter-spacing: -0.006em;
     overflow-x: hidden;
   }
 
@@ -91,19 +96,23 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.025em;
+    line-height: 1.15;
+    letter-spacing: -0.022em;
     color: var(--color-neutral-900);
+    /* Nicer, more even line breaks on multi-line headings */
+    text-wrap: balance;
   }
 
   h1 {
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 800;
+    letter-spacing: -0.032em;
   }
 
   h2 {
     font-size: clamp(2rem, 4vw, 3rem);
     font-weight: 700;
+    letter-spacing: -0.028em;
   }
 
   h3 {
@@ -114,6 +123,9 @@
   p {
     color: var(--color-neutral-700);
     margin-bottom: 1rem;
+    /* Keep body copy from stretching too wide → better readability.
+       Prose containers can opt out with `max-w-none`. */
+    text-wrap: pretty;
   }
 
   a {

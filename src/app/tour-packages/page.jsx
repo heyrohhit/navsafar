@@ -9,13 +9,13 @@ export const metadata = {
   description:
     "Browse 50+ tour packages across domestic and international destinations. Best price guarantee, custom itineraries, flights, hotels included.",
   alternates: {
-    canonical: "https://navsafar.com/tour-packages",
+    canonical: "https://www.navsafar.com/tour-packages",
   },
   openGraph: {
     title: "Tour Packages | Domestic & International - NavSafar",
     description:
       "Browse 50+ tour packages across domestic and international destinations.",
-    url: "https://navsafar.com/tour-packages",
+    url: "https://www.navsafar.com/tour-packages",
     type: "website",
   },
 };
@@ -29,7 +29,7 @@ export default async function TourPackagesPage() {
       <UniversalSchemaInjector
         type="itemList"
         items={packages}
-        pageUrl="https://navsafar.com/tour-packages"
+        pageUrl="https://www.navsafar.com/tour-packages"
         listName="Domestic & International Tour Packages — NavSafar"
       />
       <TourPackagesClient />

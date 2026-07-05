@@ -10,7 +10,7 @@
 //   import UniversalSchemaInjector from "@/app/components/seo/UniversalSchemaInjector";
 //
 //   // In a listing page:
-//   <UniversalSchemaInjector type="itemList" items={packages} pageUrl="https://navsafar.com/packages" />
+//   <UniversalSchemaInjector type="itemList" items={packages} pageUrl="https://www.navsafar.com/packages" />
 //
 //   // In a single destination page:
 //   <UniversalSchemaInjector type="touristDestination" destination={dest} packages={cityPackages} />
@@ -21,7 +21,7 @@
 //   • TravelPackage (Offer)         → per-package card on listing pages
 // ─────────────────────────────────────────────────────────────────
 
-const SITE_URL = "https://navsafar.com";
+const SITE_URL = "https://www.navsafar.com";
 
 function toSlug(str) {
   return String(str || "")

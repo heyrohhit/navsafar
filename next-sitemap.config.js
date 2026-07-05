@@ -1,18 +1,18 @@
 /** @type {import('next-sitemap').IConfig} */
 const config = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://navsafar.com",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://www.navsafar.com",
   generateRobotsTxt: true, // Generate robots.txt
   // India-specific: prioritize Hindi/English content
   alternateRefs: [
     {
-      href: "https://navsafar.com",
+      href: "https://www.navsafar.com",
       hreflang: "en-IN",
     },
     {
-      href: "https://navsafar.com",
+      href: "https://www.navsafar.com",
       hreflang: "en",
     },
-    // Add Hindi version later: { href: "https://navsafar.com/hi", hreflang: "hi-IN" }
+    // Add Hindi version later: { href: "https://www.navsafar.com/hi", hreflang: "hi-IN" }
   ],
   // Exclude admin routes
   exclude: ["/admin/**", "/api/**"],
