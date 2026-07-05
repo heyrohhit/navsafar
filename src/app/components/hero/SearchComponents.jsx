@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { City, State, Country } from "country-state-city";
 
 // ── Category filter pills ────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -52,33 +51,65 @@ export default function SearchComponents() {
   const totalTravellers = adults + children + infants;
   const passengerLabel  = `${adults} Adult${adults !== 1 ? "s" : ""}${children > 0 ? `, ${children} Child${children !== 1 ? "ren" : ""}` : ""}${infants > 0 ? `, ${infants} Infant${infants !== 1 ? "s" : ""}` : ""}`;
 
-  // ── Location database ────────────────────────────────────────────────────
-  const locations = useMemo(() => {
-    const cities    = City.getAllCities();
-    const states    = State.getAllStates();
-    const countries = Country.getAllCountries();
+  // ── Location database (lazy-loaded) ──────────────────────────────────────
+  // `country-state-city` me ~1.5 lakh cities hain — inhe render pe build karna
+  // hero ko slow karta tha. Ab library sirf tab import hoti hai jab user 2+ char
+  // type kare, aur build ki hui list ek ref me cache ho jaati hai.
+  const locationsRef   = useRef(null);   // built [{label, searchText}] cache
+  const loadingRef     = useRef(null);   // in-flight import promise (dedupe)
+  const debounceRef    = useRef(null);   // debounce timer
 
-    return [
-      ...cities.map((c) => {
-        const st  = State.getStateByCodeAndCountry(c.stateCode, c.countryCode);
-        const co  = Country.getCountryByCode(c.countryCode);
-        const label = `${c.name}${st ? `, ${st.name}` : ""}${co ? `, ${co.name}` : ""}`;
-        return { label, searchText: label.toLowerCase() };
-      }),
-      ...states.map((s) => {
-        const co = Country.getCountryByCode(s.countryCode);
-        const label = `${s.name}${co ? `, ${co.name}` : ""}`;
-        return { label, searchText: label.toLowerCase() };
-      }),
-      ...countries.map((c) => ({ label: c.name, searchText: c.name.toLowerCase() })),
-    ];
-  }, []);
+  async function ensureLocations() {
+    if (locationsRef.current) return locationsRef.current;
+    if (loadingRef.current)   return loadingRef.current;
 
-  function getSuggestions(query) {
-    if (!query || query.length < 2) return [];
-    const q = query.toLowerCase();
-    return locations.filter((l) => l.searchText.includes(q)).slice(0, 8);
+    loadingRef.current = (async () => {
+      const { City, State, Country } = await import("country-state-city");
+      const cities    = City.getAllCities();
+      const states    = State.getAllStates();
+      const countries = Country.getAllCountries();
+
+      const list = [
+        ...cities.map((c) => {
+          const st = State.getStateByCodeAndCountry(c.stateCode, c.countryCode);
+          const co = Country.getCountryByCode(c.countryCode);
+          const label = `${c.name}${st ? `, ${st.name}` : ""}${co ? `, ${co.name}` : ""}`;
+          return { label, searchText: label.toLowerCase() };
+        }),
+        ...states.map((s) => {
+          const co = Country.getCountryByCode(s.countryCode);
+          const label = `${s.name}${co ? `, ${co.name}` : ""}`;
+          return { label, searchText: label.toLowerCase() };
+        }),
+        ...countries.map((c) => ({ label: c.name, searchText: c.name.toLowerCase() })),
+      ];
+      locationsRef.current = list;
+      return list;
+    })();
+
+    return loadingRef.current;
   }
+
+  function filterLocations(query, list) {
+    const q = query.toLowerCase();
+    return list.filter((l) => l.searchText.includes(q)).slice(0, 8);
+  }
+
+  // Debounced: load lib (once) then set suggestions via provided setter.
+  function updateSuggestions(query, setSuggestions) {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!query || query.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+    debounceRef.current = setTimeout(async () => {
+      const list = await ensureLocations();
+      setSuggestions(filterLocations(query, list));
+    }, 200);
+  }
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => () => debounceRef.current && clearTimeout(debounceRef.current), []);
 
   // ── Search ───────────────────────────────────────────────────────────────
   function handleSearch(e) {
@@ -136,7 +167,7 @@ export default function SearchComponents() {
               value={fromCity}
               onChange={(e) => {
                 setFromCity(e.target.value);
-                setFromSuggestions(getSuggestions(e.target.value));
+                updateSuggestions(e.target.value, setFromSuggestions);
                 setShowFromDrop(true);
               }}
               onFocus={() => fromCity && setShowFromDrop(true)}
@@ -169,7 +200,7 @@ export default function SearchComponents() {
               value={destination}
               onChange={(e) => {
                 setDestination(e.target.value);
-                setDestSuggestions(getSuggestions(e.target.value));
+                updateSuggestions(e.target.value, setDestSuggestions);
                 setShowDestDrop(true);
               }}
               onFocus={() => destination && setShowDestDrop(true)}

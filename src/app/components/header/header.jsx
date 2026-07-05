@@ -5,6 +5,7 @@ import Nav from "./nav";
 import { mobileNav, getTravelIcon } from "../../models";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import AuthButton from "../auth/AuthButton";
 
 
 
@@ -65,6 +66,7 @@ const Header = () => {
                   Book Now
                 </button>
               </Link>
+              <AuthButton />
             </div>
           </div>
         </div>
@@ -85,7 +87,9 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile right side: account + menu */}
+          <div className="flex items-center gap-3">
+          <AuthButton compact />
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="relative w-8 h-8 flex flex-col justify-center items-center gap-1.5 transition-all duration-300"
@@ -104,6 +108,7 @@ const Header = () => {
                 }`}
             />
           </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}

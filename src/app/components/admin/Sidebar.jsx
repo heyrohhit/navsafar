@@ -15,6 +15,7 @@ import {
   LogOut,
   Menu,
   Activity,
+  Plane,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -31,6 +32,12 @@ const navItems = [
     href: "/admin/visitors",
     icon: Activity,
     description: "Visitor's ",
+  },
+  {
+    name: "Bookings",
+    href: "/admin/bookings",
+    icon: Plane,
+    description: "User bookings & enquiries",
   },
    {
     name: "Packages",
