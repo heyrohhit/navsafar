@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
+import { packages } from "../../models/objAll/packages";
 
 // ── Category filter pills ────────────────────────────────────────────────────
 const CATEGORIES = [
@@ -13,6 +14,59 @@ const CATEGORIES = [
   { label: "👨‍👩‍👧‍👦 Family",        link: "/packages?category=family"   },
   { label: "🧗 Adventure",      link: "/packages?type=Adventure"     },
 ];
+
+// ── Place suggestions — built ONCE from the packages the site actually offers.
+// Pehle `country-state-city` (~1.5 lakh global cities) load hoti thi jisse
+// search me duniya bhar ke bemtlab places aate the aur unka koi package hi
+// nahi hota tha. Ab sirf real destinations (city + country) suggest hote hain.
+const PLACES = (() => {
+  const cities = new Map();     // "city|country" → suggestion
+  const countries = new Map();  // "country"      → suggestion
+
+  for (const p of packages) {
+    const cityKey = `${p.city}|${p.country}`;
+    if (!cities.has(cityKey)) {
+      cities.set(cityKey, {
+        label: `${p.city}, ${p.country}`,
+        searchText: `${p.city} ${p.country} ${p.title} ${(p.tourism_type || []).join(" ")}`.toLowerCase(),
+      });
+    }
+    if (!countries.has(p.country)) {
+      countries.set(p.country, {
+        label: p.country,
+        searchText: p.country.toLowerCase(),
+      });
+    }
+  }
+
+  return [...cities.values(), ...countries.values()];
+})();
+
+function filterPlaces(query) {
+  const q = query.toLowerCase();
+  return PLACES.filter((l) => l.searchText.includes(q)).slice(0, 8);
+}
+
+// ── Counter helper — component outside render (state-safe, no re-creation) ────
+function Counter({ value, onChange, min = 0, max = 10 }) {
+  return (
+    <div className="flex items-center gap-3">
+      <button type="button"
+        onClick={() => onChange(Math.max(min, value - 1))}
+        disabled={value <= min}
+        className="w-8 h-8 rounded-full border border-[#0f6477] text-[#0f6477] font-bold text-lg flex items-center justify-center disabled:opacity-30 hover:bg-[#0f6477] hover:text-white transition-all">
+        −
+      </button>
+      <span className="w-6 text-center font-bold text-white text-base">{value}</span>
+      <button type="button"
+        onClick={() => onChange(Math.min(max, value + 1))}
+        disabled={value >= max}
+        className="w-8 h-8 rounded-full border border-[#0f6477] text-[#0f6477] font-bold text-lg flex items-center justify-center disabled:opacity-30 hover:bg-[#0f6477] hover:text-white transition-all">
+        +
+      </button>
+    </div>
+  );
+}
 
 export default function SearchComponents() {
   const router = useRouter();
@@ -51,65 +105,16 @@ export default function SearchComponents() {
   const totalTravellers = adults + children + infants;
   const passengerLabel  = `${adults} Adult${adults !== 1 ? "s" : ""}${children > 0 ? `, ${children} Child${children !== 1 ? "ren" : ""}` : ""}${infants > 0 ? `, ${infants} Infant${infants !== 1 ? "s" : ""}` : ""}`;
 
-  // ── Location database (lazy-loaded) ──────────────────────────────────────
-  // `country-state-city` me ~1.5 lakh cities hain — inhe render pe build karna
-  // hero ko slow karta tha. Ab library sirf tab import hoti hai jab user 2+ char
-  // type kare, aur build ki hui list ek ref me cache ho jaati hai.
-  const locationsRef   = useRef(null);   // built [{label, searchText}] cache
-  const loadingRef     = useRef(null);   // in-flight import promise (dedupe)
-  const debounceRef    = useRef(null);   // debounce timer
-
-  async function ensureLocations() {
-    if (locationsRef.current) return locationsRef.current;
-    if (loadingRef.current)   return loadingRef.current;
-
-    loadingRef.current = (async () => {
-      const { City, State, Country } = await import("country-state-city");
-      const cities    = City.getAllCities();
-      const states    = State.getAllStates();
-      const countries = Country.getAllCountries();
-
-      const list = [
-        ...cities.map((c) => {
-          const st = State.getStateByCodeAndCountry(c.stateCode, c.countryCode);
-          const co = Country.getCountryByCode(c.countryCode);
-          const label = `${c.name}${st ? `, ${st.name}` : ""}${co ? `, ${co.name}` : ""}`;
-          return { label, searchText: label.toLowerCase() };
-        }),
-        ...states.map((s) => {
-          const co = Country.getCountryByCode(s.countryCode);
-          const label = `${s.name}${co ? `, ${co.name}` : ""}`;
-          return { label, searchText: label.toLowerCase() };
-        }),
-        ...countries.map((c) => ({ label: c.name, searchText: c.name.toLowerCase() })),
-      ];
-      locationsRef.current = list;
-      return list;
-    })();
-
-    return loadingRef.current;
-  }
-
-  function filterLocations(query, list) {
-    const q = query.toLowerCase();
-    return list.filter((l) => l.searchText.includes(q)).slice(0, 8);
-  }
-
-  // Debounced: load lib (once) then set suggestions via provided setter.
+  // ── Suggestions — filter the real destinations list (see PLACES above).
+  // List chhoti hai (site ke actual packages) isliye debounce/lazy-load ki
+  // zaroorat nahi — seedha sync filter.
   function updateSuggestions(query, setSuggestions) {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!query || query.length < 2) {
       setSuggestions([]);
       return;
     }
-    debounceRef.current = setTimeout(async () => {
-      const list = await ensureLocations();
-      setSuggestions(filterLocations(query, list));
-    }, 200);
+    setSuggestions(filterPlaces(query));
   }
-
-  // Cleanup debounce timer on unmount
-  useEffect(() => () => debounceRef.current && clearTimeout(debounceRef.current), []);
 
   // ── Search ───────────────────────────────────────────────────────────────
   function handleSearch(e) {
@@ -125,27 +130,6 @@ export default function SearchComponents() {
       infants:    infants.toString(),
     });
     router.push(`/search?${params.toString()}`);
-  }
-
-  // ── Counter helper ────────────────────────────────────────────────────────
-  function Counter({ value, onChange, min = 0, max = 10 }) {
-    return (
-      <div className="flex items-center gap-3">
-        <button type="button"
-          onClick={() => onChange(Math.max(min, value - 1))}
-          disabled={value <= min}
-          className="w-8 h-8 rounded-full border border-[#0f6477] text-[#0f6477] font-bold text-lg flex items-center justify-center disabled:opacity-30 hover:bg-[#0f6477] hover:text-white transition-all">
-          −
-        </button>
-        <span className="w-6 text-center font-bold text-white text-base">{value}</span>
-        <button type="button"
-          onClick={() => onChange(Math.min(max, value + 1))}
-          disabled={value >= max}
-          className="w-8 h-8 rounded-full border border-[#0f6477] text-[#0f6477] font-bold text-lg flex items-center justify-center disabled:opacity-30 hover:bg-[#0f6477] hover:text-white transition-all">
-          +
-        </button>
-      </div>
-    );
   }
 
   return (

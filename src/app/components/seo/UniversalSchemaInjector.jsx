@@ -66,14 +66,10 @@ function buildItemListSchema(items = [], pageUrl, listName = "Tour Packages") {
               name: item.country,
             }
           } : {}),
-          ...(item.rating ? {
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: item.rating,
-              bestRating: 5,
-              ratingCount: Math.floor(item.rating * 100),
-            }
-          } : {}),
+          // NOTE: aggregateRating intentionally omitted — Google requires it to
+          // be backed by genuine, on-page reviews. Add it back only when real
+          // review data + a visible reviews section exist (avoids a
+          // "Spammy structured markup" manual action).
         },
       };
     }),
@@ -116,32 +112,30 @@ function buildTouristDestinationSchema(destination, packages = []) {
         name: attr,
       })),
     } : {}),
-    ...(destination.rating ? {
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: destination.rating,
-        bestRating: 5,
-        ratingCount: Math.floor(destination.rating * 120),
-      }
-    } : {}),
+    // NOTE: aggregateRating intentionally omitted (no genuine on-page reviews).
     ...(packages.length ? {
       hasOfferCatalog: {
         "@type": "OfferCatalog",
         name: `${city} Tour Packages`,
         numberOfItems: packages.length,
+        // Each package is a bookable TouristTrip. No fabricated price/currency —
+        // NavSafar quotes custom prices, so an Offer with priceCurrency but no
+        // price is invalid ("Missing field price" in GSC). We describe the trip
+        // instead and let users request a quote.
         itemListElement: packages.slice(0, 10).map((pkg) => ({
           "@type": "Offer",
           name: pkg.title || `${city} Tour Package`,
-          description: pkg.description || pkg.tagline || `${city} tour package from NavSafar`,
-          priceCurrency: "INR",
-          availability: "https://schema.org/InStock",
-          validFrom: new Date().toISOString().split("T")[0],
-          seller: {
-            "@type": "TravelAgency",
-            name: "NavSafar Travel Solutions",
-            url: SITE_URL,
+          url: pageUrl,
+          seller: { "@id": `${SITE_URL}/#organization` },
+          itemOffered: {
+            "@type": "TouristTrip",
+            name: pkg.title || `${city} Tour Package`,
+            description:
+              [pkg.duration, pkg.tagline || pkg.description]
+                .filter(Boolean)
+                .join(" — ") || `${city} tour package from NavSafar`,
+            ...(pkg.image ? { image: pkg.image } : {}),
           },
-          ...(pkg.duration ? { description: `${pkg.duration} — ${pkg.description || pkg.tagline || ""}` } : {}),
         })),
       }
     } : {}),

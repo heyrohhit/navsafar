@@ -73,8 +73,7 @@ function buildLlmsTxt() {
 | Page | URL | Description |
 |------|-----|-------------|
 | Home | ${SITE_URL}/ | Overview of NavSafar — tour packages, services, booking |
-| Tour Packages | ${SITE_URL}/tour-packages | All domestic & international packages with filters |
-| Packages | ${SITE_URL}/packages | Curated holiday package collections |
+| Packages | ${SITE_URL}/packages | All domestic & international packages with filters |
 | Destinations | ${SITE_URL}/destinations | Browse 50+ destinations by region, type, or country |
 | Travel Guides | ${SITE_URL}/travel | Destination travel guides for Indian travellers |
 | Experiences | ${SITE_URL}/experiences | Curated travel experiences (adventure, honeymoon, beach, etc.) |
