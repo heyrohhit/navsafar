@@ -14,14 +14,15 @@ function toSlug(value) {
 
 export default async function sitemap() {
   const [blogs, packages] = await Promise.all([getBlogs(), getPackages()]);
-  const now = new Date();
 
-  // <lastmod> should reflect the LAST REAL content change. Stamping `now` on
-  // every page each crawl tells Google "everything changed just now" forever,
-  // which makes it distrust and ignore <lastmod> across the whole sitemap.
-  // So: high-churn index pages use `now`; content-stable pages use a stable
-  // date; blog posts use their real edit dates (below).
+  // Dynamic lastmod strategy:
+  // - High-churn pages (home, blog, packages): `now` — tells crawlers "check often"
+  // - Content pages (destinations, travel guides, experiences): `now` — dynamic
+  //   SEO engine rotates keywords/FAQs daily, so pages ARE fresh each day
+  // - Static pages (policies, about): stable date — rarely changes
+  // - Blog posts: use real edit dates from the data
   const stable = new Date("2026-06-01T00:00:00.000Z");
+  const now = new Date(); // fresh each request — crawlers see daily updates
 
   // Only real, indexable pages on the ONE canonical domain (navsafar.com).
   // No alternate domains (they 301 here), no /tour-packages (301 → /packages),
@@ -43,11 +44,12 @@ export default async function sitemap() {
     { url: `${PRIMARY_DOMAIN}/policies/refund`,  changeFrequency: "yearly",  priority: 0.3,  lastModified: stable },
   ];
 
-  // One rich page per destination (~180) — replaces the ~2,000 keyword-combo URLs.
+  // One rich page per destination (~180) — daily keyword/FAQ rotation means
+  // content changes daily, so lastModified = now & changeFrequency = daily
   const travelPages = ALL_DESTINATIONS.map((dest) => ({
     url: `${PRIMARY_DOMAIN}/travel/${destinationSlug(dest)}`,
-    lastModified: stable,
-    changeFrequency: "weekly",
+    lastModified: now,
+    changeFrequency: "daily",
     priority: 0.7,
   }));
 
@@ -55,8 +57,8 @@ export default async function sitemap() {
     .filter(Boolean)
     .map((city) => ({
       url: `${PRIMARY_DOMAIN}/destinations/${toSlug(city)}`,
-      lastModified: stable,
-      changeFrequency: "weekly",
+      lastModified: now,
+      changeFrequency: "daily",
       priority: 0.75,
     }));
 

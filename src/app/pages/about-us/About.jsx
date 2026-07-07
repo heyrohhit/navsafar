@@ -59,7 +59,6 @@ const AboutUs = () => {
         ))}
 
         <div className={`relative z-10 text-center px-4 transition-all duration-1000 ${isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}>
-          {/* ── FIX: Remove "2008" → show "Founded 2026" ── */}
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/25 text-white text-sm font-semibold px-5 py-2 rounded-full mb-8 shadow-lg">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse inline-block" />
             Founded 2026
@@ -218,7 +217,7 @@ const AboutUs = () => {
             Discover amazing destinations across India and the world with our expert travel team.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/tour-packages"
+            <a href="/packages"
               className="group relative px-10 py-4 bg-white text-blue-700 font-bold rounded-2xl hover:bg-gray-50 transition-all duration-300 hover:scale-105 shadow-2xl text-lg">
               ✈️ Explore Packages
             </a>

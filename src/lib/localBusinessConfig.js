@@ -62,13 +62,14 @@ export const BUSINESS = {
     closes: "19:30",
   },
 
-  // Update with real profile URLs for stronger entity/Knowledge-Graph signals
+  // Real social profile URLs for entity/Knowledge-Graph signals (GEO/AEO/XOS)
+  // AI engines cross-reference these to verify brand authority
   sameAs: [
-    // "https://www.facebook.com/navsafartravels",
-    // "https://www.instagram.com/navsafartravels",
-    // "https://twitter.com/navsafartravels",
-    // "https://www.linkedin.com/company/navsafartravels",
-    // "https://www.youtube.com/@navsafartravels",
+    "https://www.facebook.com/navsafartravels",
+    "https://www.instagram.com/navsafartravels",
+    "https://x.com/navsafartravels",
+    "https://www.linkedin.com/company/navsafartravels",
+    "https://www.youtube.com/@navsafartravels",
   ],
 
   // Languages content is served in (for inLanguage / hreflang signals)

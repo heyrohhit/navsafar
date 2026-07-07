@@ -10,6 +10,7 @@ import SiteShell from "./components/SiteShell";
 import GlobalSEO from "./components/seo/GlobalSEO";
 
 import { PRIMARY_DOMAIN } from "../lib/domainConfig.js";
+import { getDailyKeywords, getDailyHomeTitle, getDailyHomeDescription } from "../lib/seoEngine.js";
 
 /* ── RENDERING ───────────────────────────────────────
  * ISR: pages are cached and re-generated at most once an hour (fast + good for
@@ -40,48 +41,22 @@ const jakarta = Plus_Jakarta_Sans({
   preload: true,
 });
 
-/* ── KEYWORDS ────────────────────────────────────── */
-const ALL_KEYWORDS = [
-  "goa beach holiday package",
-  "manali snow trip 2026",
-  "kedarnath yatra package",
-  "bali honeymoon package 2026",
-  "dubai family tour package",
-  "maldives luxury resort package",
-  "weekend getaway from delhi",
-  "cheap flight booking india",
-  "travel agency delhi ncr",
-  "best honeymoon destination india 2026",
-];
-
-function getDateSeed() {
-  const d = new Date();
-  return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-}
-
-function seededShuffle(arr, seed) {
-  const a = [...arr];
-  let s = seed >>> 0;
-
-  for (let i = a.length - 1; i > 0; i--) {
-    s = (Math.imul(s, 1664525) + 1013904223) >>> 0;
-    const j = s % (i + 1);
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-
-  return a;
-}
-
-function getDailyKeywords() {
-  return seededShuffle(ALL_KEYWORDS, getDateSeed()).slice(0, 10);
-}
+/* ── DYNAMIC KEYWORD ENGINE ── imported from lib/seoEngine.js
+ * 200+ travel keywords in daily rotation. Each day a fresh subset is selected
+ * deterministically so Google sees fresh semantic signals without duplicate content.
+ */
 
 /* ─────────────────────────────────────────────────────────────
    METADATA
 ───────────────────────────────────────────────────────────── */
 export function generateMetadata() {
   const siteName = "NavSafar";
-  const keywords = getDailyKeywords();
+  const today = new Date().toISOString().split("T")[0];
+
+  // Daily rotating title & description for maximum keyword freshness
+  const homeTitle = getDailyHomeTitle();
+  const homeDesc = getDailyHomeDescription();
+  const dailyKeywords = getDailyKeywords(20);
 
   // NOTE: no site-wide `alternates.canonical` here. Each page sets its own
   // self-referential canonical; a single default would wrongly point every
@@ -91,22 +66,18 @@ export function generateMetadata() {
     metadataBase: new URL(PRIMARY_DOMAIN),
 
     title: {
-      default: `${siteName} | Book Domestic & International Tour Packages`,
+      default: homeTitle,
       template: `%s | ${siteName}`,
     },
 
-    description:
-      "NavSafar - Your trusted travel partner. Book domestic & international tour packages, flights, hotels, visa services.",
+    description: homeDesc,
 
     keywords: [
+      "navsafar",
       "travel agency india",
-      "tour packages india",
-      "domestic tours",
-      "international tours",
-      "flight booking",
-      "hotel booking",
-      "visa services",
-      ...keywords,
+      "tour packages",
+      "holiday packages",
+      ...dailyKeywords,
     ],
 
     authors: [{ name: "NavSafar Team" }],
@@ -114,9 +85,8 @@ export function generateMetadata() {
     creator: "NavSafar",
 
     openGraph: {
-      title: `${siteName} - Explore World's Best Destinations`,
-      description:
-        "Book domestic & international tour packages with NavSafar.",
+      title: homeTitle,
+      description: homeDesc,
       url: PRIMARY_DOMAIN,
       siteName,
       type: "website",
@@ -134,9 +104,8 @@ export function generateMetadata() {
 
     twitter: {
       card: "summary_large_image",
-      title: `${siteName} - Book Tour Packages`,
-      description:
-        "Explore world's best destinations with NavSafar.",
+      title: homeTitle,
+      description: homeDesc,
       images: [`${PRIMARY_DOMAIN}/assets/bg.jpg`],
     },
 
@@ -150,6 +119,21 @@ export function generateMetadata() {
         "max-image-preview": "large",
         "max-video-preview": -1,
       },
+    },
+
+    // hreflang for multi-language support (AEO/GEO/XOS)
+    alternates: {
+      languages: {
+        "en-IN": PRIMARY_DOMAIN,
+        "en": PRIMARY_DOMAIN,
+        "x-default": PRIMARY_DOMAIN,
+      },
+    },
+
+    // dateModified for freshness signals (GEO: AI engines prefer recent content)
+    other: {
+      "dateModified": today,
+      "datePublished": today,
     },
   };
 }

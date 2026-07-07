@@ -38,6 +38,10 @@ export async function generateMetadata({ params }) {
       index: blog.status !== "draft",
       follow: true,
     },
+    other: {
+      "dateModified": blog.updatedAt || blog.publishedAt || new Date().toISOString().split("T")[0],
+      "datePublished": blog.publishedAt || "",
+    },
   };
 }
 
@@ -116,6 +120,13 @@ function buildBlogJsonLd(blog) {
     author: {
       "@type": "Person",
       name: blog.author?.name || "Navsafar Travels",
+      url: `${SITE_URL}/pages/about-us`,
+      sameAs: [
+        "https://www.facebook.com/navsafartravels",
+        "https://www.instagram.com/navsafartravels",
+        "https://x.com/navsafartravels",
+        "https://www.linkedin.com/company/navsafartravels",
+      ],
     },
     publisher: {
       "@type": "Organization",

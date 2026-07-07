@@ -310,7 +310,7 @@ const Contact = () => {
             Don't wait any longer — your dream journey is just one click away.
           </p>
           <a
-            href="/tour-packages"
+            href="/packages"
             className="inline-flex items-center gap-2 px-10 py-4 bg-amber-400 hover:bg-amber-300 text-gray-900 font-extrabold rounded-2xl shadow-xl shadow-amber-500/30 hover:shadow-amber-400/50 transition-all duration-300 hover:scale-105 text-base"
           >
             ✈️ Explore Our Packages

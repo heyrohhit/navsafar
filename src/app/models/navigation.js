@@ -12,8 +12,8 @@ const navModel = [
         keywords: "destinations, places, countries, cities"
     },
     {
-        name: "Tour Packages",
-        path: "/tour-packages",
+        name: "Packages",
+        path: "/packages",
         description: "Browse our exclusive tour packages",
         keywords: "tour packages, holiday packages, vacation deals"
     },
@@ -44,13 +44,13 @@ const navModel = [
     // },
     {
         name: "Visa Services",
-        path: "/visa-services",
-        description: "Complete visa assistance",
+        path: "/pages/services#service-international",
+        description: "Complete visa assistance for international travel",
         keywords: "visa, immigration, travel documents"
     },
     {
         name: "Travel Insurance",
-        path: "/travel-insurance",
+        path: "/pages/services#service-international",
         description: "Comprehensive travel coverage",
         keywords: "travel insurance, coverage, protection"
     },

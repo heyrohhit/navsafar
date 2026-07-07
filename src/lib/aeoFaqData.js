@@ -1,28 +1,18 @@
 // src/lib/aeoFaqData.js
 // ─────────────────────────────────────────────────────────────
-// 🇮🇳 AEO (Answer Engine Optimization) FAQ data
+// 🇮🇳 AEO (Answer Engine Optimization) + GEO FAQ DATA
 //
-// These Q&As are rendered as a VISIBLE FAQ accordion (FaqAccordion.jsx)
-// AND injected as matching FAQPage JSON-LD — the visible text and the
-// structured data always come from the SAME rotated set, which is what
-// Google's FAQ guidelines require.
+// EXPANDED POOLS: Every major route now has its own FAQ pool.
+// Daily rotating via getRotatedFaqsForPath() for freshness.
 //
-// 🔁 DAILY ROTATION: each route has a POOL of Q&As. getRotatedFaqsForPath()
-// deterministically picks/orders a subset seeded by (today's date + path):
-//   • Changes once per day  → Google/AI engines see fresh content daily
-//   • Stable within the day  → ISR-cacheable + structured data stays consistent
-//   • Different per page      → every route gets its own daily set
-// (Same seeded-shuffle approach already used for daily keywords in layout.jsx.)
-//
-// 👉 To add/edit FAQs for a route, edit this file only — add as many Q&As
-//    to a route's pool as you like; the rotator handles variety.
-//
-// Matching rules (checked in order, first match wins):
-//   - "exact"  → matches pathname exactly (e.g. "/")
-//   - "prefix" → matches if pathname starts with this value
+// Matching rules:
+//   - "exact"  → matches pathname exactly
+//   - "prefix" → matches if pathname starts with value
+//   - "regex"  → matches via RegExp.test(pathname)
 // ─────────────────────────────────────────────────────────────
 
 export const AEO_FAQS = [
+  // ═══ HOME ═══════════════════════════════════════════════
   {
     match: { type: "exact", value: "/" },
     faqs: [
@@ -58,8 +48,18 @@ export const AEO_FAQS = [
         q: "Does NavSafar arrange trips for large groups and corporates?",
         a: "Yes. We handle family reunions, friends' groups, school/college tours and corporate MICE travel, with group discounts and a coordinator assigned to your trip.",
       },
+      {
+        q: "How far in advance should I book a tour package?",
+        a: "For peak seasons and holidays we recommend booking 3–6 weeks ahead to lock in the best rates and availability. Our team can also arrange last-minute trips depending on hotel and flight availability.",
+      },
+      {
+        q: "What payment methods does NavSafar accept?",
+        a: "We accept all major credit cards, debit cards, UPI, bank transfers, and EMI options for selected packages. All payments are in Indian Rupees (INR).",
+      },
     ],
   },
+
+  // ═══ PACKAGES ═══════════════════════════════════════════
   {
     match: { type: "prefix", value: "/packages" },
     faqs: [
@@ -87,33 +87,18 @@ export const AEO_FAQS = [
         q: "Are there any hidden charges in NavSafar packages?",
         a: "No. The quote we share is transparent and itemised. Any optional add-ons (like extra activities or upgrades) are clearly listed so you always know exactly what you're paying for.",
       },
-    ],
-  },
-  {
-    match: { type: "prefix", value: "/tour-packages" },
-    faqs: [
       {
-        q: "How do I book a tour package with NavSafar?",
-        a: "Browse the available tour packages on our website, select one that fits your plans, and click the enquiry/booking button. Our travel experts will then assist you with itinerary customisation, pricing and payment in INR.",
+        q: "Which is the best domestic tour package from Delhi?",
+        a: "Goa, Manali, Kashmir, Kerala and Rajasthan are our most popular domestic packages from Delhi. Each can be customised for duration, hotel category and activities.",
       },
       {
-        q: "Can NavSafar tour packages be customised for honeymoon or family trips?",
-        a: "Yes. Packages can be tailored for honeymoons, family holidays, solo trips, group tours and corporate travel, with options for hotel category, meal plans and activities.",
-      },
-      {
-        q: "What is the difference between a fixed departure and a customised tour?",
-        a: "A fixed departure follows a set date and itinerary shared with other travellers (often cheaper), while a customised tour runs privately on your own dates with an itinerary built around your preferences.",
-      },
-      {
-        q: "Do tour packages include airport and hotel transfers?",
-        a: "Most packages include airport pickups, drops and inter-city transfers in private or shared vehicles. The exact transfer type is listed in each package and can be upgraded on request.",
-      },
-      {
-        q: "Can I add extra days or activities to a tour package?",
-        a: "Yes, you can extend the trip, add a nearby destination, or include activities like adventure sports, cruises or guided tours — our team will re-quote the updated itinerary in INR.",
+        q: "Do you offer honeymoon packages?",
+        a: "Yes! We offer specialised honeymoon packages for destinations like Bali, Maldives, Kerala, Manali, Goa, Switzerland, Dubai and more — with romantic stays, candlelight dinners and couple experiences.",
       },
     ],
   },
+
+  // ═══ DESTINATIONS ═══════════════════════════════════════
   {
     match: { type: "exact", value: "/destinations" },
     faqs: [
@@ -137,8 +122,18 @@ export const AEO_FAQS = [
         q: "Which destinations are best for a short 2–3 day trip?",
         a: "For quick getaways from Delhi NCR, destinations like Jaipur, Rishikesh, Shimla, Agra and Jim Corbett are ideal, while Goa and Kerala suit slightly longer breaks.",
       },
+      {
+        q: "Which destination is best for a honeymoon trip from India?",
+        a: "Bali, Maldives, Switzerland, Kerala, Manali and Goa are top honeymoon choices. The best destination depends on your budget, preferred season and travel style.",
+      },
+      {
+        q: "What are the best beach destinations in India?",
+        a: "Goa, Andaman, Kerala (Varkala, Kovalam), Gokarna, Pondicherry and Lakshadweep are India's best beach destinations, each offering unique coastal experiences.",
+      },
     ],
   },
+
+  // ═══ TRAVEL GUIDES ═════════════════════════════════════
   {
     match: { type: "prefix", value: "/travel" },
     faqs: [
@@ -158,8 +153,14 @@ export const AEO_FAQS = [
         q: "Do the guides mention the best time to visit each destination?",
         a: "Yes, each guide highlights the ideal months to visit based on weather, festivals and crowd levels, so you can pick the most enjoyable and cost-effective time to travel.",
       },
+      {
+        q: "Which travel guide is most popular among Indian travellers?",
+        a: "Our Goa, Manali, Bali and Dubai travel guides are the most-read. They cover everything from best time to visit, top attractions, local food, travel tips and estimated budgets.",
+      },
     ],
   },
+
+  // ═══ EXPERIENCES ═══════════════════════════════════════
   {
     match: { type: "prefix", value: "/experiences" },
     faqs: [
@@ -179,14 +180,20 @@ export const AEO_FAQS = [
         q: "Are there family-friendly and senior-friendly experiences?",
         a: "Yes, we offer relaxed sightseeing, cultural tours, scenic toy-train rides and easy nature walks that are comfortable for children and senior travellers.",
       },
+      {
+        q: "What adventure experiences are best for beginners?",
+        a: "River rafting in Rishikesh, paragliding in Himachal, snorkelling in Andaman and wildlife safaris in Jim Corbett are all beginner-friendly adventures that can be added to any package.",
+      },
     ],
   },
+
+  // ═══ ABOUT ═════════════════════════════════════════════
   {
     match: { type: "prefix", value: "/pages/about-us" },
     faqs: [
       {
         q: "Where is NavSafar Travel Solutions located?",
-        a: "NavSafar Travel Solutions is based in New Delhi, India (Nangal Raya, New Delhi - 110046) and serves customers across India for domestic and international travel planning.",
+        a: "NavSafar Travel Solutions is based in New Delhi, India (WZ-447, First Floor, Left Side, Nangal Raya, New Delhi - 110046) and serves customers across India for domestic and international travel planning.",
       },
       {
         q: "Is NavSafar a government-approved travel agency?",
@@ -200,8 +207,14 @@ export const AEO_FAQS = [
         q: "Why should I choose NavSafar over an online booking website?",
         a: "Unlike self-service booking sites, NavSafar gives you a real human travel expert, fully customised itineraries, transparent INR pricing and 24/7 support during your trip.",
       },
+      {
+        q: "Does NavSafar have a physical office I can visit?",
+        a: "Yes, you're welcome to visit our New Delhi office at WZ-447, First Floor, Nangal Raya, New Delhi - 110046. We recommend calling ahead so an expert is ready to assist you.",
+      },
     ],
   },
+
+  // ═══ CONTACT ═══════════════════════════════════════════
   {
     match: { type: "prefix", value: "/pages/contact" },
     faqs: [
@@ -221,8 +234,14 @@ export const AEO_FAQS = [
         q: "Can I visit the NavSafar office in person?",
         a: "Yes, you're welcome to visit our New Delhi office at WZ-447, First Floor, Nangal Raya, New Delhi - 110046. We recommend calling ahead so an expert is ready to assist you.",
       },
+      {
+        q: "Does NavSafar have a WhatsApp number for quick enquiries?",
+        a: "Yes, you can WhatsApp us at +91-8882128640 for instant responses. Share your destination, travel dates and group size, and we'll send you a customised quote.",
+      },
     ],
   },
+
+  // ═══ SERVICES ══════════════════════════════════════════
   {
     match: { type: "prefix", value: "/pages/services" },
     faqs: [
@@ -242,8 +261,14 @@ export const AEO_FAQS = [
         q: "Does NavSafar offer travel insurance?",
         a: "We can guide you on suitable travel insurance options for domestic and international trips so you're covered for medical emergencies, cancellations and lost baggage. Ask our team for current plans.",
       },
+      {
+        q: "Can I book only flights or hotels without a full package?",
+        a: "Yes. Apart from complete tour packages, you can book flights and hotels individually. Our team finds the best rates and handles the booking for you.",
+      },
     ],
   },
+
+  // ═══ SEARCH ════════════════════════════════════════════
   {
     match: { type: "prefix", value: "/search" },
     faqs: [
@@ -259,8 +284,14 @@ export const AEO_FAQS = [
         q: "What if I can't find the exact package I want?",
         a: "No problem — just send us an enquiry describing your ideal trip, and our experts will build a custom itinerary and quote for you, even if it isn't listed on the site.",
       },
+      {
+        q: "Can I search for international holiday packages?",
+        a: "Yes, simply type your preferred international destination (e.g., Bali, Dubai, Thailand, Europe) into the search bar. The results will show matching international tour packages.",
+      },
     ],
   },
+
+  // ═══ BOOKING ═══════════════════════════════════════════
   {
     match: { type: "prefix", value: "/booking" },
     faqs: [
@@ -280,24 +311,69 @@ export const AEO_FAQS = [
         q: "Will I get a confirmation and itinerary after booking?",
         a: "Yes. Once your booking is confirmed you receive a written itinerary and confirmation with all inclusions, hotel details and support contacts for your trip.",
       },
+      {
+        q: "Can I make changes to my booking after confirmation?",
+        a: "Yes, most bookings can be modified depending on the supplier policies. Contact your travel expert as soon as possible and we'll try to accommodate your changes.",
+      },
+    ],
+  },
+
+  // ═══ BLOG ══════════════════════════════════════════════
+  {
+    match: { type: "exact", value: "/blog" },
+    faqs: [
+      {
+        q: "What type of travel content does NavSafar publish?",
+        a: "NavSafar's blog features destination guides, travel tips, trip planning advice, itineraries, packing lists and stories from Indian travellers exploring India and the world.",
+      },
+      {
+        q: "How often is new content published on the blog?",
+        a: "We publish new travel guides and articles regularly. Popular topics include best time to visit destinations, budget travel tips, hidden gems and curated itineraries.",
+      },
+      {
+        q: "Can I contribute a travel story to the NavSafar blog?",
+        a: "We welcome guest contributions from travellers. Contact our team with your story idea and we'll review it for publication.",
+      },
+      {
+        q: "Are the blog guides useful for planning my trip?",
+        a: "Absolutely. Each guide includes practical information like best time to visit, top attractions, estimated budget, travel tips and links to customisable packages.",
+      },
+    ],
+  },
+
+  // ═══ POLICIES ══════════════════════════════════════════
+  {
+    match: { type: "prefix", value: "/policies" },
+    faqs: [
+      {
+        q: "What is NavSafar's cancellation policy?",
+        a: "Cancellation terms vary by package and supplier (hotels, airlines, transport). Please refer to our refund policy page or contact our support team for the exact terms applicable to your booking.",
+      },
+      {
+        q: "How does NavSafar handle customer disputes?",
+        a: "We strive to resolve all customer concerns amicably. If you have an issue with your booking, please contact our support team and we will work to find a fair solution.",
+      },
+      {
+        q: "Is my personal data safe with NavSafar?",
+        a: "Yes. We follow strict data protection practices and never share your personal information with third parties without your consent. Please refer to our privacy policy for details.",
+      },
     ],
   },
 ];
 
 // ─────────────────────────────────────────────────────────────
 // 🔁 DETERMINISTIC DAILY ROTATION
-// (Mirrors the seeded-shuffle approach used for daily keywords in layout.jsx.)
 // ─────────────────────────────────────────────────────────────
 
-/** Today as an integer YYYYMMDD — changes once per day, same for all users. */
+/** Today as an integer YYYYMMDD */
 function dateSeed() {
   const d = new Date();
   return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
 }
 
-/** Cheap, stable 32-bit hash of a string (so each path rotates differently). */
+/** FNV-1a 32-bit hash */
 function hashString(str = "") {
-  let h = 2166136261 >>> 0; // FNV-1a
+  let h = 2166136261 >>> 0;
   for (let i = 0; i < str.length; i++) {
     h ^= str.charCodeAt(i);
     h = Math.imul(h, 16777619) >>> 0;
@@ -305,7 +381,7 @@ function hashString(str = "") {
   return h >>> 0;
 }
 
-/** Deterministic Fisher–Yates shuffle driven by a numeric seed. */
+/** Deterministic Fisher-Yates shuffle */
 function seededShuffle(arr, seed) {
   const a = [...arr];
   let s = seed >>> 0;
@@ -318,8 +394,7 @@ function seededShuffle(arr, seed) {
 }
 
 /**
- * Find the best-matching FAQ POOL for a given pathname.
- * Returns an array of { q, a } or null if no FAQs apply.
+ * Find best-matching FAQ pool for a pathname.
  */
 export function getFaqsForPath(pathname = "/") {
   const path = pathname || "/";
@@ -329,6 +404,12 @@ export function getFaqsForPath(pathname = "/") {
     (entry) => entry.match.type === "exact" && entry.match.value === path
   );
   if (exact) return exact.faqs;
+
+  // Then regex matches
+  const regex = AEO_FAQS.find(
+    (entry) => entry.match.type === "regex" && new RegExp(entry.match.value).test(path)
+  );
+  if (regex) return regex.faqs;
 
   // Then longest matching prefix
   const prefixMatches = AEO_FAQS.filter(
@@ -340,16 +421,15 @@ export function getFaqsForPath(pathname = "/") {
 }
 
 /**
- * Daily-rotating subset of FAQs for a path.
- *  - Deterministic per (day + path): stable within a day, fresh across days.
- *  - Returns up to `count` Q&As (or the whole pool if it's smaller).
- *  - The SAME result feeds both the visible accordion and the FAQPage JSON-LD.
+ * Daily-rotating FAQ subset for a path.
+ * Deterministic per (day + path): stable within a day, fresh across days.
+ * Returns up to `count` Q&As (or full pool if smaller).
  *
  * @param {string} pathname
- * @param {number} count  how many Q&As to show (default 5)
- * @returns {{q:string,a:string}[] | null}
+ * @param {number} count  how many Q&As to show (default 6)
+ * @returns {{q:string, a:string}[] | null}
  */
-export function getRotatedFaqsForPath(pathname = "/", count = 5) {
+export function getRotatedFaqsForPath(pathname = "/", count = 6) {
   const pool = getFaqsForPath(pathname);
   if (!pool || pool.length === 0) return null;
 

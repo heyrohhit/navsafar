@@ -41,9 +41,7 @@ export async function generateMetadata({ params }) {
 
 // ── PAGE ──
 export default async function ExperiencePage({ params }) {
-  const { slug } = await params; // ✅ destructure karo
-
-  console.log("console slug is", slug);
+  const { slug } = await params;
 
   if (!slug) {
     return (
@@ -56,5 +54,55 @@ export default async function ExperiencePage({ params }) {
     );
   }
 
-  return <ExperienceClient slug={slug} />;
+  const label = slug ? slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "Travel";
+
+  return (
+    <>
+      {/* FAQPage JSON-LD for AEO/GEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: `What kind of ${label.toLowerCase()} travel experiences does NavSafar offer?`,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: `NavSafar curates ${label.toLowerCase()} experiences such as adventure trips, beach holidays, hill station getaways, heritage and pilgrimage tours, wildlife safaris and honeymoon packages, customised for Indian travellers.`,
+                },
+              },
+              {
+                "@type": "Question",
+                name: `Are ${label.toLowerCase()} experiences safe with NavSafar?`,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. We work with licensed, verified local operators for activities like trekking, rafting, scuba diving and paragliding, and safety equipment and trained guides are always included.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: `Can ${label.toLowerCase()} experiences be combined with a regular tour package?`,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Absolutely. You can add curated experiences — a desert safari, backwater cruise, cooking class or wildlife safari — to any tour package for a richer, more memorable trip.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Are there family-friendly and senior-friendly experiences?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes, we offer relaxed sightseeing, cultural tours, scenic toy-train rides and easy nature walks that are comfortable for children and senior travellers.",
+                },
+              },
+            ],
+          }),
+        }}
+      />
+      <ExperienceClient slug={slug} />
+    </>
+  );
 }

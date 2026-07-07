@@ -152,6 +152,53 @@ export default function Testimonials({
   showControls = true,
   backgroundColor = "bg-gray-50 dark:bg-slate-900",
 }) {
+  // ── AggregateRating + Review JSON-LD for SEO/AEO/GEO ──
+  // Injected once when testimonials load, provides structured review data
+  // that AI engines and search crawlers can parse for rich snippets
+  useEffect(() => {
+    if (!testimonials.length) return;
+    const avgRating = (testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length).toFixed(1);
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: "NavSafar Travel Services",
+      description: "Travel agency offering domestic and international tour packages, flights, hotels and visa assistance.",
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: avgRating,
+        reviewCount: testimonials.length,
+        bestRating: "5",
+        worstRating: "1",
+      },
+      review: testimonials.slice(0, 10).map((t) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: t.name },
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: t.rating,
+          bestRating: "5",
+        },
+        description: t.review,
+        datePublished: t.createdAt || new Date().toISOString(),
+        itemReviewed: {
+          "@type": "Service",
+          name: t.trip || "NavSafar Tour Package",
+        },
+      })),
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "review-schema";
+    script.textContent = JSON.stringify(schema);
+    // Remove old schema if exists
+    const old = document.getElementById("review-schema");
+    if (old) old.remove();
+    document.head.appendChild(script);
+    return () => {
+      const old = document.getElementById("review-schema");
+      if (old) old.remove();
+    };
+  }, [testimonials]);
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(3);

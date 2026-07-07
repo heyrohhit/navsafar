@@ -22,7 +22,7 @@ import Link from "next/link";
 ───────────────────────────────────────────────────────── */
 const SERVICES = [
   {
-    id: 1,
+    id: "domestic",
     title: "Domestic Tours",
     icon: "🇮🇳",
     description:
@@ -39,7 +39,7 @@ const SERVICES = [
     gradient: "from-blue-500 to-cyan-600",
   },
   {
-    id: 2,
+    id: "international",
     title: "International Tours",
     icon: "✈️",
     description:
@@ -56,7 +56,7 @@ const SERVICES = [
     gradient: "from-purple-500 to-pink-600",
   },
   {
-    id: 3,
+    id: "religious",
     title: "Religious Tours",
     icon: "🕉️",
     description:
@@ -73,7 +73,7 @@ const SERVICES = [
     gradient: "from-orange-500 to-red-600",
   },
   {
-    id: 4,
+    id: "adventure",
     title: "Adventure Tours",
     icon: "🏔️",
     description: "Thrilling adventures for adrenaline junkies and nature lovers",
@@ -89,7 +89,7 @@ const SERVICES = [
     gradient: "from-indigo-500 to-purple-600",
   },
   {
-    id: 5,
+    id: "family",
     title: "Family Packages",
     icon: "👨‍👩‍👧‍👦",
     description: "Perfect family vacations with activities for all age groups",
@@ -105,7 +105,7 @@ const SERVICES = [
     gradient: "from-green-500 to-emerald-600",
   },
   {
-    id: 6,
+    id: "custom",
     title: "Custom Tours",
     icon: "🎯",
     description:
@@ -299,16 +299,15 @@ function ServiceModal({ service, onClose }) {
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <Link
-              href="/tour-packages"
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600
-                         text-white font-semibold rounded-xl text-center
-                         hover:from-blue-700 hover:to-purple-700
-                         active:scale-95 transition-all duration-300"
-            >
-              View Packages
-            </Link>
+          <div className="flex gap-3">              <Link
+                href="/packages"
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600
+                           text-white font-semibold rounded-xl text-center
+                           hover:from-blue-700 hover:to-purple-700
+                           active:scale-95 transition-all duration-300"
+              >
+                View Packages
+              </Link>
             <Link
               href="/contact"
               className="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-xl
@@ -370,6 +369,7 @@ export default function ServicesClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SERVICES.map((service, index) => (
               <div
+                id={`service-${service.id}`}
                 key={service.id}
                 className="group relative overflow-hidden rounded-2xl shadow-lg
                            hover:shadow-2xl transition-all duration-500
@@ -523,7 +523,7 @@ export default function ServicesClient() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {/* <a> → <Link>: Next.js client-side navigation, no full reload */}
             <Link
-              href="/tour-packages"
+              href="/packages"
               className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl
                          hover:bg-gray-100 active:scale-95
                          transition-all duration-300 shadow-lg"
