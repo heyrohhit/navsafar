@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 // ─── Package Data ──────────────────────────────────────────────────────────────
-import ALL_PACKAGES_RAW from "../../data/packagesData.json";
+import { packages as ALL_PACKAGES_RAW } from "../models/objAll/packages";
 
 // ✅ toSlug helper — city name → URL-safe slug
 function toSlug(city) {

@@ -152,6 +152,11 @@ export default function Testimonials({
   showControls = true,
   backgroundColor = "bg-gray-50 dark:bg-slate-900",
 }) {
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(3);
+  const [isMobile, setIsMobile] = useState(false);
+
   // ── AggregateRating + Review JSON-LD for SEO/AEO/GEO ──
   // Injected once when testimonials load, provides structured review data
   // that AI engines and search crawlers can parse for rich snippets
@@ -199,10 +204,6 @@ export default function Testimonials({
       if (old) old.remove();
     };
   }, [testimonials]);
-  const [testimonials, setTestimonials] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(3);
-  const [isMobile, setIsMobile] = useState(false);
 
   // Check screen size
   useEffect(() => {

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { usePackages } from "../../hooks/usePackages";
 import PackageGridLayout from "../../components/packages/PackageGridLayout";
-import packagesData from "../../../data/packagesData.json";
+import { packages as packagesData } from "../../models/objAll/packages";
 
 // ── Category presentation meta ─────────────────────────────────────
 const CATEGORY_INFO = {

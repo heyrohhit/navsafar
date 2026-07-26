@@ -1,10 +1,11 @@
 import ExperienceClient from "./ExperienceClient";
+import { getPackages } from "../../../lib/getPackages";
 
 // ── Metadata ──
 export async function generateMetadata({ params }) {
   const { slug } = await params;
 
-  const packagesData = (await import("../../../data/packagesData.json")).default;
+  const packagesData = await getPackages();
   const catPackages = packagesData.filter((p) => p.category?.includes(slug));
 
   const label = slug ? slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "Travel";
