@@ -7,7 +7,7 @@ import "./globals.css";
 
 import ClientLoaderWrapper from "./components/loading/ClientLoaderWrapper";
 import SiteShell from "./components/SiteShell";
-import GlobalSEO from "./components/seo/GlobalSEO";
+import UniversalSEOEngine from "./components/seo/UniversalSEOEngine";
 
 import { PRIMARY_DOMAIN } from "../lib/domainConfig.js";
 import { getDailyKeywords, getDailyHomeTitle, getDailyHomeDescription } from "../lib/seoEngine.js";
@@ -144,8 +144,8 @@ export function generateMetadata() {
 async function DynamicShell({ children }) {
   return (
     <>
-      {/* SEO + AEO + GEO + AIO — runs once for every page */}
-      <GlobalSEO />
+      {/* 🚀 Universal SEO Engine — SEO + AEO + GEO + XOS + schemas + perf hints */}
+      <UniversalSEOEngine />
 
       <ClientLoaderWrapper>
         <SiteShell>{children}</SiteShell>
@@ -161,61 +161,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en-IN" suppressHydrationWarning>
       <head>
-        {/* Performance */}
-        <link
-          rel="preconnect"
-          href="https://fonts.googleapis.com"
-        />
-
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-
-        <link
-          rel="preconnect"
-          href="https://ilvzxhlndbpppbkzujpz.supabase.co"
-        />
-
-        <link
-          rel="dns-prefetch"
-          href="https://www.googletagmanager.com"
-        />
-
-        {/* ✅ Hero LCP image preload — fetchpriority high se browser seedha download karta hai */}
-        <link
-          rel="preload"
-          as="image"
-          href="/assets/bg.jpg"
-          // @ts-ignore
-          fetchpriority="high"
-          imageSizes="100vw"
-        />
-
-        {/* ✅ Next slide preload */}
-        <link rel="prefetch" as="image" href="/assets/kd.jpg" />
-        <link rel="prefetch" as="image" href="/assets/mt.jpg" />
-
-        {/* PWA */}
-        <link rel="manifest" href="/manifest.json" />
-
-        <meta name="theme-color" content="#0F6177" />
-
-        <meta
-          name="apple-mobile-web-app-capable"
-          content="yes"
-        />
-
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-
-        <meta
-          name="apple-mobile-web-app-title"
-          content="NavSafar"
-        />
+        {/* All resource hints, PWA meta, GEO meta, social verification, and
+            freshness signals are handled by <UniversalSEOEngine /> which
+            renders them server-side (it's a server component). Keeping them
+            here too would create duplicate tags. */}
       </head>
 
       <body

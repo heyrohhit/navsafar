@@ -16,6 +16,7 @@ import {
   Menu,
   Activity,
   Plane,
+  Settings,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -62,6 +63,12 @@ const navItems = [
     href: "/admin/contacts",
     icon: MessageSquare,
     description: "Customer inquiries",
+  },
+  {
+    name: "Settings",
+    href: "/admin/settings",
+    icon: Settings,
+    description: "Business config & SEO",
   },
 ];
 
