@@ -6,14 +6,11 @@ import {
   Mail,
   Phone,
   MapPin,
-  Send,
   Heart,
   ArrowUp,
   Shield,
-  Award,
-  Users,
-  CheckCircle
 } from "lucide-react"
+import { BUSINESS } from "../../../lib/localBusinessConfig.js"
 
 import {
   FaFacebook,
@@ -41,25 +38,23 @@ const Footer = () => {
 
   const footerLinks = {
     company: [
-      { name: "About Us", href: "/about" },
-      { name: "Our Story", href: "/story" },
-      { name: "Team", href: "/team" },
-      { name: "Careers", href: "/careers" },
-      { name: "Press", href: "/press" }
+      { name: "About Us", href: "/pages/about-us" },
+      { name: "Our Services", href: "/pages/services" },
+      { name: "Become a Partner", href: "/pages/contact" },
     ],
     explore: [
       { name: "Destinations", href: "/destinations" },
       { name: "Travel Packages", href: "/packages" },
-      { name: "Special Offers", href: "/offers" },
+      { name: "Experiences", href: "/experiences" },
+      { name: "Travel Guides", href: "/travel" },
       { name: "Travel Blog", href: "/blog" },
-      { name: "Gallery", href: "/gallery" }
     ],
     support: [
-      { name: "Help Center", href: "/help" },
-      { name: "Contact Us", href: "/contact" },
-      { name: "FAQs", href: "/faq" },
-      { name: "Booking Guide", href: "/guide" },
-      { name: "Cancellation Policy", href: "/cancellation" }
+      { name: "Contact Us", href: "/pages/contact" },
+      { name: "Booking Guide", href: "/booking" },
+      { name: "Refund Policy", href: "/policies/refund" },
+      { name: "Privacy Policy", href: "/policies/privacy" },
+      { name: "Terms & Conditions", href: "/policies/terms" },
     ],
     legal: [
       { name: "Terms of Service", href: "/policies/terms" },
@@ -70,11 +65,11 @@ const Footer = () => {
   }
 
   const socialLinks = [
-    { icon: FaFacebook, href: "#", label: "Facebook", color: "hover:bg-blue-600" },
-    { icon: FaTwitter, href: "#", label: "Twitter", color: "hover:bg-sky-500" },
-    { icon: FaInstagram, href: "#", label: "Instagram", color: "hover:bg-pink-600" },
-    { icon: FaYoutube, href: "#", label: "Youtube", color: "hover:bg-red-600" },
-    { icon: FaLinkedin, href: "#", label: "LinkedIn", color: "hover:bg-blue-700" }
+    { icon: FaFacebook, href: BUSINESS.sameAs?.[0] || "https://www.facebook.com/navsafartravels", label: "Facebook", color: "hover:bg-blue-600" },
+    { icon: FaInstagram, href: BUSINESS.sameAs?.[1] || "https://www.instagram.com/navsafartravels", label: "Instagram", color: "hover:bg-pink-600" },
+    { icon: FaTwitter, href: BUSINESS.sameAs?.[2] || "https://x.com/navsafartravels", label: "Twitter", color: "hover:bg-sky-500" },
+    { icon: FaLinkedin, href: BUSINESS.sameAs?.[3] || "https://www.linkedin.com/company/navsafartravels", label: "LinkedIn", color: "hover:bg-blue-700" },
+    { icon: FaYoutube, href: BUSINESS.sameAs?.[4] || "https://www.youtube.com/@navsafartravels", label: "Youtube", color: "hover:bg-red-600" },
   ]
 
   const paymentMethods = ["Visa", "Mastercard", "PayPal", "UPI", "NetBanking"]
@@ -114,7 +109,7 @@ const Footer = () => {
               {/* Contact */}
               <ul className="space-y-3 mb-8">
                 {[
-                  { icon: Phone, text: "+91 8882128640" },
+                  { icon: Phone, text: BUSINESS.phone },
                   { icon: Mail, text: "info@navsafartravels.com" },
                   { icon: MapPin, text: "WZ-447, First Floor, Left Side\nNangal Raya, Delhi 110046" }
                 ].map(({ icon: Icon, text }, i) => (

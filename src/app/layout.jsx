@@ -8,9 +8,10 @@ import "./globals.css";
 import ClientLoaderWrapper from "./components/loading/ClientLoaderWrapper";
 import SiteShell from "./components/SiteShell";
 import UniversalSEOEngine from "./components/seo/UniversalSEOEngine";
+import GlobalComponents from "./components/seo/GlobalComponents";
 
 import { PRIMARY_DOMAIN } from "../lib/domainConfig.js";
-import { getDailyKeywords, getDailyHomeTitle, getDailyHomeDescription } from "../lib/seoEngine.js";
+import { getDailyHomeTitle, getDailyHomeDescription } from "../lib/seoEngine.js";
 
 /* ── RENDERING ───────────────────────────────────────
  * ISR: pages are cached and re-generated at most once an hour (fast + good for
@@ -56,8 +57,6 @@ export function generateMetadata() {
   // Daily rotating title & description for maximum keyword freshness
   const homeTitle = getDailyHomeTitle();
   const homeDesc = getDailyHomeDescription();
-  const dailyKeywords = getDailyKeywords(20);
-
   // NOTE: no site-wide `alternates.canonical` here. Each page sets its own
   // self-referential canonical; a single default would wrongly point every
   // page at the homepage URL. Single-domain consolidation (see proxy.js) also
@@ -72,13 +71,8 @@ export function generateMetadata() {
 
     description: homeDesc,
 
-    keywords: [
-      "navsafar",
-      "travel agency india",
-      "tour packages",
-      "holiday packages",
-      ...dailyKeywords,
-    ],
+    // Meta keywords tag has no ranking value in 2026 — removed per SEO audit.
+    // Keywords are now handled via JSON-LD schemas, FAQ rotation, and title/description rotation.
 
     authors: [{ name: "NavSafar Team" }],
 
@@ -146,6 +140,9 @@ async function DynamicShell({ children }) {
     <>
       {/* 🚀 Universal SEO Engine — SEO + AEO + GEO + XOS + schemas + perf hints */}
       <UniversalSEOEngine />
+
+      {/* 🌐 Global Components — daily SEO agent pool health checks (zero latency) */}
+      <GlobalComponents />
 
       <ClientLoaderWrapper>
         <SiteShell>{children}</SiteShell>

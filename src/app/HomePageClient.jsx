@@ -152,7 +152,7 @@ export default function HomePageClient() {
                 Why Choose NavSafar?
               </h2>
               <p className="text-neutral-600 text-lg mb-10">
-                With over a decade of experience, we've crafted unforgettable journeys
+                With a passion for travel and a commitment to quality, we've crafted unforgettable journeys
                 for travelers across the globe. Here's why thousands choose us:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
