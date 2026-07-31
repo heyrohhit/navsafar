@@ -23,7 +23,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 
 // ── Gemini API config ──────────────────────────────────────────
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+// .trim() added: guards against a stray newline/space getting into
+// the GitHub secret when it was copy-pasted (this alone can make
+// process.env.GEMINI_API_KEY look "falsy-ish" or invalid downstream).
+const GEMINI_API_KEY = (process.env.GEMINI_API_KEY || "").trim();
 const GEMINI_MODEL = "gemini-2.5-flash-lite";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -132,6 +135,12 @@ async function runAgent() {
 
   if (!GEMINI_API_KEY) {
     console.error("❌ GEMINI_API_KEY not set. Exiting.");
+    console.error(
+      "   Checked process.env.GEMINI_API_KEY — it was empty or missing.\n" +
+      "   Fix: GitHub repo → Settings → Secrets and variables → Actions →\n" +
+      "   Repository secrets → confirm 'GEMINI_API_KEY' exists, then re-run\n" +
+      "   this workflow via 'Run workflow' (workflow_dispatch)."
+    );
     process.exit(1);
   }
 
