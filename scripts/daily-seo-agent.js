@@ -27,7 +27,11 @@ const ROOT = path.resolve(__dirname, "..");
 // the GitHub secret when it was copy-pasted (this alone can make
 // process.env.GEMINI_API_KEY look "falsy-ish" or invalid downstream).
 const GEMINI_API_KEY = (process.env.GEMINI_API_KEY || "").trim();
-const GEMINI_MODEL = "gemini-2.5-flash-lite";
+// NOTE: "gemini-2.5-flash-lite" was retired for new users (404 NOT_FOUND).
+// Updated to "gemini-3.1-flash-lite", the current cost/latency-equivalent
+// replacement as of Aug 2026. If this ever 404s again, try
+// "gemini-2.5-flash" as a stable fallback.
+const GEMINI_MODEL = "gemini-3.1-flash-lite";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
 // ── Safety thresholds ──────────────────────────────────────────
